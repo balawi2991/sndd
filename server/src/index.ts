@@ -27,6 +27,22 @@ app.use(cors({
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
+// Root route
+app.get('/', (req, res) => {
+  res.json({
+    name: 'Sanad API',
+    version: '1.0.0',
+    status: 'running',
+    endpoints: {
+      health: '/health',
+      chat: '/api/chat',
+      materials: '/api/materials',
+      conversations: '/api/conversations'
+    },
+    documentation: 'https://github.com/balawi2991/sabot'
+  });
+});
+
 // Health check
 app.get('/health', (req, res) => {
   res.json({
