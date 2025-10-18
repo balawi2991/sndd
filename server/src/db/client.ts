@@ -7,6 +7,16 @@ class Database {
     const connectionString = process.env.DATABASE_URL;
 
     if (!connectionString) {
+      console.error('❌ DATABASE_URL environment variable is not set!');
+      console.error('');
+      console.error('Railway Setup Required:');
+      console.error('1. Add PostgreSQL service to your Railway project');
+      console.error('2. Railway will automatically add DATABASE_URL variable');
+      console.error('3. Make sure PostgreSQL service is linked to Backend service');
+      console.error('');
+      console.error('Or set it manually in Variables tab:');
+      console.error('DATABASE_URL=postgresql://user:pass@host:5432/dbname');
+      console.error('');
       throw new Error('DATABASE_URL environment variable is required');
     }
 
