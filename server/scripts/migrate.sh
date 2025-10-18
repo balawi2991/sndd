@@ -13,6 +13,12 @@ fi
 
 echo "✅ DATABASE_URL found"
 
+# Get script directory
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+PROJECT_ROOT="$( cd "$SCRIPT_DIR/.." && pwd )"
+
+echo "📁 Project root: $PROJECT_ROOT"
+
 # Install pgvector extension
 echo "📦 Installing pgvector extension..."
 psql $DATABASE_URL -c "CREATE EXTENSION IF NOT EXISTS vector;"
@@ -26,7 +32,7 @@ fi
 
 # Run main schema
 echo "📝 Running main schema..."
-psql $DATABASE_URL < ../src/db/schema.sql
+psql $DATABASE_URL < "$PROJECT_ROOT/src/db/schema.sql"
 
 if [ $? -eq 0 ]; then
   echo "✅ Main schema applied"
@@ -37,7 +43,7 @@ fi
 
 # Run schema updates (SaaS features)
 echo "📝 Running schema updates..."
-psql $DATABASE_URL < ../src/db/schema-updates.sql
+psql $DATABASE_URL < "$PROJECT_ROOT/src/db/schema-updates.sql"
 
 if [ $? -eq 0 ]; then
   echo "✅ Schema updates applied"
