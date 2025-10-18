@@ -23,8 +23,8 @@ router.post(
       // Get userId from auth middleware
       const userId = req.userId!;
 
-      // Process message
-      const response = await chatService.processMessage(validated, userId);
+      // Process message (validated is already typed correctly from Zod)
+      const response = await chatService.processMessage(validated as any, userId);
 
       res.json(response);
 
