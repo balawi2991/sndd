@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { authAPI } from '@/services/api/auth.api';
 
 interface User {
   id: string;
@@ -10,7 +9,6 @@ interface User {
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
-  isLoading: boolean;
   signIn: (email: string, password: string, remember?: boolean) => Promise<void>;
   signUp: (name: string, email: string, password: string) => Promise<void>;
   signOut: () => void;
@@ -22,69 +20,57 @@ const AuthContext = createContext<AuthContextType | null>(null);
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Check for stored auth and validate
-    const checkAuth = async () => {
-      const savedUser = authAPI.getSavedUser();
-      
-      if (savedUser && authAPI.isAuthenticated()) {
-        // Verify token is still valid
-        const response = await authAPI.getCurrentUser();
-        
-        if (response.success && response.data) {
-          setUser(response.data.user);
-          setIsAuthenticated(true);
-        } else {
-          // Token invalid, clear auth
-          authAPI.clearAuth();
-        }
-      }
-      
-      setIsLoading(false);
-    };
-
-    checkAuth();
+    // Check for stored auth
+    const storedUser = localStorage.getItem('mintchat_user');
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+      setIsAuthenticated(true);
+    }
   }, []);
 
   const signIn = async (email: string, password: string, remember = false) => {
-    const response = await authAPI.login({ email, password });
+    console.log('Signing in:', { email, remember });
     
-    if (response.success && response.data) {
-      const { user, accessToken, refreshToken } = response.data;
-      
-      setUser(user);
-      setIsAuthenticated(true);
-      
-      authAPI.saveTokens(accessToken, refreshToken);
-      authAPI.saveUser(user);
-    } else {
-      throw new Error(response.error?.message || 'Login failed');
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 500));
+    
+    const mockUser: User = {
+      id: '1',
+      name: email.split('@')[0],
+      email,
+    };
+    
+    setUser(mockUser);
+    setIsAuthenticated(true);
+    
+    if (remember) {
+      localStorage.setItem('mintchat_user', JSON.stringify(mockUser));
     }
   };
 
   const signUp = async (name: string, email: string, password: string) => {
-    const response = await authAPI.register({ name, email, password });
+    console.log('Signing up:', { name, email });
     
-    if (response.success && response.data) {
-      const { user, accessToken, refreshToken } = response.data;
-      
-      setUser(user);
-      setIsAuthenticated(true);
-      
-      authAPI.saveTokens(accessToken, refreshToken);
-      authAPI.saveUser(user);
-    } else {
-      throw new Error(response.error?.message || 'Registration failed');
-    }
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 500));
+    
+    const mockUser: User = {
+      id: '1',
+      name,
+      email,
+    };
+    
+    setUser(mockUser);
+    setIsAuthenticated(true);
+    localStorage.setItem('mintchat_user', JSON.stringify(mockUser));
   };
 
   const signOut = () => {
-    authAPI.logout().catch(console.error);
-    authAPI.clearAuth();
     setUser(null);
     setIsAuthenticated(false);
+    localStorage.removeItem('mintchat_user');
   };
 
   const resetPassword = async (email: string) => {
@@ -97,7 +83,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     <AuthContext.Provider value={{
       user,
       isAuthenticated,
-      isLoading,
       signIn,
       signUp,
       signOut,
