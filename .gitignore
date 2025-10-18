@@ -7,22 +7,10 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-# Dependencies
 node_modules
-
-# Build outputs
 dist
 dist-ssr
 *.local
-
-# Environment variables
-.env
-.env.local
-.env.*.local
-
-# Uploads
-uploads/
-server/uploads/
 
 # Editor directories and files
 .vscode/*
@@ -35,15 +23,31 @@ server/uploads/
 *.sln
 *.sw?
 
-# Vite
 .vite
 
-# TypeScript
 *.tsbuildinfo
 .eslintcache
 
-# Railway
-.railway/
+# Environment variables
+.env
+.env.local
+.env.production
+.env.development
+server/.env
+server/.env.local
 
-# OS
-Thumbs.db
+# Railway
+.railway
+
+# Build outputs
+apps/*/dist
+apps/*/build
+server/dist
+
+# Database
+*.db
+*.sqlite
+
+# Uploads
+uploads/
+temp/

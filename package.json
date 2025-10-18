@@ -5,10 +5,16 @@
   "type": "module",
   "scripts": {
     "dev": "vite dev",
+    "dev:server": "cd server && npm run dev",
+    "dev:all": "concurrently \"npm run dev\" \"npm run dev:server\"",
     "build": "tsc -b && vite build",
+    "build:server": "cd server && npm run build",
+    "build:all": "npm run build && npm run build:server",
+    "start": "node server/dist/index.js",
     "lint": "eslint .",
     "typecheck": "tsc -b --noEmit",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "postinstall": "cd server && npm install"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.0.1",
@@ -69,6 +75,7 @@
     "@types/react-dom": "^18.3.7",
     "@vitejs/plugin-react": "^4.4.1",
     "autoprefixer": "^10.4.21",
+    "concurrently": "^8.2.2",
     "eslint": "^9.26.0",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.20",

@@ -1,9 +1,8 @@
-import { Router, Response, NextFunction } from 'express';
+import { Router, Request, Response, NextFunction } from 'express';
 import { chatService } from '../services/chat.service';
 import { chatRequestSchema } from '../schemas/chat.schema';
 import { chatLimiter } from '../middleware/rateLimiter';
-import { ValidationError } from '../middleware/errorHandler';
-import { authenticate, AuthRequest } from '../middleware/auth';
+import { authenticate, getUserId } from '../middleware/auth.middleware';
 
 const router = Router();
 
@@ -15,16 +14,16 @@ router.post(
   '/',
   authenticate,
   chatLimiter,
-  async (req: AuthRequest, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction) => {
     try {
       // Validate request
       const validated = chatRequestSchema.parse(req.body);
 
-      // Get userId from auth middleware
-      const userId = req.userId!;
+      // Get userId from authenticated user
+      const userId = getUserId(req);
 
-      // Process message (validated is already typed correctly from Zod)
-      const response = await chatService.processMessage(validated as any, userId);
+      // Process message
+      const response = await chatService.processMessage(validated, userId);
 
       res.json(response);
 
@@ -41,10 +40,10 @@ router.post(
 router.get(
   '/conversations/:id',
   authenticate,
-  async (req: AuthRequest, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { id } = req.params;
-      const userId = req.userId!;
+      const userId = getUserId(req);
 
       const conversation = await chatService.getConversation(id, userId);
 
@@ -66,9 +65,9 @@ router.get(
 router.get(
   '/conversations',
   authenticate,
-  async (req: AuthRequest, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const userId = req.userId!;
+      const userId = getUserId(req);
       const limit = parseInt(req.query.limit as string) || 50;
       const offset = parseInt(req.query.offset as string) || 0;
 
@@ -92,10 +91,10 @@ router.get(
 router.delete(
   '/conversations/:id',
   authenticate,
-  async (req: AuthRequest, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { id } = req.params;
-      const userId = req.userId!;
+      const userId = getUserId(req);
 
       await chatService.deleteConversation(id, userId);
 

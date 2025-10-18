@@ -3,9 +3,13 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import compression from 'compression';
+import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { errorHandler } from './middleware/errorHandler';
 import { notFoundHandler } from './middleware/notFoundHandler';
+import authRouter from './routes/auth.routes';
 import chatRouter from './routes/chat.routes';
 import materialsRouter from './routes/materials.routes';
 import conversationsRouter from './routes/conversations.routes';
@@ -15,6 +19,11 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3001;
+const NODE_ENV = process.env.NODE_ENV || 'development';
+
+// Get __dirname equivalent in ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Middleware
 app.use(helmet()); // Security headers
@@ -26,25 +35,10 @@ app.use(cors({
 }));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
-
-// Root route
-app.get('/', (req, res) => {
-  res.json({
-    name: 'Sanad API',
-    version: '1.0.0',
-    status: 'running',
-    endpoints: {
-      health: '/health',
-      chat: '/api/chat',
-      materials: '/api/materials',
-      conversations: '/api/conversations'
-    },
-    documentation: 'https://github.com/balawi2991/sabot'
-  });
-});
+app.use(cookieParser()); // Parse cookies
 
 // Health check
-app.get('/health', (req, res) => {
+app.get('/health', (_req, res) => {
   res.json({
     status: 'ok',
     timestamp: new Date().toISOString(),
@@ -53,12 +47,26 @@ app.get('/health', (req, res) => {
 });
 
 // API Routes
+app.use('/api/auth', authRouter);
 app.use('/api/chat', chatRouter);
 app.use('/api/materials', materialsRouter);
 app.use('/api/conversations', conversationsRouter);
 
+// Serve static files in production
+if (NODE_ENV === 'production') {
+  const frontendPath = path.join(__dirname, '../../dist');
+  app.use(express.static(frontendPath));
+  
+  // Serve index.html for all non-API routes (SPA)
+  app.get('*', (_req, res) => {
+    res.sendFile(path.join(frontendPath, 'index.html'));
+  });
+} else {
+  // In development, use 404 handler
+  app.use(notFoundHandler);
+}
+
 // Error handling
-app.use(notFoundHandler);
 app.use(errorHandler);
 
 // Start server

@@ -2,19 +2,15 @@
   "name": "sanad-server",
   "version": "1.0.0",
   "description": "Backend server for Sanad (MintChat) with RAG + DeepSeek integration",
+  "type": "module",
   "main": "dist/index.js",
   "scripts": {
+    "setup": "node scripts/setup-env.js",
     "dev": "tsx watch src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
     "lint": "eslint src --ext .ts",
-    "test": "jest",
-    "db:setup": "node scripts/setup-database.js",
-    "db:seed": "node scripts/seed-demo-data.js",
-    "db:index": "node scripts/index-materials.js",
-    "db:reset": "node scripts/setup-database.js && node scripts/seed-demo-data.js && node scripts/index-materials.js",
-    "db:migrate": "node scripts/migrate-production.js",
-    "setup": "npm run db:setup && npm run db:seed && npm run db:index"
+    "test": "jest"
   },
   "keywords": [
     "ai",
@@ -24,10 +20,6 @@
   ],
   "author": "",
   "license": "MIT",
-  "engines": {
-    "node": ">=20.18.1",
-    "npm": ">=10.0.0"
-  },
   "dependencies": {
     "express": "^4.18.2",
     "cors": "^2.8.5",
@@ -43,7 +35,10 @@
     "uuid": "^9.0.1",
     "helmet": "^7.1.0",
     "morgan": "^1.10.0",
-    "compression": "^1.7.4"
+    "compression": "^1.7.4",
+    "bcrypt": "^5.1.1",
+    "jsonwebtoken": "^9.0.2",
+    "cookie-parser": "^1.4.6"
   },
   "devDependencies": {
     "@types/express": "^4.17.21",
@@ -53,6 +48,9 @@
     "@types/uuid": "^9.0.7",
     "@types/morgan": "^1.9.9",
     "@types/compression": "^1.7.5",
+    "@types/bcrypt": "^5.0.2",
+    "@types/jsonwebtoken": "^9.0.5",
+    "@types/cookie-parser": "^1.4.6",
     "typescript": "^5.3.3",
     "tsx": "^4.7.0",
     "eslint": "^8.56.0",

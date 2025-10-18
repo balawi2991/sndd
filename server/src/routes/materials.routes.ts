@@ -1,5 +1,7 @@
-import { Router, Response, NextFunction } from 'express';
-import { authenticate, AuthRequest } from '../middleware/auth';
+import { Router, Request, Response, NextFunction } from 'express';
+import { authenticate, getUserId } from '../middleware/auth.middleware';
+import { materialsRepository } from '../db/repositories/materials.repository';
+import { ragService } from '../services/rag.service';
 
 const router = Router();
 
@@ -10,16 +12,17 @@ const router = Router();
 router.get(
   '/',
   authenticate,
-  async (req: AuthRequest, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const userId = req.userId!;
+      const userId = getUserId(req);
 
-      // TODO: Implement database retrieval
+      const materials = await materialsRepository.list(userId);
+
       res.json({
         success: true,
         data: {
-          materials: [],
-          total: 0
+          materials,
+          total: materials.length
         }
       });
 
@@ -36,27 +39,32 @@ router.get(
 router.post(
   '/',
   authenticate,
-  async (req: AuthRequest, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const userId = req.userId!;
+      const userId = getUserId(req);
       const { type, title, content, url } = req.body;
 
-      // TODO: Implement material creation and indexing
-      // 1. Validate input
-      // 2. Save to database
-      // 3. Index with RAG service
-      // 4. Return created material
+      // 1. Save to database
+      const material = await materialsRepository.create({
+        userId,
+        type,
+        title,
+        content,
+        url
+      });
+
+      // 2. Index with RAG service (if has content)
+      if (content) {
+        await ragService.indexMaterial(
+          material.id,
+          content,
+          { source: title, url }
+        );
+      }
 
       res.json({
         success: true,
-        data: {
-          id: 'mock-material-id',
-          type,
-          title,
-          content,
-          url,
-          createdAt: new Date().toISOString()
-        }
+        data: material
       });
 
     } catch (error) {
@@ -72,14 +80,16 @@ router.post(
 router.delete(
   '/:id',
   authenticate,
-  async (req: AuthRequest, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { id } = req.params;
-      const userId = req.userId!;
+      const userId = getUserId(req);
 
-      // TODO: Implement material deletion
-      // 1. Delete from database
-      // 2. Delete chunks from vector DB
+      // 1. Delete chunks from vector DB
+      await ragService.deleteMaterialChunks(id);
+
+      // 2. Delete from database
+      await materialsRepository.delete(id, userId);
 
       res.json({
         success: true,

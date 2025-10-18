@@ -1,4 +1,6 @@
 import { Router, Request, Response, NextFunction } from 'express';
+import { authenticate, getUserId } from '../middleware/auth.middleware';
+import { conversationsRepository } from '../db/repositories/conversations.repository';
 
 const router = Router();
 
@@ -8,19 +10,20 @@ const router = Router();
  */
 router.get(
   '/',
+  authenticate,
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const userId = req.headers['x-user-id'] as string || 'mock-user-id';
+      const userId = getUserId(req);
       const limit = parseInt(req.query.limit as string) || 50;
       const offset = parseInt(req.query.offset as string) || 0;
       const search = req.query.search as string;
 
-      // TODO: Implement database retrieval with filters
+      const result = await conversationsRepository.list(userId, limit, offset, search);
+
       res.json({
         success: true,
         data: {
-          conversations: [],
-          total: 0,
+          ...result,
           limit,
           offset
         }
@@ -38,22 +41,17 @@ router.get(
  */
 router.get(
   '/:id',
+  authenticate,
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { id } = req.params;
-      const userId = req.headers['x-user-id'] as string || 'mock-user-id';
+      const userId = getUserId(req);
 
-      // TODO: Implement database retrieval
+      const conversation = await conversationsRepository.findById(id, userId);
+
       res.json({
         success: true,
-        data: {
-          id,
-          userId,
-          title: 'Conversation',
-          messages: [],
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
-        }
+        data: conversation
       });
 
     } catch (error) {
@@ -68,21 +66,18 @@ router.get(
  */
 router.patch(
   '/:id',
+  authenticate,
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { id } = req.params;
-      const userId = req.headers['x-user-id'] as string || 'mock-user-id';
+      const userId = getUserId(req);
       const { title, isRead } = req.body;
 
-      // TODO: Implement database update
+      const updated = await conversationsRepository.update(id, userId, { title, isRead });
+
       res.json({
         success: true,
-        data: {
-          id,
-          title,
-          isRead,
-          updatedAt: new Date().toISOString()
-        }
+        data: updated
       });
 
     } catch (error) {
@@ -97,12 +92,14 @@ router.patch(
  */
 router.delete(
   '/:id',
+  authenticate,
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { id } = req.params;
-      const userId = req.headers['x-user-id'] as string || 'mock-user-id';
+      const userId = getUserId(req);
 
-      // TODO: Implement database deletion
+      await conversationsRepository.delete(id, userId);
+
       res.json({
         success: true,
         message: 'Conversation deleted successfully'
@@ -120,17 +117,21 @@ router.delete(
  */
 router.post(
   '/:id/export',
+  authenticate,
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { id } = req.params;
-      const userId = req.headers['x-user-id'] as string || 'mock-user-id';
+      const userId = getUserId(req);
       const { format } = req.body; // 'json', 'markdown', 'pdf'
 
       // TODO: Implement export functionality
+      const conversation = await conversationsRepository.findById(id, userId);
+
       res.json({
         success: true,
         data: {
           format,
+          conversation,
           downloadUrl: '#'
         }
       });
