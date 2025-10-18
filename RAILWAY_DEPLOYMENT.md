@@ -1,539 +1,470 @@
-# 🚂 Railway Deployment Guide - Sanad
+# 🚂 Railway Deployment Guide
 
-## 📋 Pre-Deployment Checklist
-
-### **Required**
-- [ ] GitHub repository created
-- [ ] Railway account created
-- [ ] DeepSeek API key obtained
-- [ ] OpenAI API key obtained
-- [ ] Code committed to GitHub
-
-### **Optional**
-- [ ] Custom domain ready
-- [ ] Email service configured
-- [ ] Monitoring tools ready
+> **ملاحظة**: هذا الدليل للمستقبل. تأكد من أن كل شيء يعمل محلياً أولاً!
 
 ---
 
-## 🚀 Step-by-Step Deployment
+## نظرة عامة
 
-### **Step 1: Install Railway CLI**
-
-```bash
-# Windows (PowerShell)
-iwr https://railway.app/install.ps1 | iex
-
-# Mac/Linux
-curl -fsSL https://railway.app/install.sh | sh
-
-# Or via npm
-npm install -g @railway/cli
-```
-
-### **Step 2: Login to Railway**
-
-```bash
-railway login
-```
-
-سيفتح متصفح للتسجيل/الدخول.
+Railway هو منصة deployment سهلة تدعم:
+- ✅ PostgreSQL مع pgvector
+- ✅ Automatic deployments من GitHub
+- ✅ Environment variables
+- ✅ Custom domains
+- ✅ Auto-scaling
 
 ---
 
-### **Step 3: Create New Project**
+## المتطلبات الأساسية
 
-#### **Option A: From GitHub (Recommended)**
-
-1. اذهب إلى [Railway Dashboard](https://railway.app/dashboard)
-2. اضغط **"New Project"**
-3. اختر **"Deploy from GitHub repo"**
-4. اختر repository: `sanad`
-5. اختر branch: `main`
-6. اضغط **"Deploy Now"**
-
-#### **Option B: From CLI**
-
-```bash
-cd C:\Users\balaw_mce0m32\Downloads\sanad\server
-railway init
-railway link
-```
+1. ✅ حساب على [Railway](https://railway.app)
+2. ✅ حساب GitHub
+3. ✅ المشروع يعمل محلياً بنجاح
+4. ✅ API Keys جاهزة
 
 ---
 
-### **Step 4: Add PostgreSQL Database**
+## الخطوة 1: إعداد المشروع لـ Railway
 
+### 1. إضافة Procfile
 ```bash
-# في Railway Dashboard
-# أو عبر CLI:
-railway add --plugin postgresql
+# في المجلد الرئيسي
+echo "web: cd server && npm start" > Procfile
 ```
 
-**ملاحظة**: Railway سيُنشئ `DATABASE_URL` تلقائياً.
-
----
-
-### **Step 5: Install pgvector Extension**
-
-```bash
-# Connect to database
-railway connect postgresql
-
-# في psql prompt:
-CREATE EXTENSION IF NOT EXISTS vector;
-
-# تحقق من التثبيت
-\dx vector
-
-# اخرج
-\q
-```
-
----
-
-### **Step 6: Run Database Migrations**
-
-#### **Option A: Manual (Recommended for first time)**
-
-```bash
-# Download schema files locally or use Railway shell
-railway run bash
-
-# Inside Railway shell:
-cd server/scripts
-chmod +x migrate.sh
-./migrate.sh
-```
-
-#### **Option B: Direct psql**
-
-```bash
-# Get DATABASE_URL
-railway variables
-
-# Run migrations
-psql $DATABASE_URL < server/src/db/schema.sql
-psql $DATABASE_URL < server/src/db/schema-updates.sql
-```
-
----
-
-### **Step 7: Set Environment Variables**
-
-```bash
-# Required variables
-railway variables set DEEPSEEK_API_KEY=sk-xxxxxxxxxxxxx
-railway variables set OPENAI_API_KEY=sk-xxxxxxxxxxxxx
-railway variables set JWT_SECRET=your-super-secret-key-min-32-characters-long
-
-# Optional variables
-railway variables set NODE_ENV=production
-railway variables set CORS_ORIGIN=https://yourdomain.com
-railway variables set PORT=3001
-```
-
-**أو من Dashboard**:
-1. اذهب إلى Project Settings
-2. اضغط **Variables**
-3. أضف كل variable
-
----
-
-### **Step 8: Configure Build Settings**
-
-Railway سيكتشف تلقائياً:
-- `package.json` → Node.js project
-- `nixpacks.toml` → Build configuration
-- `Procfile` → Start command
-
-**تحقق من**:
-- Build Command: `npm install && npm run build`
-- Start Command: `npm start`
-- Root Directory: `server`
-
----
-
-### **Step 9: Deploy!**
-
-```bash
-# إذا استخدمت GitHub
-# Railway سيبدأ deployment تلقائياً عند push
-
-# أو يدوياً
-railway up
-
-# أو من Dashboard
-# اضغط "Deploy" → "Redeploy"
-```
-
----
-
-### **Step 10: Seed Database (Optional)**
-
-```bash
-# Connect to Railway
-railway run bash
-
-# Run seed script
-psql $DATABASE_URL < server/scripts/seed.sql
-```
-
-هذا سيُنشئ:
-- Demo user
-- Test agent with API key
-- Sample training material
-- Free tier subscription
-
----
-
-## ✅ Verify Deployment
-
-### **1. Check Health Endpoint**
-
-```bash
-curl https://your-app.railway.app/health
-```
-
-**Expected Response**:
-```json
-{
-  "status": "ok",
-  "timestamp": "2024-01-01T00:00:00.000Z",
-  "uptime": 123.456
-}
-```
-
-### **2. Check Database Connection**
-
-```bash
-railway logs
-```
-
-ابحث عن:
-- ✅ `Server running on...`
-- ✅ `Database connected`
-- ❌ أي errors
-
-### **3. Test API Endpoints**
-
-```bash
-# Get your Railway URL
-railway domain
-
-# Test chat endpoint (needs API key)
-curl -X POST https://your-app.railway.app/api/chat \
-  -H "X-API-Key: agent_demo_key_for_testing_only_change_in_production" \
-  -H "Content-Type: application/json" \
-  -d '{"question": "مرحباً"}'
-```
-
----
-
-## 🔧 Configuration Files
-
-### **1. railway.json**
+### 2. إضافة railway.json
 ```json
 {
   "$schema": "https://railway.app/railway.schema.json",
   "build": {
     "builder": "NIXPACKS",
-    "buildCommand": "npm install && npm run build"
+    "buildCommand": "cd server && npm install && npm run build"
   },
   "deploy": {
-    "startCommand": "npm start",
+    "startCommand": "cd server && npm start",
     "restartPolicyType": "ON_FAILURE",
     "restartPolicyMaxRetries": 10
   }
 }
 ```
 
-### **2. nixpacks.toml**
-```toml
-[phases.setup]
-nixPkgs = ["nodejs-18_x", "python3"]
-
-[phases.install]
-cmds = ["npm ci"]
-
-[phases.build]
-cmds = ["npm run build"]
-
-[start]
-cmd = "npm start"
-```
-
-### **3. Procfile**
-```
-web: npm start
+### 3. تحديث package.json
+تأكد من وجود:
+```json
+{
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js"
+  }
+}
 ```
 
 ---
 
-## 🌐 Custom Domain (Optional)
+## الخطوة 2: إنشاء Project على Railway
 
-### **1. Add Domain in Railway**
-
-1. Project Settings → Domains
-2. اضغط **"Add Domain"**
-3. أدخل domain: `api.yourdomain.com`
-
-### **2. Configure DNS**
-
-أضف CNAME record:
+### 1. إنشاء Project جديد
 ```
-Type: CNAME
-Name: api
-Value: your-app.railway.app
+1. اذهب إلى railway.app
+2. اضغط "New Project"
+3. اختر "Deploy from GitHub repo"
+4. اختر repository الخاص بك
 ```
 
-### **3. Update CORS**
+### 2. إضافة PostgreSQL Service
+```
+1. في Project، اضغط "+ New"
+2. اختر "Database"
+3. اختر "PostgreSQL"
+4. انتظر حتى يتم التثبيت
+```
 
+### 3. تثبيت pgvector Extension
 ```bash
-railway variables set CORS_ORIGIN=https://yourdomain.com
+# في Railway PostgreSQL Console:
+CREATE EXTENSION vector;
 ```
 
 ---
 
-## 📊 Monitoring & Logs
+## الخطوة 3: إعداد Environment Variables
 
-### **View Logs**
+في Railway Project Settings → Variables:
 
-```bash
-# Real-time logs
-railway logs
+### Backend Variables
+```env
+# Node
+NODE_ENV=production
+PORT=3001
 
-# Follow logs
-railway logs --follow
+# DeepSeek
+DEEPSEEK_API_KEY=sk-xxxxx
+DEEPSEEK_BASE_URL=https://api.deepseek.com/v1
+DEEPSEEK_MODEL=deepseek-chat
+DEEPSEEK_TEMPERATURE=0.7
+DEEPSEEK_MAX_TOKENS=1000
+DEEPSEEK_TIMEOUT=30000
 
-# Filter by service
-railway logs --service backend
+# Database (Railway يوفرها تلقائياً)
+DATABASE_URL=${{Postgres.DATABASE_URL}}
+
+# OpenAI
+OPENAI_API_KEY=sk-xxxxx
+
+# CORS (استخدم domain الخاص بك)
+CORS_ORIGIN=https://your-frontend-domain.com
+
+# Rate Limiting
+RATE_LIMIT_PER_MINUTE=10
+RATE_LIMIT_PER_HOUR=100
+RATE_LIMIT_PER_DAY=500
+
+# RAG
+RAG_CHUNK_SIZE=750
+RAG_CHUNK_OVERLAP=100
+RAG_TOP_K=10
+RAG_RERANK_TOP=3
+RAG_SIMILARITY_THRESHOLD=0.7
 ```
-
-### **Metrics**
-
-في Railway Dashboard:
-- CPU usage
-- Memory usage
-- Network traffic
-- Request count
 
 ---
 
-## 🔄 Updates & Redeployment
+## الخطوة 4: Deploy Backend
 
-### **Automatic (GitHub)**
-
-```bash
-# Make changes
-git add .
-git commit -m "Update feature"
-git push origin main
-
-# Railway will auto-deploy
+### 1. Automatic Deployment
+```
+Railway سيقوم بـ deploy تلقائياً عند push إلى GitHub
 ```
 
-### **Manual**
-
-```bash
-railway up
+### 2. Manual Deployment
+```
+1. في Railway Dashboard
+2. اضغط "Deploy"
+3. انتظر حتى ينتهي Build
 ```
 
-### **Rollback**
+### 3. تشغيل Database Setup
+```bash
+# في Railway Console:
+npm run db:setup
+npm run db:seed
+npm run db:index
+```
 
-في Dashboard:
-1. Deployments tab
-2. اختر previous deployment
-3. اضغط **"Redeploy"**
+---
+
+## الخطوة 5: Deploy Frontend
+
+### Option 1: Vercel (موصى به)
+```bash
+# تثبيت Vercel CLI
+npm i -g vercel
+
+# Deploy
+vercel
+
+# إضافة Environment Variable
+vercel env add VITE_API_URL
+# القيمة: https://your-railway-backend.railway.app/api
+```
+
+### Option 2: Netlify
+```bash
+# تثبيت Netlify CLI
+npm i -g netlify-cli
+
+# Deploy
+netlify deploy --prod
+
+# إضافة Environment Variable في Netlify Dashboard
+```
+
+### Option 3: Railway (Frontend أيضاً)
+```
+1. أنشئ Service جديد في نفس Project
+2. اربطه بـ GitHub repo
+3. أضف Environment Variables
+4. Deploy
+```
+
+---
+
+## الخطوة 6: إعداد Custom Domain (اختياري)
+
+### Backend Domain
+```
+1. في Railway Service Settings
+2. اذهب إلى "Domains"
+3. أضف custom domain
+4. أضف DNS records في domain provider
+```
+
+### Frontend Domain
+```
+# في Vercel/Netlify
+1. اذهب إلى Domains
+2. أضف custom domain
+3. أضف DNS records
+```
+
+---
+
+## الخطوة 7: Database Migrations
+
+### إنشاء Migration Script
+```javascript
+// server/scripts/migrate.js
+const { Client } = require('pg');
+const fs = require('fs');
+
+async function migrate() {
+  const client = new Client({
+    connectionString: process.env.DATABASE_URL,
+    ssl: { rejectUnauthorized: false }
+  });
+
+  await client.connect();
+  
+  // Run migrations
+  const schema = fs.readFileSync('./src/db/schema.sql', 'utf8');
+  await client.query(schema);
+  
+  await client.end();
+  console.log('Migration completed');
+}
+
+migrate();
+```
+
+### تشغيل Migrations
+```bash
+# في Railway Console
+npm run migrate
+```
+
+---
+
+## الخطوة 8: Monitoring & Logs
+
+### Railway Logs
+```
+1. في Railway Dashboard
+2. اذهب إلى Service
+3. اضغط "Logs"
+4. راقب errors و performance
+```
+
+### إضافة Monitoring (اختياري)
+```bash
+# Sentry for error tracking
+npm install @sentry/node
+
+# في server/src/index.ts
+import * as Sentry from '@sentry/node';
+
+Sentry.init({
+  dsn: process.env.SENTRY_DSN,
+  environment: process.env.NODE_ENV
+});
+```
+
+---
+
+## الخطوة 9: Performance Optimization
+
+### 1. Database Connection Pooling
+```typescript
+// في db/client.ts
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  max: 20, // Railway limit
+  ssl: process.env.NODE_ENV === 'production' 
+    ? { rejectUnauthorized: false } 
+    : false
+});
+```
+
+### 2. Caching (Redis)
+```
+1. في Railway، أضف Redis service
+2. أضف REDIS_URL environment variable
+3. استخدم Redis للـ caching
+```
+
+### 3. CDN للـ Static Files
+```
+استخدم Vercel/Netlify CDN للـ frontend assets
+```
+
+---
+
+## الخطوة 10: Security
+
+### 1. Environment Variables
+```
+✅ لا تضع API keys في الكود
+✅ استخدم Railway Environment Variables
+✅ استخدم secrets management
+```
+
+### 2. CORS
+```typescript
+// تحديد domains المسموحة فقط
+app.use(cors({
+  origin: process.env.CORS_ORIGIN,
+  credentials: true
+}));
+```
+
+### 3. Rate Limiting
+```typescript
+// موجود بالفعل في middleware/rateLimiter.ts
+```
+
+### 4. SSL/HTTPS
+```
+✅ Railway يوفر SSL تلقائياً
+✅ Vercel/Netlify يوفرون SSL تلقائياً
+```
+
+---
+
+## الخطوة 11: Backup Strategy
+
+### Database Backups
+```bash
+# Railway يوفر automatic backups
+# أو استخدم pg_dump:
+pg_dump $DATABASE_URL > backup.sql
+```
+
+### File Storage Backups
+```bash
+# إذا كنت تستخدم Railway Volumes
+# أو استخدم S3 للـ file storage
+```
+
+---
+
+## الخطوة 12: CI/CD Pipeline
+
+### GitHub Actions (اختياري)
+```yaml
+# .github/workflows/deploy.yml
+name: Deploy to Railway
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: Install Railway CLI
+        run: npm i -g @railway/cli
+      
+      - name: Deploy
+        run: railway up
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+```
+
+---
+
+## 🎯 Checklist قبل Production
+
+- [ ] كل شيء يعمل محلياً
+- [ ] Tests تمر بنجاح
+- [ ] Environment variables محددة
+- [ ] Database migrations جاهزة
+- [ ] Monitoring مفعل
+- [ ] Backups مجدولة
+- [ ] SSL/HTTPS مفعل
+- [ ] Custom domains مضبوطة
+- [ ] Error handling شامل
+- [ ] Rate limiting مفعل
+- [ ] Security headers مضبوطة
+
+---
+
+## 💰 التكلفة المتوقعة
+
+### Railway
+- **Hobby Plan**: $5/month
+  - 500 hours execution time
+  - 512MB RAM
+  - 1GB storage
+
+- **Developer Plan**: $20/month
+  - Unlimited execution time
+  - 8GB RAM
+  - 100GB storage
+
+### Vercel (Frontend)
+- **Free**: مناسب للبداية
+- **Pro**: $20/month للمشاريع الكبيرة
+
+### API Costs
+- **DeepSeek**: ~$0.14 per 1M tokens
+- **OpenAI Embeddings**: ~$0.10 per 1M tokens
 
 ---
 
 ## 🐛 Troubleshooting
 
-### **Build Fails**
-
+### "Build failed"
 ```bash
-# Check build logs
-railway logs --deployment <deployment-id>
-
-# Common issues:
-# 1. Missing dependencies → Check package.json
-# 2. TypeScript errors → Check tsconfig.json
-# 3. Build timeout → Increase resources
+# تحقق من:
+1. package.json scripts صحيحة
+2. Dependencies مثبتة
+3. TypeScript يعمل
+4. Build command صحيح
 ```
 
-### **Database Connection Fails**
-
+### "Database connection failed"
 ```bash
-# Verify DATABASE_URL
-railway variables | grep DATABASE_URL
-
-# Test connection
-railway connect postgresql
+# تحقق من:
+1. DATABASE_URL صحيح
+2. pgvector extension مثبت
+3. SSL settings صحيحة
 ```
 
-### **API Returns 500**
-
+### "CORS error"
 ```bash
-# Check runtime logs
-railway logs --follow
-
-# Common issues:
-# 1. Missing env variables
-# 2. Database not migrated
-# 3. API keys invalid
-```
-
-### **CORS Errors**
-
-```bash
-# Update CORS_ORIGIN
-railway variables set CORS_ORIGIN=https://yourdomain.com
-
-# Or allow multiple origins (not recommended for production)
-railway variables set CORS_ORIGIN=*
+# تحقق من:
+1. CORS_ORIGIN يطابق frontend URL
+2. credentials: true إذا كنت تستخدم cookies
 ```
 
 ---
 
-## 💰 Pricing & Resources
+## 📚 Resources
 
-### **Free Tier**
-- $5 credit/month
-- Shared CPU
-- 512MB RAM
-- 1GB storage
-- Good for testing
-
-### **Hobby Plan** ($5/month)
-- $5 credit + $5/month
-- Dedicated resources
-- Better for production
-
-### **Pro Plan** ($20/month)
-- $20 credit/month
-- Priority support
-- Advanced features
+- [Railway Docs](https://docs.railway.app)
+- [Vercel Docs](https://vercel.com/docs)
+- [PostgreSQL on Railway](https://docs.railway.app/databases/postgresql)
+- [pgvector](https://github.com/pgvector/pgvector)
 
 ---
 
-## 🔐 Security Best Practices
+## 🎉 بعد Deployment الناجح
 
-### **1. Environment Variables**
-
-✅ **DO**:
-- Use Railway variables
-- Rotate secrets regularly
-- Use strong JWT secrets
-
-❌ **DON'T**:
-- Commit .env files
-- Share API keys
-- Use default secrets
-
-### **2. Database**
-
-✅ **DO**:
-- Enable SSL
-- Use connection pooling
-- Regular backups
-
-❌ **DON'T**:
-- Expose DATABASE_URL
-- Use weak passwords
-- Skip migrations
-
-### **3. API**
-
-✅ **DO**:
-- Use rate limiting
-- Validate inputs
-- Log important actions
-
-❌ **DON'T**:
-- Skip authentication
-- Trust client data
-- Ignore errors
+1. ✅ اختبر كل الـ endpoints
+2. ✅ اختبر الـ Widget في موقع حقيقي
+3. ✅ راقب Logs لأول 24 ساعة
+4. ✅ اختبر Performance
+5. ✅ شارك مع المستخدمين!
 
 ---
 
-## 📦 Backup Strategy
+**ملاحظة**: هذا دليل للمستقبل. ركز على التشغيل المحلي أولاً!
 
-### **Database Backups**
+**الحالة**: 📝 جاهز للاستخدام عند الحاجة
 
-```bash
-# Manual backup
-railway connect postgresql
-pg_dump $DATABASE_URL > backup-$(date +%Y%m%d).sql
-
-# Restore
-psql $DATABASE_URL < backup-20240101.sql
-```
-
-### **Automated Backups**
-
-Railway Pro includes:
-- Daily automated backups
-- Point-in-time recovery
-- 7-day retention
-
----
-
-## 🎯 Post-Deployment Tasks
-
-### **Immediate**
-- [ ] Test all API endpoints
-- [ ] Verify database connection
-- [ ] Check logs for errors
-- [ ] Test file uploads
-- [ ] Verify CORS settings
-
-### **Within 24 Hours**
-- [ ] Monitor error rates
-- [ ] Check performance metrics
-- [ ] Test from production frontend
-- [ ] Verify rate limiting
-- [ ] Test API key authentication
-
-### **Within 1 Week**
-- [ ] Setup monitoring alerts
-- [ ] Configure backups
-- [ ] Document API endpoints
-- [ ] Load testing
-- [ ] Security audit
-
----
-
-## 📞 Support
-
-### **Railway**
-- Docs: https://docs.railway.app
-- Discord: https://discord.gg/railway
-- Status: https://status.railway.app
-
-### **Project Issues**
-- Check logs first
-- Review environment variables
-- Test locally
-- Check database migrations
-
----
-
-## 🎉 Success Checklist
-
-- [ ] ✅ Server deployed and running
-- [ ] ✅ Database connected with pgvector
-- [ ] ✅ Migrations applied
-- [ ] ✅ Environment variables set
-- [ ] ✅ Health check passing
-- [ ] ✅ API endpoints working
-- [ ] ✅ CORS configured
-- [ ] ✅ Logs accessible
-- [ ] ✅ Custom domain (optional)
-- [ ] ✅ Monitoring setup
-
----
-
-**Status**: 🟢 **Ready for Production!**
-
-**Next**: Connect frontend to Railway backend URL
+**آخر تحديث**: الجلسة الحالية

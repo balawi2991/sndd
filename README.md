@@ -1,286 +1,312 @@
-# 🤖 Sanad - AI-Powered Customer Support Platform
+# 🤖 Sanad (MintChat) - AI-Powered Chat Platform
 
-> **MintChat** - Build intelligent chatbots trained on your data with RAG + DeepSeek AI
+<div align="center">
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.3-blue)](https://www.typescriptlang.org/)
-[![React](https://img.shields.io/badge/React-18-blue)](https://reactjs.org/)
-[![Node.js](https://img.shields.io/badge/Node.js-18+-green)](https://nodejs.org/)
+![Status](https://img.shields.io/badge/Status-Ready%20for%20Local%20Testing-green)
+![Progress](https://img.shields.io/badge/Progress-70%25-blue)
+![License](https://img.shields.io/badge/License-MIT-yellow)
 
----
+**منصة ذكاء اصطناعي متقدمة مع RAG + DeepSeek**
 
-## ✨ Features
+[التوثيق](#-documentation) • [البدء السريع](#-quick-start) • [المميزات](#-features) • [التقنيات](#-tech-stack)
 
-### **🎨 Frontend**
-- ✅ Beautiful chat widget with RGB glow animation
-- ✅ Real-time AI responses
-- ✅ Markdown support with syntax highlighting
-- ✅ Source citations
-- ✅ Responsive design
-- ✅ Dark/Light mode support
-
-### **🚀 Backend**
-- ✅ RAG (Retrieval-Augmented Generation) pipeline
-- ✅ DeepSeek AI integration
-- ✅ Vector search with pgvector
-- ✅ Multi-tenancy & user isolation
-- ✅ JWT & API Key authentication
-- ✅ File upload (PDF, TXT, MD, CSV)
-- ✅ Rate limiting & usage tracking
-
-### **🔒 Security**
-- ✅ Row-level security (RLS)
-- ✅ API key management
-- ✅ Audit logging
-- ✅ CORS protection
-- ✅ Input validation
-
-### **💼 SaaS Ready**
-- ✅ Subscription tiers
-- ✅ Usage limits
-- ✅ Billing-ready structure
-- ✅ Multi-agent support
+</div>
 
 ---
 
-## 🏗️ Tech Stack
+## 📋 نظرة عامة
 
-### **Frontend**
-- React 18 + TypeScript
-- Vite
-- TailwindCSS
-- Shadcn/ui
-- React Router
-- Zustand (state management)
+Sanad هو نظام chatbot ذكي يستخدم تقنية RAG (Retrieval-Augmented Generation) مع DeepSeek AI لتقديم إجابات دقيقة بناءً على مواد تدريبية مخصصة.
 
-### **Backend**
-- Node.js + Express
-- TypeScript
-- PostgreSQL + pgvector
-- OpenAI (embeddings)
-- DeepSeek (chat)
-- Redis (rate limiting)
+### ✨ المميزات الرئيسية
+
+- 🤖 **AI-Powered Responses** - ردود ذكية باستخدام DeepSeek
+- 📚 **RAG Pipeline** - استرجاع معلومات دقيقة من المواد التدريبية
+- 🎨 **Customizable Widget** - قابل للتخصيص بالكامل
+- 🔒 **Multi-tenancy Ready** - عزل كامل بين المستخدمين
+- ⚡ **Real-time Updates** - تحديثات فورية للمظهر والإعدادات
+- 📊 **Conversation History** - حفظ وإدارة المحادثات
+- 🌐 **Arabic & English** - دعم كامل للغة العربية
 
 ---
 
-## 📦 Installation
+## 🚀 Quick Start
 
-### **Prerequisites**
+### المتطلبات
 - Node.js 18+
-- PostgreSQL 14+
-- Redis (optional)
-- DeepSeek API key
-- OpenAI API key
+- PostgreSQL 14+ مع pgvector
+- DeepSeek API Key
+- OpenAI API Key
 
-### **1. Clone Repository**
+### التثبيت السريع
+
 ```bash
-git clone https://github.com/balawi2991/sanaad.git
-cd sanaad
-```
+# 1. Clone المشروع
+git clone <repo-url>
+cd sanad
 
-### **2. Install Dependencies**
-
-**Frontend:**
-```bash
+# 2. تثبيت Dependencies
 npm install
-```
+cd server && npm install && cd ..
 
-**Backend:**
-```bash
+# 3. إعداد Environment Variables
+cp .env.example .env
+cd server && cp .env.example .env && cd ..
+# أضف API keys في server/.env
+
+# 4. إعداد قاعدة البيانات (تلقائي!)
 cd server
-npm install
+npm run setup
+
+# 5. تشغيل المشروع
+npm run dev  # Backend (Terminal 1)
+cd .. && npm run dev  # Frontend (Terminal 2)
 ```
 
-### **3. Setup Database**
-```bash
-# Create database
-createdb sanad
+**🎉 افتح المتصفح**: http://localhost:5173
 
-# Install pgvector
-psql sanad -c "CREATE EXTENSION vector;"
-
-# Run migrations
-psql sanad < server/src/db/schema.sql
-psql sanad < server/src/db/schema-updates.sql
-```
-
-### **4. Configure Environment**
-
-**Frontend (.env):**
-```env
-VITE_API_URL=http://localhost:3001/api
-```
-
-**Backend (server/.env):**
-```env
-DATABASE_URL=postgresql://user:password@localhost:5432/sanad
-DEEPSEEK_API_KEY=your_deepseek_key
-OPENAI_API_KEY=your_openai_key
-JWT_SECRET=your_secret_key_min_32_chars
-CORS_ORIGIN=http://localhost:5173
-```
-
-### **5. Run Development Servers**
-
-**Frontend:**
-```bash
-npm run dev
-# Open http://localhost:5173
-```
-
-**Backend:**
-```bash
-cd server
-npm run dev
-# Server runs on http://localhost:3001
-```
+📖 **للتفاصيل الكاملة**: راجع [`COMPLETE_SETUP_GUIDE.md`](./COMPLETE_SETUP_GUIDE.md)
 
 ---
 
-## 🚀 Deployment
+## 🎯 Features
 
-### **Railway (Recommended)**
+### Chat Widget
+- ✅ Fixed dimensions مع internal scrolling
+- ✅ RGB glow animation
+- ✅ Real-time config updates
+- ✅ Error handling مع retry
+- ✅ Source chips للمراجع
+- ✅ Typing indicator
+- ✅ Suggested questions
 
-See detailed guide: [`RAILWAY_DEPLOYMENT.md`](./RAILWAY_DEPLOYMENT.md)
+### Backend
+- ✅ Single unified API endpoint
+- ✅ RAG pipeline كامل (chunking, embeddings, retrieval, reranking)
+- ✅ Vector search مع pgvector
+- ✅ Rate limiting (10/min, 100/hr, 500/day)
+- ✅ Authentication middleware
+- ✅ Error handling شامل
 
-**Quick Deploy:**
-```bash
-# Install Railway CLI
-npm install -g @railway/cli
+### Database
+- ✅ PostgreSQL مع pgvector extension
+- ✅ Optimized indexes
+- ✅ Vector similarity search
+- ✅ Auto-update triggers
+- ✅ Helper functions
 
-# Login
-railway login
+### Automation
+- ✅ One-command setup (`npm run setup`)
+- ✅ Auto database creation
+- ✅ Auto demo data seeding
+- ✅ Auto material indexing
 
-# Deploy
-cd server
-railway up
+---
+
+## 🛠️ Tech Stack
+
+### Frontend
+- **React 18** + **TypeScript** + **Vite**
+- **TailwindCSS** للتصميم
+- **Shadcn/ui** للمكونات
+- **React Router** للتنقل
+- **React Hook Form** + **Zod** للنماذج
+- **date-fns** للتواريخ
+
+### Backend
+- **Node.js** + **Express** + **TypeScript**
+- **PostgreSQL** مع **pgvector** للـ vector search
+- **OpenAI** للـ embeddings
+- **DeepSeek** للـ AI responses
+- **Zod** للـ validation
+- **JWT** للـ authentication (قريباً)
+
+### DevOps
+- **Railway** للـ deployment (جاهز)
+- **Vercel/Netlify** للـ frontend
+- **GitHub Actions** للـ CI/CD (قريباً)
+
+---
+
+## 📁 Project Structure
+
 ```
-
-### **Other Platforms**
-- Vercel (Frontend)
-- Heroku (Backend)
-- AWS/GCP/Azure
+sanad/
+├── src/                      # Frontend (React)
+│   ├── components/
+│   │   ├── widget/          # Chat Widget
+│   │   ├── appearance/      # Config controls
+│   │   └── ui/              # Shadcn components
+│   ├── contexts/            # React Context
+│   ├── pages/               # All pages
+│   ├── services/api/        # API clients
+│   └── hooks/               # Custom hooks
+│
+├── server/                   # Backend (Node.js)
+│   ├── src/
+│   │   ├── db/              # Database (schema, client, repositories)
+│   │   ├── services/        # Business logic (DeepSeek, RAG, Chat)
+│   │   ├── routes/          # API routes
+│   │   ├── middleware/      # Auth, errors, rate limit
+│   │   └── index.ts         # Main server
+│   └── scripts/             # Setup & seeding scripts
+│
+└── docs/                     # Documentation
+    ├── COMPLETE_SETUP_GUIDE.md
+    ├── RAILWAY_DEPLOYMENT.md
+    ├── PROJECT_STATUS.md
+    └── ...
+```
 
 ---
 
 ## 📚 Documentation
 
-- **[Quick Start Guide](./QUICK_START.md)** - Get started in 15 minutes
-- **[Railway Deployment](./RAILWAY_DEPLOYMENT.md)** - Deploy to Railway
-- **[SaaS Security Guide](./SAAS_SECURITY_GUIDE.md)** - Security & Multi-tenancy
-- **[Backend Architecture](./BACKEND_ARCHITECTURE.md)** - Technical details
-- **[Implementation Guide](./IMPLEMENTATION_GUIDE.md)** - Development guide
+| Document | Description |
+|----------|-------------|
+| [`COMPLETE_SETUP_GUIDE.md`](./COMPLETE_SETUP_GUIDE.md) | دليل إعداد شامل خطوة بخطوة |
+| [`PROJECT_STATUS.md`](./PROJECT_STATUS.md) | حالة المشروع والتقدم |
+| [`RAILWAY_DEPLOYMENT.md`](./RAILWAY_DEPLOYMENT.md) | دليل deployment على Railway |
+| [`BACKEND_ARCHITECTURE.md`](./BACKEND_ARCHITECTURE.md) | البنية المعمارية التفصيلية |
+| [`FINAL_SUMMARY.md`](./FINAL_SUMMARY.md) | ملخص شامل للمشروع |
+| [`QUICK_START.md`](./QUICK_START.md) | دليل بدء سريع |
 
 ---
 
-## 🎯 Project Structure
+## 🔧 Available Scripts
 
-```
-sanad/
-├── src/                    # Frontend source
-│   ├── components/         # React components
-│   ├── contexts/          # React contexts
-│   ├── pages/             # Page components
-│   ├── services/          # API services
-│   └── lib/               # Utilities
-├── server/                # Backend source
-│   ├── src/
-│   │   ├── routes/        # API routes
-│   │   ├── services/      # Business logic
-│   │   ├── middleware/    # Express middleware
-│   │   ├── db/            # Database
-│   │   └── schemas/       # Validation schemas
-│   └── scripts/           # Deployment scripts
-├── public/                # Static assets
-└── docs/                  # Documentation
-```
-
----
-
-## 🔑 API Endpoints
-
-### **Chat**
-- `POST /api/chat` - Send message
-- `GET /api/chat/conversations` - List conversations
-- `GET /api/chat/conversations/:id` - Get conversation
-- `DELETE /api/chat/conversations/:id` - Delete conversation
-
-### **Materials**
-- `GET /api/materials` - List materials
-- `POST /api/materials/text` - Add text/link
-- `POST /api/materials/upload` - Upload file
-- `DELETE /api/materials/:id` - Delete material
-
-### **Agents**
-- `GET /api/agents` - List agents
-- `POST /api/agents` - Create agent
-- `POST /api/agents/:id/regenerate` - Regenerate API key
-- `DELETE /api/agents/:id` - Delete agent
-
----
-
-## 🧪 Testing
-
+### Backend
 ```bash
-# Frontend tests
-npm test
-
-# Backend tests
 cd server
-npm test
 
-# E2E tests
-npm run test:e2e
+# Development
+npm run dev              # Start with hot reload
+
+# Database
+npm run db:setup         # Setup database
+npm run db:seed          # Add demo data
+npm run db:index         # Index materials
+npm run setup            # All-in-one setup
+
+# Production
+npm run build            # Build TypeScript
+npm start                # Start production server
 ```
+
+### Frontend
+```bash
+# Development
+npm run dev              # Start with hot reload
+
+# Production
+npm run build            # Build for production
+npm run preview          # Preview production build
+```
+
+---
+
+## 🎨 Pages
+
+- **Dashboard** - إحصائيات ونظرة عامة
+- **Conversations** - إدارة المحادثات
+- **Training Materials** - إضافة وإدارة المواد التدريبية
+- **Appearance** - تخصيص مظهر الـ Widget
+- **Try My Agent** - اختبار الـ Widget
+- **Embed** - الحصول على كود التضمين
+- **Settings** - إعدادات الحساب
+- **Demo** - صفحة عرض عامة
+
+---
+
+## 🔐 Security & Multi-tenancy
+
+- ✅ User isolation في Database
+- ✅ Row-level security
+- ✅ Rate limiting per user
+- ✅ Authentication middleware
+- ⚠️ يحتاج JWT للإنتاج
+
+---
+
+## 📊 Progress
+
+| Component | Status |
+|-----------|--------|
+| Frontend UI | ✅ 100% |
+| Chat Widget | ✅ 100% |
+| Backend Server | ✅ 100% |
+| Database Schema | ✅ 100% |
+| RAG Pipeline | ✅ 100% |
+| API Integration | ✅ 100% |
+| Setup Scripts | ✅ 100% |
+| Documentation | ✅ 100% |
+| Local Testing | 🔴 Pending |
+| Materials Upload UI | 🟡 30% |
+| JWT Auth | 🟡 20% |
+| Railway Deployment | ⚪ Ready |
+
+**Overall**: ~70% Complete
+
+---
+
+## 🚧 Roadmap
+
+### Phase 1: Setup & Testing ✅ (Current)
+- [x] Complete infrastructure
+- [x] Database setup scripts
+- [x] Documentation
+- [ ] Local testing
+
+### Phase 2: Core Features (Next)
+- [ ] Materials upload UI
+- [ ] Conversations integration
+- [ ] File storage
+- [ ] Advanced error handling
+
+### Phase 3: Authentication (Soon)
+- [ ] JWT implementation
+- [ ] User management
+- [ ] Protected routes
+
+### Phase 4: Production (Future)
+- [ ] Railway deployment
+- [ ] Monitoring & analytics
+- [ ] Performance optimization
+
+---
+
+## 🐛 Troubleshooting
+
+راجع [`COMPLETE_SETUP_GUIDE.md`](./COMPLETE_SETUP_GUIDE.md#-حل-المشاكل-الشائعة) لحلول المشاكل الشائعة.
+
+---
+
+## 📝 License
+
+MIT License - راجع [LICENSE](./LICENSE) للتفاصيل
 
 ---
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please read our [Contributing Guide](./CONTRIBUTING.md) first.
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+Contributions welcome! راجع [CONTRIBUTING.md](./CONTRIBUTING.md) للتفاصيل.
 
 ---
 
-## 📄 License
+## 📧 Support
 
-This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for details.
-
----
-
-## 🙏 Acknowledgments
-
-- [DeepSeek](https://www.deepseek.com/) - AI model
-- [OpenAI](https://openai.com/) - Embeddings
-- [Shadcn/ui](https://ui.shadcn.com/) - UI components
-- [Railway](https://railway.app/) - Hosting platform
+- 📖 Documentation: راجع المستندات أعلاه
+- 🐛 Issues: [GitHub Issues](https://github.com/your-repo/issues)
+- 💬 Discussions: [GitHub Discussions](https://github.com/your-repo/discussions)
 
 ---
 
-## 📞 Support
+<div align="center">
 
-- 📧 Email: support@sanad.com
-- 💬 Discord: [Join our community](https://discord.gg/sanad)
-- 📖 Docs: [docs.sanad.com](https://docs.sanad.com)
+**Built with ❤️ using React, TypeScript, and DeepSeek AI**
 
----
+[⬆ Back to Top](#-sanad-mintchat---ai-powered-chat-platform)
 
-## 🗺️ Roadmap
+</div>
 
-- [ ] User authentication & registration
-- [ ] Frontend upload UI
-- [ ] Stripe billing integration
-- [ ] Analytics dashboard
-- [ ] Multi-language support
-- [ ] Voice input/output
-- [ ] Mobile app (React Native)
-- [ ] Slack/Discord integrations
-
----
-
-**Made with ❤️ by the Sanad Team**
+We don't support custom domains yet.

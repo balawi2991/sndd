@@ -11,7 +11,7 @@ export const errorHandler = (
   req: Request,
   res: Response,
   next: NextFunction
-): any => {
+) => {
   console.error('Error:', err);
 
   // Zod validation errors

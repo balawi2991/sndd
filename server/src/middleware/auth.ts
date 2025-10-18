@@ -1,77 +1,39 @@
 import { Request, Response, NextFunction } from 'express';
-import jwt, { SignOptions } from 'jsonwebtoken';
 import { UnauthorizedError } from './errorHandler';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
-const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
-
-export interface AuthUser {
-  id: string;
-  email: string;
-  name?: string;
-}
-
-// Extend Express Request to include user
-declare global {
-  namespace Express {
-    interface Request {
-      user?: AuthUser;
-      userId?: string;
-    }
-  }
+/**
+ * Extended Request with user info
+ */
+export interface AuthRequest extends Request {
+  userId?: string;
+  userEmail?: string;
 }
 
 /**
- * Generate JWT token for user
- */
-export const generateToken = (user: AuthUser): string => {
-  return jwt.sign(
-    {
-      id: user.id,
-      email: user.email,
-      name: user.name
-    },
-    JWT_SECRET,
-    { expiresIn: JWT_EXPIRES_IN as any }
-  );
-};
-
-/**
- * Verify JWT token
- */
-export const verifyToken = (token: string): AuthUser => {
-  try {
-    const decoded = jwt.verify(token, JWT_SECRET) as AuthUser;
-    return decoded;
-  } catch (error) {
-    throw new UnauthorizedError('Invalid or expired token');
-  }
-};
-
-/**
- * Authentication middleware - requires valid JWT
+ * Simple authentication middleware
+ * For now, uses X-User-Id header (development)
+ * TODO: Replace with JWT/Session authentication in production
  */
 export const authenticate = async (
-  req: Request,
+  req: AuthRequest,
   res: Response,
   next: NextFunction
-): Promise<void> => {
+) => {
   try {
-    // Get token from header
-    const authHeader = req.headers.authorization;
-    
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      throw new UnauthorizedError('No token provided');
+    // Get user ID from header (temporary - for development)
+    const userId = req.headers['x-user-id'] as string;
+
+    if (!userId) {
+      throw new UnauthorizedError('User ID required');
     }
 
-    const token = authHeader.substring(7); // Remove 'Bearer '
+    // TODO: In production, validate JWT token:
+    // const token = req.headers.authorization?.replace('Bearer ', '');
+    // const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    // req.userId = decoded.userId;
 
-    // Verify token
-    const user = verifyToken(token);
-
-    // Attach user to request
-    req.user = user;
-    req.userId = user.id;
+    // For now, just set the user ID
+    req.userId = userId;
 
     next();
   } catch (error) {
@@ -80,65 +42,20 @@ export const authenticate = async (
 };
 
 /**
- * Optional authentication - doesn't fail if no token
- * Used for public endpoints that can work with or without auth
+ * Optional authentication
+ * Doesn't fail if no auth provided
  */
 export const optionalAuth = async (
-  req: Request,
+  req: AuthRequest,
   res: Response,
   next: NextFunction
-): Promise<void> => {
+) => {
   try {
-    const authHeader = req.headers.authorization;
+    const userId = req.headers['x-user-id'] as string;
     
-    if (authHeader && authHeader.startsWith('Bearer ')) {
-      const token = authHeader.substring(7);
-      const user = verifyToken(token);
-      req.user = user;
-      req.userId = user.id;
+    if (userId) {
+      req.userId = userId;
     }
-
-    next();
-  } catch (error) {
-    // Ignore auth errors for optional auth
-    next();
-  }
-};
-
-/**
- * API Key authentication for embedded widgets
- * Format: X-API-Key: agent_xxxxx
- */
-export const authenticateApiKey = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): Promise<void> => {
-  try {
-    const apiKey = req.headers['x-api-key'] as string;
-
-    if (!apiKey) {
-      throw new UnauthorizedError('API key required');
-    }
-
-    // Validate API key format
-    if (!apiKey.startsWith('agent_')) {
-      throw new UnauthorizedError('Invalid API key format');
-    }
-
-    // Verify API key in database
-    const { agentsRepository } = await import('../db/repositories/agents.repository');
-    const agent = await agentsRepository.findByApiKey(apiKey);
-
-    if (!agent) {
-      throw new UnauthorizedError('Invalid API key');
-    }
-
-    if (!agent.isActive) {
-      throw new UnauthorizedError('API key is inactive');
-    }
-
-    req.userId = agent.userId;
 
     next();
   } catch (error) {
@@ -147,51 +64,7 @@ export const authenticateApiKey = async (
 };
 
 /**
- * Combine auth methods: JWT or API Key
- * Used for widget endpoints that can be called from dashboard or embedded widget
- */
-export const authenticateFlexible = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): Promise<void> => {
-  try {
-    // Try JWT first
-    const authHeader = req.headers.authorization;
-    if (authHeader && authHeader.startsWith('Bearer ')) {
-      try {
-        const token = authHeader.substring(7);
-        const user = verifyToken(token);
-        req.user = user;
-        req.userId = user.id;
-        return next();
-      } catch (jwtError) {
-        // JWT failed, try API key
-      }
-    }
-
-    // Try API Key
-    const apiKey = req.headers['x-api-key'] as string;
-    if (apiKey && apiKey.startsWith('agent_')) {
-      const { agentsRepository } = await import('../db/repositories/agents.repository');
-      const agent = await agentsRepository.findByApiKey(apiKey);
-
-      if (agent && agent.isActive) {
-        req.userId = agent.userId;
-        return next();
-      }
-    }
-
-    // No valid auth method
-    throw new UnauthorizedError('Authentication required');
-  } catch (error) {
-    next(error);
-  }
-};
-
-/**
- * Check if user owns the resource
- * Used to prevent users from accessing other users' data
+ * Check if user owns resource
  */
 export const checkOwnership = (resourceUserId: string, requestUserId: string): boolean => {
   return resourceUserId === requestUserId;

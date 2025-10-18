@@ -9,7 +9,6 @@ import { notFoundHandler } from './middleware/notFoundHandler';
 import chatRouter from './routes/chat.routes';
 import materialsRouter from './routes/materials.routes';
 import conversationsRouter from './routes/conversations.routes';
-import agentsRouter from './routes/agents.routes';
 
 // Load environment variables
 dotenv.config();
@@ -41,7 +40,6 @@ app.get('/health', (req, res) => {
 app.use('/api/chat', chatRouter);
 app.use('/api/materials', materialsRouter);
 app.use('/api/conversations', conversationsRouter);
-app.use('/api/agents', agentsRouter);
 
 // Error handling
 app.use(notFoundHandler);

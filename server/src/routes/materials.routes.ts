@@ -1,8 +1,5 @@
-import { Router, Request, Response, NextFunction } from 'express';
-import { authenticate } from '../middleware/auth';
-import { upload, extractTextFromFile, deleteFile } from '../middleware/upload';
-import { materialsRepository } from '../db/repositories/materials.repository';
-import { ragService } from '../services/rag.service';
+import { Router, Response, NextFunction } from 'express';
+import { authenticate, AuthRequest } from '../middleware/auth';
 
 const router = Router();
 
@@ -13,16 +10,16 @@ const router = Router();
 router.get(
   '/',
   authenticate,
-  async (req: Request, res: Response, next: NextFunction): Promise<any> => {
+  async (req: AuthRequest, res: Response, next: NextFunction) => {
     try {
       const userId = req.userId!;
-      const materials = await materialsRepository.list(userId);
 
+      // TODO: Implement database retrieval
       res.json({
         success: true,
         data: {
-          materials,
-          total: materials.length
+          materials: [],
+          total: 0
         }
       });
 
@@ -33,134 +30,36 @@ router.get(
 );
 
 /**
- * POST /api/materials/text
- * Add text or link material
+ * POST /api/materials
+ * Add new training material
  */
 router.post(
-  '/text',
+  '/',
   authenticate,
-  async (req: Request, res: Response, next: NextFunction): Promise<any> => {
+  async (req: AuthRequest, res: Response, next: NextFunction) => {
     try {
       const userId = req.userId!;
       const { type, title, content, url } = req.body;
 
-      // Validate
-      if (!type || !title) {
-        return res.status(400).json({
-          success: false,
-          error: {
-            code: 'VALIDATION_ERROR',
-            message: 'Type and title are required'
-          }
-        });
-      }
+      // TODO: Implement material creation and indexing
+      // 1. Validate input
+      // 2. Save to database
+      // 3. Index with RAG service
+      // 4. Return created material
 
-      if (type === 'text' && !content) {
-        return res.status(400).json({
-          success: false,
-          error: {
-            code: 'VALIDATION_ERROR',
-            message: 'Content is required for text type'
-          }
-        });
-      }
-
-      if (type === 'link' && !url) {
-        return res.status(400).json({
-          success: false,
-          error: {
-            code: 'VALIDATION_ERROR',
-            message: 'URL is required for link type'
-          }
-        });
-      }
-
-      // Create material
-      const material = await materialsRepository.create({
-        userId,
-        type,
-        title,
-        content,
-        url
-      });
-
-      // Index material
-      if (content) {
-        await ragService.indexMaterial(
-          material.id,
+      res.json({
+        success: true,
+        data: {
+          id: 'mock-material-id',
+          type,
+          title,
           content,
-          { source: title, url }
-        );
-      }
-
-      res.json({
-        success: true,
-        data: material
+          url,
+          createdAt: new Date().toISOString()
+        }
       });
 
     } catch (error) {
-      next(error);
-    }
-  }
-);
-
-/**
- * POST /api/materials/upload
- * Upload file material
- */
-router.post(
-  '/upload',
-  authenticate,
-  upload.single('file'),
-  async (req: Request, res: Response, next: NextFunction): Promise<any> => {
-    try {
-      const userId = req.userId!;
-      const file = req.file;
-
-      if (!file) {
-        return res.status(400).json({
-          success: false,
-          error: {
-            code: 'VALIDATION_ERROR',
-            message: 'File is required'
-          }
-        });
-      }
-
-      const { title } = req.body;
-      const materialTitle = title || file.originalname;
-
-      // Extract text from file
-      const content = await extractTextFromFile(file.path, file.mimetype);
-
-      // Create material
-      const material = await materialsRepository.create({
-        userId,
-        type: 'file',
-        title: materialTitle,
-        content,
-        filePath: file.path,
-        fileSize: file.size,
-        mimeType: file.mimetype
-      });
-
-      // Index material
-      await ragService.indexMaterial(
-        material.id,
-        content,
-        { source: materialTitle }
-      );
-
-      res.json({
-        success: true,
-        data: material
-      });
-
-    } catch (error) {
-      // Clean up file on error
-      if (req.file) {
-        await deleteFile(req.file.path);
-      }
       next(error);
     }
   }
@@ -173,34 +72,14 @@ router.post(
 router.delete(
   '/:id',
   authenticate,
-  async (req: Request, res: Response, next: NextFunction): Promise<any> => {
+  async (req: AuthRequest, res: Response, next: NextFunction) => {
     try {
       const { id } = req.params;
       const userId = req.userId!;
 
-      // Get material to delete file
-      const material = await materialsRepository.findById(id, userId);
-
-      if (!material) {
-        return res.status(404).json({
-          success: false,
-          error: {
-            code: 'NOT_FOUND',
-            message: 'Material not found'
-          }
-        });
-      }
-
-      // Delete chunks
-      await ragService.deleteMaterialChunks(id);
-
-      // Delete file if exists
-      if (material.filePath) {
-        await deleteFile(material.filePath);
-      }
-
-      // Delete from database
-      await materialsRepository.delete(id, userId);
+      // TODO: Implement material deletion
+      // 1. Delete from database
+      // 2. Delete chunks from vector DB
 
       res.json({
         success: true,

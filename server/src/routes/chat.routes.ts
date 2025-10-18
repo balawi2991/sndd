@@ -1,25 +1,24 @@
-import { Router, Request, Response, NextFunction } from 'express';
+import { Router, Response, NextFunction } from 'express';
 import { chatService } from '../services/chat.service';
 import { chatRequestSchema } from '../schemas/chat.schema';
 import { chatLimiter } from '../middleware/rateLimiter';
-import { authenticateFlexible } from '../middleware/auth';
 import { ValidationError } from '../middleware/errorHandler';
+import { authenticate, AuthRequest } from '../middleware/auth';
 
 const router = Router();
 
 /**
  * POST /api/chat
  * Send a message and get AI response
- * Supports both JWT (dashboard) and API Key (embedded widget)
  */
 router.post(
   '/',
+  authenticate,
   chatLimiter,
-  authenticateFlexible, // JWT or API Key
-  async (req: Request, res: Response, next: NextFunction): Promise<any> => {
+  async (req: AuthRequest, res: Response, next: NextFunction) => {
     try {
       // Validate request
-      const validated = chatRequestSchema.parse(req.body) as any;
+      const validated = chatRequestSchema.parse(req.body);
 
       // Get userId from auth middleware
       const userId = req.userId!;
@@ -41,8 +40,8 @@ router.post(
  */
 router.get(
   '/conversations/:id',
-  authenticateFlexible,
-  async (req: Request, res: Response, next: NextFunction): Promise<any> => {
+  authenticate,
+  async (req: AuthRequest, res: Response, next: NextFunction) => {
     try {
       const { id } = req.params;
       const userId = req.userId!;
@@ -66,8 +65,8 @@ router.get(
  */
 router.get(
   '/conversations',
-  authenticateFlexible,
-  async (req: Request, res: Response, next: NextFunction): Promise<any> => {
+  authenticate,
+  async (req: AuthRequest, res: Response, next: NextFunction) => {
     try {
       const userId = req.userId!;
       const limit = parseInt(req.query.limit as string) || 50;
@@ -92,8 +91,8 @@ router.get(
  */
 router.delete(
   '/conversations/:id',
-  authenticateFlexible,
-  async (req: Request, res: Response, next: NextFunction): Promise<any> => {
+  authenticate,
+  async (req: AuthRequest, res: Response, next: NextFunction) => {
     try {
       const { id } = req.params;
       const userId = req.userId!;
