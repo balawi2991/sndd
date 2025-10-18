@@ -1,530 +1,539 @@
 # 🚂 Railway Deployment Guide - Sanad
 
-## دليل شامل لنشر المشروع على Railway
+## 📋 Pre-Deployment Checklist
+
+### **Required**
+- [ ] GitHub repository created
+- [ ] Railway account created
+- [ ] DeepSeek API key obtained
+- [ ] OpenAI API key obtained
+- [ ] Code committed to GitHub
+
+### **Optional**
+- [ ] Custom domain ready
+- [ ] Email service configured
+- [ ] Monitoring tools ready
 
 ---
 
-## 📋 قبل البدء
+## 🚀 Step-by-Step Deployment
 
-### **المتطلبات**
-- ✅ حساب GitHub
-- ✅ حساب Railway (مجاني)
-- ✅ DeepSeek API Key
-- ✅ OpenAI API Key
-- ✅ المشروع على GitHub
+### **Step 1: Install Railway CLI**
 
----
-
-## 🎯 الخطوات الكاملة
-
-### **المرحلة 1: تجهيز GitHub Repository**
-
-#### **1.1 إنشاء Repository**
 ```bash
-# إذا لم تكن قد أنشأت repo بعد
-git init
-git add .
-git commit -m "Initial commit: Sanad AI Chat Platform"
-git branch -M main
-git remote add origin https://github.com/balawi2991/sanadbot.git
-git push -u origin main
+# Windows (PowerShell)
+iwr https://railway.app/install.ps1 | iex
+
+# Mac/Linux
+curl -fsSL https://railway.app/install.sh | sh
+
+# Or via npm
+npm install -g @railway/cli
 ```
 
-#### **1.2 التحقق من الملفات المهمة**
-تأكد من وجود:
-- ✅ `server/railway.json`
-- ✅ `server/Procfile`
-- ✅ `server/.env.example`
-- ✅ `.gitignore` (لا يحتوي على .env)
+### **Step 2: Login to Railway**
+
+```bash
+railway login
+```
+
+سيفتح متصفح للتسجيل/الدخول.
 
 ---
 
-### **المرحلة 2: إعداد Railway Project**
+### **Step 3: Create New Project**
 
-#### **2.1 إنشاء حساب Railway**
-1. اذهب إلى: https://railway.app
-2. سجل دخول بـ GitHub
-3. اربط حسابك
+#### **Option A: From GitHub (Recommended)**
 
-#### **2.2 إنشاء مشروع جديد**
-1. Dashboard → **"New Project"**
-2. اختر **"Deploy from GitHub repo"**
-3. اختر `balawi2991/sanadbot`
-4. Railway سيبدأ بـ auto-detect
+1. اذهب إلى [Railway Dashboard](https://railway.app/dashboard)
+2. اضغط **"New Project"**
+3. اختر **"Deploy from GitHub repo"**
+4. اختر repository: `sanad`
+5. اختر branch: `main`
+6. اضغط **"Deploy Now"**
 
-#### **2.3 تكوين Backend Service**
+#### **Option B: From CLI**
 
-**في Railway Dashboard:**
-
-1. **اذهب إلى Settings**
-   - Service Name: `sanad-backend`
-   - Root Directory: `server`
-   
-2. **Build Settings**
-   - Build Command: `npm install && npm run build`
-   - Start Command: `npm start`
-   
-3. **Deploy Trigger**
-   - Branch: `main`
-   - Auto-deploy: ✅ Enabled
+```bash
+cd C:\Users\balaw_mce0m32\Downloads\sanad\server
+railway init
+railway link
+```
 
 ---
 
-### **المرحلة 3: إضافة PostgreSQL Database**
+### **Step 4: Add PostgreSQL Database**
 
-#### **3.1 إضافة Database Service**
-1. في Project → **"New"** → **"Database"** → **"PostgreSQL"**
-2. Railway سينشئ database تلقائياً
-3. سيظهر `DATABASE_URL` في Variables
-
-#### **3.2 تثبيت pgvector Extension**
-
-**الطريقة 1: من Railway Dashboard**
 ```bash
 # في Railway Dashboard
-# اذهب إلى PostgreSQL service
-# اضغط "Connect"
-# اختر "psql"
-
-# في psql terminal:
-CREATE EXTENSION vector;
-\q
+# أو عبر CLI:
+railway add --plugin postgresql
 ```
 
-**الطريقة 2: من Local Machine**
+**ملاحظة**: Railway سيُنشئ `DATABASE_URL` تلقائياً.
+
+---
+
+### **Step 5: Install pgvector Extension**
+
 ```bash
-# Install Railway CLI
-npm install -g @railway/cli
-
-# Login
-railway login
-
-# Link to project
-railway link
-
 # Connect to database
 railway connect postgresql
 
-# في psql:
-CREATE EXTENSION vector;
+# في psql prompt:
+CREATE EXTENSION IF NOT EXISTS vector;
+
+# تحقق من التثبيت
+\dx vector
+
+# اخرج
 \q
 ```
 
 ---
 
-### **المرحلة 4: تشغيل Database Migrations**
+### **Step 6: Run Database Migrations**
 
-#### **4.1 من Railway CLI**
+#### **Option A: Manual (Recommended for first time)**
+
 ```bash
-# تأكد أنك في مجلد المشروع
-cd /path/to/sanadbot
+# Download schema files locally or use Railway shell
+railway run bash
 
-# Run schema
-railway run psql $DATABASE_URL < server/src/db/schema.sql
-
-# Run updates
-railway run psql $DATABASE_URL < server/src/db/schema-updates.sql
+# Inside Railway shell:
+cd server/scripts
+chmod +x migrate.sh
+./migrate.sh
 ```
 
-#### **4.2 التحقق من النجاح**
+#### **Option B: Direct psql**
+
 ```bash
-railway connect postgresql
+# Get DATABASE_URL
+railway variables
 
-# في psql:
-\dt  # عرض الجداول
-\q
-```
-
-يجب أن ترى:
-- ✅ users
-- ✅ conversations
-- ✅ messages
-- ✅ training_materials
-- ✅ chunks
-- ✅ agents
-- ✅ subscription_tiers
-- ✅ user_subscriptions
-- ✅ daily_usage
-- ✅ audit_logs
-
----
-
-### **المرحلة 5: إضافة Environment Variables**
-
-#### **5.1 في Railway Dashboard**
-
-اذهب إلى Backend Service → **Variables** → **Raw Editor**
-
-```env
-# Database (Auto-generated by Railway)
-DATABASE_URL=${{Postgres.DATABASE_URL}}
-
-# AI APIs (Required)
-DEEPSEEK_API_KEY=sk-your-deepseek-key-here
-OPENAI_API_KEY=sk-your-openai-key-here
-
-# Security (Required - Generate strong key)
-JWT_SECRET=your-super-secret-jwt-key-min-32-characters-long
-
-# Server Configuration
-PORT=3001
-NODE_ENV=production
-
-# CORS (Update after frontend deployment)
-CORS_ORIGIN=https://your-frontend-url.vercel.app
-```
-
-#### **5.2 توليد JWT Secret**
-```bash
-# في terminal:
-node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+# Run migrations
+psql $DATABASE_URL < server/src/db/schema.sql
+psql $DATABASE_URL < server/src/db/schema-updates.sql
 ```
 
 ---
 
-### **المرحلة 6: Deploy Backend**
+### **Step 7: Set Environment Variables**
 
-#### **6.1 Trigger Deployment**
-1. Railway سيبدأ deploy تلقائياً
-2. راقب Logs في Dashboard
-3. انتظر حتى يصبح Status: **"Active"**
-
-#### **6.2 الحصول على Backend URL**
-1. في Backend Service → **Settings**
-2. اذهب إلى **Networking**
-3. اضغط **"Generate Domain"**
-4. سيعطيك URL مثل: `sanad-backend.railway.app`
-
-#### **6.3 اختبار Backend**
 ```bash
-# Health check
-curl https://sanad-backend.railway.app/health
+# Required variables
+railway variables set DEEPSEEK_API_KEY=sk-xxxxxxxxxxxxx
+railway variables set OPENAI_API_KEY=sk-xxxxxxxxxxxxx
+railway variables set JWT_SECRET=your-super-secret-key-min-32-characters-long
 
-# يجب أن ترى:
-# {"status":"ok","timestamp":"...","uptime":...}
+# Optional variables
+railway variables set NODE_ENV=production
+railway variables set CORS_ORIGIN=https://yourdomain.com
+railway variables set PORT=3001
+```
+
+**أو من Dashboard**:
+1. اذهب إلى Project Settings
+2. اضغط **Variables**
+3. أضف كل variable
+
+---
+
+### **Step 8: Configure Build Settings**
+
+Railway سيكتشف تلقائياً:
+- `package.json` → Node.js project
+- `nixpacks.toml` → Build configuration
+- `Procfile` → Start command
+
+**تحقق من**:
+- Build Command: `npm install && npm run build`
+- Start Command: `npm start`
+- Root Directory: `server`
+
+---
+
+### **Step 9: Deploy!**
+
+```bash
+# إذا استخدمت GitHub
+# Railway سيبدأ deployment تلقائياً عند push
+
+# أو يدوياً
+railway up
+
+# أو من Dashboard
+# اضغط "Deploy" → "Redeploy"
 ```
 
 ---
 
-### **المرحلة 7: Deploy Frontend (Vercel)**
+### **Step 10: Seed Database (Optional)**
 
-#### **7.1 إنشاء Vercel Project**
-1. اذهب إلى: https://vercel.com
-2. Import `balawi2991/sanadbot`
-3. **Root Directory**: اتركه فارغ (/)
+```bash
+# Connect to Railway
+railway run bash
 
-#### **7.2 Environment Variables**
-```env
-VITE_API_URL=https://sanad-backend.railway.app/api
+# Run seed script
+psql $DATABASE_URL < server/scripts/seed.sql
 ```
 
-#### **7.3 Deploy**
-- Vercel سيبني ويرفع تلقائياً
-- سيعطيك URL مثل: `sanadbot.vercel.app`
-
-#### **7.4 تحديث CORS في Railway**
-1. ارجع لـ Railway Backend
-2. Variables → `CORS_ORIGIN`
-3. غيره إلى: `https://sanadbot.vercel.app`
-4. Redeploy Backend
+هذا سيُنشئ:
+- Demo user
+- Test agent with API key
+- Sample training material
+- Free tier subscription
 
 ---
 
-### **المرحلة 8: إنشاء مستخدم تجريبي**
+## ✅ Verify Deployment
 
-#### **8.1 الاتصال بـ Database**
+### **1. Check Health Endpoint**
+
 ```bash
-railway connect postgresql
+curl https://your-app.railway.app/health
 ```
 
-#### **8.2 إنشاء User**
-```sql
--- إنشاء مستخدم
-INSERT INTO users (id, email, name)
-VALUES ('test-user-id', 'admin@sanad.com', 'Admin User');
-
--- إنشاء subscription (Free tier)
-INSERT INTO user_subscriptions (user_id, tier_id, status)
-SELECT 'test-user-id', id, 'active'
-FROM subscription_tiers
-WHERE name = 'free';
-
--- التحقق
-SELECT * FROM users;
-SELECT * FROM user_subscriptions;
-\q
-```
-
----
-
-### **المرحلة 9: إنشاء Agent & API Key**
-
-#### **9.1 الحصول على JWT Token**
-
-**مؤقتاً** (حتى نضيف login):
-```javascript
-// في browser console على frontend
-const jwt = require('jsonwebtoken');
-const token = jwt.sign(
-  { id: 'test-user-id', email: 'admin@sanad.com' },
-  'your-jwt-secret',
-  { expiresIn: '7d' }
-);
-console.log(token);
-```
-
-أو استخدم: https://jwt.io
-
-#### **9.2 إنشاء Agent**
-```bash
-curl -X POST https://sanad-backend.railway.app/api/agents \
-  -H "Authorization: Bearer YOUR_JWT_TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{"name": "My First Agent"}'
-```
-
-**Response:**
+**Expected Response**:
 ```json
 {
-  "success": true,
-  "data": {
-    "id": "...",
-    "name": "My First Agent",
-    "apiKey": "agent_xxxxxxxxxxxxxxxxx",
-    "isActive": true
+  "status": "ok",
+  "timestamp": "2024-01-01T00:00:00.000Z",
+  "uptime": 123.456
+}
+```
+
+### **2. Check Database Connection**
+
+```bash
+railway logs
+```
+
+ابحث عن:
+- ✅ `Server running on...`
+- ✅ `Database connected`
+- ❌ أي errors
+
+### **3. Test API Endpoints**
+
+```bash
+# Get your Railway URL
+railway domain
+
+# Test chat endpoint (needs API key)
+curl -X POST https://your-app.railway.app/api/chat \
+  -H "X-API-Key: agent_demo_key_for_testing_only_change_in_production" \
+  -H "Content-Type: application/json" \
+  -d '{"question": "مرحباً"}'
+```
+
+---
+
+## 🔧 Configuration Files
+
+### **1. railway.json**
+```json
+{
+  "$schema": "https://railway.app/railway.schema.json",
+  "build": {
+    "builder": "NIXPACKS",
+    "buildCommand": "npm install && npm run build"
+  },
+  "deploy": {
+    "startCommand": "npm start",
+    "restartPolicyType": "ON_FAILURE",
+    "restartPolicyMaxRetries": 10
   }
 }
 ```
 
-**احفظ API Key!** ستحتاجه للـ widget.
+### **2. nixpacks.toml**
+```toml
+[phases.setup]
+nixPkgs = ["nodejs-18_x", "python3"]
 
----
+[phases.install]
+cmds = ["npm ci"]
 
-### **المرحلة 10: رفع مادة تدريبية**
+[phases.build]
+cmds = ["npm run build"]
 
-#### **10.1 رفع نص**
-```bash
-curl -X POST https://sanad-backend.railway.app/api/materials/text \
-  -H "Authorization: Bearer YOUR_JWT_TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "type": "text",
-    "title": "دليل الاستخدام",
-    "content": "مرحباً بك في Sanad! هذا نظام ذكاء اصطناعي متقدم..."
-  }'
+[start]
+cmd = "npm start"
 ```
 
-#### **10.2 رفع ملف**
-```bash
-curl -X POST https://sanad-backend.railway.app/api/materials/upload \
-  -H "Authorization: Bearer YOUR_JWT_TOKEN" \
-  -F "file=@/path/to/document.pdf" \
-  -F "title=دليل المنتج"
+### **3. Procfile**
+```
+web: npm start
 ```
 
 ---
 
-### **المرحلة 11: اختبار Chat**
+## 🌐 Custom Domain (Optional)
 
-#### **11.1 إرسال رسالة**
-```bash
-curl -X POST https://sanad-backend.railway.app/api/chat \
-  -H "X-API-Key: agent_xxxxxxxxxxxxxxxxx" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "question": "مرحباً، كيف يمكنني استخدام النظام؟"
-  }'
+### **1. Add Domain in Railway**
+
+1. Project Settings → Domains
+2. اضغط **"Add Domain"**
+3. أدخل domain: `api.yourdomain.com`
+
+### **2. Configure DNS**
+
+أضف CNAME record:
+```
+Type: CNAME
+Name: api
+Value: your-app.railway.app
 ```
 
-#### **11.2 من Frontend**
-1. افتح `https://sanadbot.vercel.app`
-2. اذهب إلى أي صفحة
-3. اكتب في Chat Widget
-4. يجب أن تحصل على رد من AI
+### **3. Update CORS**
 
----
-
-## 🔧 إعدادات متقدمة
-
-### **Custom Domain (Railway)**
-
-#### **للـ Backend**
-1. Railway Service → Settings → Networking
-2. Custom Domain → Add Domain
-3. أضف: `api.yourdomain.com`
-4. أضف CNAME record في DNS:
-   ```
-   api.yourdomain.com → sanad-backend.railway.app
-   ```
-
-#### **للـ Frontend (Vercel)**
-1. Vercel Project → Settings → Domains
-2. Add Domain: `yourdomain.com`
-3. اتبع تعليمات DNS
-
-### **File Storage (Railway Volumes)**
-
-إذا كنت تريد persistent storage:
-
-1. Railway Service → Settings → Volumes
-2. Add Volume:
-   - Mount Path: `/app/uploads`
-   - Size: 1GB (أو حسب الحاجة)
-
-### **Redis for Rate Limiting**
-
-1. Railway → New → Database → Redis
-2. أضف `REDIS_URL` في Variables
-3. حدّث rate limiter في `server/src/middleware/rateLimiter.ts`
+```bash
+railway variables set CORS_ORIGIN=https://yourdomain.com
+```
 
 ---
 
 ## 📊 Monitoring & Logs
 
-### **عرض Logs**
+### **View Logs**
+
 ```bash
-# من Railway CLI
+# Real-time logs
 railway logs
 
-# أو من Dashboard
-# Service → Logs tab
+# Follow logs
+railway logs --follow
+
+# Filter by service
+railway logs --service backend
 ```
 
 ### **Metrics**
-- Railway Dashboard → Service → Metrics
-- CPU, Memory, Network usage
+
+في Railway Dashboard:
+- CPU usage
+- Memory usage
+- Network traffic
+- Request count
 
 ---
 
-## 🐛 حل المشاكل
+## 🔄 Updates & Redeployment
 
-### **Problem: Build Failed**
+### **Automatic (GitHub)**
+
 ```bash
-# Check logs
-railway logs
+# Make changes
+git add .
+git commit -m "Update feature"
+git push origin main
 
-# Common issues:
-# 1. Missing dependencies → npm install
-# 2. TypeScript errors → npm run build locally first
-# 3. Wrong root directory → Check Settings
+# Railway will auto-deploy
 ```
 
-### **Problem: Database Connection Failed**
+### **Manual**
+
+```bash
+railway up
+```
+
+### **Rollback**
+
+في Dashboard:
+1. Deployments tab
+2. اختر previous deployment
+3. اضغط **"Redeploy"**
+
+---
+
+## 🐛 Troubleshooting
+
+### **Build Fails**
+
+```bash
+# Check build logs
+railway logs --deployment <deployment-id>
+
+# Common issues:
+# 1. Missing dependencies → Check package.json
+# 2. TypeScript errors → Check tsconfig.json
+# 3. Build timeout → Increase resources
+```
+
+### **Database Connection Fails**
+
 ```bash
 # Verify DATABASE_URL
-railway variables
+railway variables | grep DATABASE_URL
 
 # Test connection
 railway connect postgresql
 ```
 
-### **Problem: pgvector Extension Missing**
+### **API Returns 500**
+
 ```bash
-railway connect postgresql
-CREATE EXTENSION vector;
-\q
+# Check runtime logs
+railway logs --follow
+
+# Common issues:
+# 1. Missing env variables
+# 2. Database not migrated
+# 3. API keys invalid
 ```
 
-### **Problem: CORS Error**
+### **CORS Errors**
+
 ```bash
-# Update CORS_ORIGIN in Railway
-# Must match frontend URL exactly
-CORS_ORIGIN=https://sanadbot.vercel.app
+# Update CORS_ORIGIN
+railway variables set CORS_ORIGIN=https://yourdomain.com
+
+# Or allow multiple origins (not recommended for production)
+railway variables set CORS_ORIGIN=*
 ```
 
-### **Problem: API Keys Not Working**
-```sql
--- Check agents table
+---
+
+## 💰 Pricing & Resources
+
+### **Free Tier**
+- $5 credit/month
+- Shared CPU
+- 512MB RAM
+- 1GB storage
+- Good for testing
+
+### **Hobby Plan** ($5/month)
+- $5 credit + $5/month
+- Dedicated resources
+- Better for production
+
+### **Pro Plan** ($20/month)
+- $20 credit/month
+- Priority support
+- Advanced features
+
+---
+
+## 🔐 Security Best Practices
+
+### **1. Environment Variables**
+
+✅ **DO**:
+- Use Railway variables
+- Rotate secrets regularly
+- Use strong JWT secrets
+
+❌ **DON'T**:
+- Commit .env files
+- Share API keys
+- Use default secrets
+
+### **2. Database**
+
+✅ **DO**:
+- Enable SSL
+- Use connection pooling
+- Regular backups
+
+❌ **DON'T**:
+- Expose DATABASE_URL
+- Use weak passwords
+- Skip migrations
+
+### **3. API**
+
+✅ **DO**:
+- Use rate limiting
+- Validate inputs
+- Log important actions
+
+❌ **DON'T**:
+- Skip authentication
+- Trust client data
+- Ignore errors
+
+---
+
+## 📦 Backup Strategy
+
+### **Database Backups**
+
+```bash
+# Manual backup
 railway connect postgresql
-SELECT * FROM agents;
+pg_dump $DATABASE_URL > backup-$(date +%Y%m%d).sql
 
--- Verify API key format
--- Should start with: agent_
+# Restore
+psql $DATABASE_URL < backup-20240101.sql
 ```
 
----
+### **Automated Backups**
 
-## ✅ Checklist النهائي
-
-### **Backend**
-- [ ] Railway project created
-- [ ] PostgreSQL added
-- [ ] pgvector installed
-- [ ] Migrations run successfully
-- [ ] Environment variables set
-- [ ] Backend deployed (Status: Active)
-- [ ] Health check passing
-- [ ] Domain generated
-
-### **Database**
-- [ ] All tables created
-- [ ] Test user created
-- [ ] Subscription created
-- [ ] Agent created
-- [ ] API key generated
-
-### **Frontend**
-- [ ] Vercel project created
-- [ ] VITE_API_URL set
-- [ ] Deployed successfully
-- [ ] Can access website
-
-### **Testing**
-- [ ] Material uploaded
-- [ ] Chat message sent
-- [ ] Response received
-- [ ] Conversation saved
-- [ ] User isolation verified
+Railway Pro includes:
+- Daily automated backups
+- Point-in-time recovery
+- 7-day retention
 
 ---
 
-## 🎯 Next Steps
+## 🎯 Post-Deployment Tasks
 
-بعد Deployment الناجح:
+### **Immediate**
+- [ ] Test all API endpoints
+- [ ] Verify database connection
+- [ ] Check logs for errors
+- [ ] Test file uploads
+- [ ] Verify CORS settings
 
-1. **إضافة User Registration**
-   - Login/Signup pages
-   - Password hashing
-   - Email verification
+### **Within 24 Hours**
+- [ ] Monitor error rates
+- [ ] Check performance metrics
+- [ ] Test from production frontend
+- [ ] Verify rate limiting
+- [ ] Test API key authentication
 
-2. **تحسين Upload UI**
-   - Drag & drop
-   - Progress bars
-   - Material management
-
-3. **Analytics Dashboard**
-   - Usage statistics
-   - Popular questions
-   - Response times
-
-4. **Custom Domain**
-   - Professional domain
-   - SSL certificate
-   - CDN setup
+### **Within 1 Week**
+- [ ] Setup monitoring alerts
+- [ ] Configure backups
+- [ ] Document API endpoints
+- [ ] Load testing
+- [ ] Security audit
 
 ---
 
-## 📞 الدعم
+## 📞 Support
 
-### **Railway Issues**
-- 📖 Docs: https://docs.railway.app
-- 💬 Discord: https://discord.gg/railway
-- 🐛 GitHub: https://github.com/railwayapp/railway
+### **Railway**
+- Docs: https://docs.railway.app
+- Discord: https://discord.gg/railway
+- Status: https://status.railway.app
 
 ### **Project Issues**
-- 🐛 GitHub Issues: https://github.com/balawi2991/sanadbot/issues
+- Check logs first
+- Review environment variables
+- Test locally
+- Check database migrations
 
 ---
 
-## 🎉 تهانينا!
+## 🎉 Success Checklist
 
-إذا وصلت هنا، مشروعك الآن **Live on Production!** 🚀
-
-**URL Backend**: `https://sanad-backend.railway.app`
-**URL Frontend**: `https://sanadbot.vercel.app`
+- [ ] ✅ Server deployed and running
+- [ ] ✅ Database connected with pgvector
+- [ ] ✅ Migrations applied
+- [ ] ✅ Environment variables set
+- [ ] ✅ Health check passing
+- [ ] ✅ API endpoints working
+- [ ] ✅ CORS configured
+- [ ] ✅ Logs accessible
+- [ ] ✅ Custom domain (optional)
+- [ ] ✅ Monitoring setup
 
 ---
 
-**الوقت المتوقع للـ Deployment**: 30-45 دقيقة
+**Status**: 🟢 **Ready for Production!**
 
-**الحالة**: 🟢 **Ready for Production!**
+**Next**: Connect frontend to Railway backend URL

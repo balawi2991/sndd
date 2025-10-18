@@ -25,7 +25,7 @@ router.post(
       const userId = req.userId!;
 
       // Process message
-      const response = await chatService.processMessage(validated as any, userId);
+      const response = await chatService.processMessage(validated, userId);
 
       res.json(response);
 
