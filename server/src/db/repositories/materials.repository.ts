@@ -189,7 +189,7 @@ export class MaterialsRepository {
         id: row.chunk_id,
         materialId: row.material_id,
         content: row.content,
-        embedding: [], // Don't return embedding (large)
+        embedding: [] as number[], // Don't return embedding (large)
         metadata: row.metadata,
         createdAt: new Date()
       },

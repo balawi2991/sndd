@@ -11,7 +11,7 @@ const router = Router();
 router.get(
   '/',
   authenticate,
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction): Promise<any> => {
     try {
       const userId = req.userId!;
       const agents = await agentsRepository.list(userId);
@@ -34,7 +34,7 @@ router.get(
 router.post(
   '/',
   authenticate,
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction): Promise<any> => {
     try {
       const userId = req.userId!;
       const { name } = req.body;
@@ -69,7 +69,7 @@ router.post(
 router.patch(
   '/:id',
   authenticate,
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction): Promise<any> => {
     try {
       const userId = req.userId!;
       const { id } = req.params;
@@ -108,7 +108,7 @@ router.patch(
 router.post(
   '/:id/regenerate',
   authenticate,
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction): Promise<any> => {
     try {
       const userId = req.userId!;
       const { id } = req.params;
@@ -144,7 +144,7 @@ router.post(
 router.delete(
   '/:id',
   authenticate,
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction): Promise<any> => {
     try {
       const userId = req.userId!;
       const { id } = req.params;

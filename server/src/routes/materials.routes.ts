@@ -13,7 +13,7 @@ const router = Router();
 router.get(
   '/',
   authenticate,
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction): Promise<any> => {
     try {
       const userId = req.userId!;
       const materials = await materialsRepository.list(userId);
@@ -39,7 +39,7 @@ router.get(
 router.post(
   '/text',
   authenticate,
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction): Promise<any> => {
     try {
       const userId = req.userId!;
       const { type, title, content, url } = req.body;
@@ -112,7 +112,7 @@ router.post(
   '/upload',
   authenticate,
   upload.single('file'),
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction): Promise<any> => {
     try {
       const userId = req.userId!;
       const file = req.file;
@@ -173,7 +173,7 @@ router.post(
 router.delete(
   '/:id',
   authenticate,
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction): Promise<any> => {
     try {
       const { id } = req.params;
       const userId = req.userId!;

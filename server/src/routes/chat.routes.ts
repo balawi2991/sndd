@@ -16,10 +16,10 @@ router.post(
   '/',
   chatLimiter,
   authenticateFlexible, // JWT or API Key
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction): Promise<any> => {
     try {
       // Validate request
-      const validated = chatRequestSchema.parse(req.body);
+      const validated = chatRequestSchema.parse(req.body) as any;
 
       // Get userId from auth middleware
       const userId = req.userId!;
@@ -42,7 +42,7 @@ router.post(
 router.get(
   '/conversations/:id',
   authenticateFlexible,
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction): Promise<any> => {
     try {
       const { id } = req.params;
       const userId = req.userId!;
@@ -67,7 +67,7 @@ router.get(
 router.get(
   '/conversations',
   authenticateFlexible,
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction): Promise<any> => {
     try {
       const userId = req.userId!;
       const limit = parseInt(req.query.limit as string) || 50;
@@ -93,7 +93,7 @@ router.get(
 router.delete(
   '/conversations/:id',
   authenticateFlexible,
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction): Promise<any> => {
     try {
       const { id } = req.params;
       const userId = req.userId!;
