@@ -31,8 +31,8 @@ export const generateToken = (user: AuthUser): string => {
       email: user.email,
       name: user.name
     },
-    JWT_SECRET,
-    { expiresIn: JWT_EXPIRES_IN }
+    JWT_SECRET as string,
+    { expiresIn: JWT_EXPIRES_IN as string }
   );
 };
 
