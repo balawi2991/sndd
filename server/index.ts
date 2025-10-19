@@ -44,12 +44,19 @@ app.use('/api/appearance', appearanceRoutes);
 
 // Serve static files in production
 if (isProduction) {
-  const clientPath = path.join(__dirname, '../client');
+  // In production, files are in dist/client (built by Vite)
+  // __dirname is dist/server, so we go up one level then to client
+  const clientPath = path.join(__dirname, '..', 'client');
+  
+  console.log('📁 Serving static files from:', clientPath);
+  
   app.use(express.static(clientPath));
   
   // Serve index.html for all non-API routes (SPA)
   app.get('*', (req, res) => {
-    res.sendFile(path.join(clientPath, 'index.html'));
+    const indexPath = path.join(clientPath, 'index.html');
+    console.log('📄 Serving index.html from:', indexPath);
+    res.sendFile(indexPath);
   });
 }
 
