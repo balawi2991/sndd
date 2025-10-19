@@ -2,11 +2,9 @@ import React, { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { ExternalLink } from 'lucide-react';
-import { ChatWidgetProvider, WidgetConfig } from '@/contexts/ChatWidgetContext';
-import ChatWidget from '@/components/widget/ChatWidget';
 
 interface LivePreviewProps {
-  config: WidgetConfig;
+  config: any;
 }
 
 const LivePreview: React.FC<LivePreviewProps> = ({ config }) => {
@@ -32,45 +30,47 @@ const LivePreview: React.FC<LivePreviewProps> = ({ config }) => {
           </Button>
         </div>
 
-        <ChatWidgetProvider initialConfig={config}>
-          <div className="live-preview-canvas" style={{ minHeight: '600px', position: 'relative' }}>
-            {/* Hero Section */}
-            <div className="p-12 bg-gradient-to-br from-gray-50 to-white">
-              <div className="max-w-2xl">
-                <div className="skeleton h-8 w-48 mb-4" />
-                <div className="skeleton h-12 w-full mb-3" />
-                <div className="skeleton h-12 w-3/4 mb-6" />
-                <div className="skeleton h-10 w-32 rounded-lg" />
-              </div>
-            </div>
-
-            {/* Content Section */}
-            <div className="p-12 space-y-8">
-              <div className="grid grid-cols-3 gap-6">
-                {[1, 2, 3].map((i) => (
-                  <div key={i} className="space-y-3">
-                    <div className="skeleton h-32 w-full rounded-lg" />
-                    <div className="skeleton h-4 w-3/4" />
-                    <div className="skeleton h-3 w-full" />
-                    <div className="skeleton h-3 w-5/6" />
-                  </div>
-                ))}
-              </div>
-
-              <div className="space-y-4">
-                <div className="skeleton h-6 w-64" />
-                <div className="skeleton h-4 w-full" />
-                <div className="skeleton h-4 w-full" />
-                <div className="skeleton h-4 w-3/4" />
-              </div>
-            </div>
-
-            {/* Widget - Container Mode */}
-            <div className="live-preview__widget-slot">
-              <ChatWidget containerMode={true} />
+        <div className="live-preview-canvas" style={{ minHeight: '600px' }}>
+          {/* Hero Section */}
+          <div className="p-12 bg-gradient-to-br from-gray-50 to-white">
+            <div className="max-w-2xl">
+              <div className="skeleton h-8 w-48 mb-4" />
+              <div className="skeleton h-12 w-full mb-3" />
+              <div className="skeleton h-12 w-3/4 mb-6" />
+              <div className="skeleton h-10 w-32 rounded-lg" />
             </div>
           </div>
-        </ChatWidgetProvider>
+
+          {/* Content Section */}
+          <div className="p-12 space-y-8">
+            <div className="grid grid-cols-3 gap-6">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="space-y-3">
+                  <div className="skeleton h-32 w-full rounded-lg" />
+                  <div className="skeleton h-4 w-3/4" />
+                  <div className="skeleton h-3 w-full" />
+                  <div className="skeleton h-3 w-5/6" />
+                </div>
+              ))}
+            </div>
+
+            <div className="space-y-4">
+              <div className="skeleton h-6 w-64" />
+              <div className="skeleton h-4 w-full" />
+              <div className="skeleton h-4 w-full" />
+              <div className="skeleton h-4 w-3/4" />
+            </div>
+          </div>
+
+          {/* Widget Slot */}
+          <div 
+            className="live-preview__widget-slot"
+            style={{
+              backgroundColor: config.primaryColor,
+              boxShadow: config.glowingBorder ? `0 0 20px ${config.primaryColor}40` : undefined,
+            }}
+          />
+        </div>
       </div>
     </div>
   );

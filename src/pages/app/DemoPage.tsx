@@ -2,24 +2,8 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { ChatWidgetProvider } from '@/contexts/ChatWidgetContext';
-import ChatWidget from '@/components/widget/ChatWidget';
 
 const DemoPage = () => {
-  // Default config for Demo
-  const defaultConfig = {
-    primaryColor: '#17B26A',
-    glowingBorder: true,
-    showFloatingAvatar: true,
-    title: 'Chat with us',
-    placeholder: 'Ask me anything...',
-    suggestedQuestions: [
-      'How can I get started?',
-      'What are your pricing plans?',
-      'Do you offer support?',
-    ],
-  };
-
   return (
     <div className="min-h-screen bg-white">
       {/* Top Bar */}
@@ -33,8 +17,7 @@ const DemoPage = () => {
       </div>
 
       {/* Demo Content */}
-      <ChatWidgetProvider initialConfig={defaultConfig}>
-        <div className="live-preview-canvas border-0 rounded-none" style={{ minHeight: 'calc(100vh - 73px)', position: 'relative' }}>
+      <div className="live-preview-canvas border-0 rounded-none" style={{ minHeight: 'calc(100vh - 73px)' }}>
         {/* Hero Section */}
         <div className="px-6 py-20 bg-gradient-to-br from-mint-50 via-white to-blue-50">
           <div className="max-w-6xl mx-auto">
@@ -97,11 +80,8 @@ const DemoPage = () => {
         </div>
 
         {/* Widget Slot */}
-        <div className="live-preview__widget-slot">
-          <ChatWidget containerMode={true} />
-        </div>
+        <div className="live-preview__widget-slot" />
       </div>
-      </ChatWidgetProvider>
     </div>
   );
 };

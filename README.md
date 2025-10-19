@@ -1,361 +1,418 @@
-# 🤖 Sanad (MintChat) - AI-Powered Customer Support Platform
+# 🌿 MintChat - AI-Powered Customer Support Platform
 
-[![Railway](https://img.shields.io/badge/Deploy%20on-Railway-blueviolet)](https://railway.app)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.8-blue)](https://www.typescriptlang.org/)
-[![React](https://img.shields.io/badge/React-18.3-61dafb)](https://reactjs.org/)
-[![Node.js](https://img.shields.io/badge/Node.js-18+-green)](https://nodejs.org/)
-[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-14+-blue)](https://www.postgresql.org/)
-
-**Sanad** is a modern, AI-powered customer support platform built with RAG (Retrieval-Augmented Generation) technology. Train your AI assistant on your own content and provide instant, accurate responses to your customers.
-
----
+A modern SaaS platform for creating intelligent chatbots powered by DeepSeek AI and RAG (Retrieval-Augmented Generation).
 
 ## ✨ Features
 
-### 🎨 **Beautiful Chat Widget**
-- Fixed dimensions with internal scrolling
-- RGB glow border animation
-- Real-time configuration updates
-- Mobile responsive
-- Accessibility compliant (ARIA)
+### Core Functionality
+- 🤖 **AI-Powered Chatbot** - DeepSeek integration with RAG for accurate responses
+- 📚 **Training Materials** - Upload files, add links, or paste text to train your bot
+- 🎨 **Customizable Widget** - Fully customizable chat widget with live preview
+- 💬 **Conversation History** - View and manage all customer conversations
+- 🔐 **Secure Authentication** - JWT-based auth with bcrypt password hashing
+- 📊 **Dashboard Analytics** - Track knowledge base and training status
 
-### 🧠 **RAG-Powered AI**
-- Train on your own content (files, links, text)
-- Vector similarity search with pgvector
-- Context-aware responses
-- Source attribution
-- DeepSeek AI integration
-
-### 🔒 **Multi-tenant Architecture**
-- Complete user isolation
-- Secure data separation
-- Perfect for SaaS
-- Scalable design
-
-### 📊 **Full Dashboard**
-- Conversation management
-- Training materials
-- Appearance customization
-- Analytics & usage tracking
-- Embed code generator
+### Technical Highlights
+- **RAG System** - Vector embeddings with pgvector for semantic search
+- **Multi-tenancy** - Complete isolation between users and bots
+- **Rate Limiting** - Protection against abuse
+- **Responsive Design** - Works on desktop, tablet, and mobile
+- **Container-Aware Widget** - Adapts to any container size
 
 ---
 
 ## 🏗️ Architecture
 
-```
-┌─────────────────────────────────────────────────────┐
-│                   Railway Platform                   │
-├─────────────────────────────────────────────────────┤
-│                                                      │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────┐ │
-│  │   Frontend   │  │   Backend    │  │ Database │ │
-│  │ React + Vite │→ │ Express + TS │→ │PostgreSQL│ │
-│  │              │  │   + RAG      │  │+ pgvector│ │
-│  └──────────────┘  └──────────────┘  └──────────┘ │
-│                                                      │
-└─────────────────────────────────────────────────────┘
-```
+### Tech Stack
+
+**Frontend:**
+- React 18 + TypeScript
+- Vite (build tool)
+- TailwindCSS + shadcn/ui
+- React Query (data fetching)
+- React Router (routing)
+
+**Backend:**
+- Node.js + Express
+- TypeScript
+- Prisma ORM
+- PostgreSQL + pgvector
+- JWT Authentication
+
+**AI & ML:**
+- DeepSeek API (chat completions)
+- OpenAI API (embeddings)
+- Vector similarity search
+
+**Deployment:**
+- Railway (fullstack hosting)
+- PostgreSQL on Railway
+- Automatic deployments from GitHub
 
 ---
 
 ## 🚀 Quick Start
 
 ### Prerequisites
-
-- Node.js 18+
+- Node.js 20+
 - PostgreSQL 14+ (or Railway account)
-- DeepSeek API Key
-- OpenAI API Key
+- DeepSeek API key
+- OpenAI API key
 
 ### Local Development
 
+1. **Clone the repository**
 ```bash
-# 1. Clone the repository
-git clone https://github.com/your-username/sanad.git
-cd sanad
+git clone <your-repo-url>
+cd mintchat
+```
 
-# 2. Install dependencies
+2. **Install dependencies**
+```bash
+# Install root dependencies
 npm install
-cd server && npm install && cd ..
 
-# 3. Setup environment variables
-cp .env.example .env
-cp server/.env.example server/.env
-
-# Edit .env files with your API keys
-
-# 4. Setup database
-createdb sanad
-psql sanad < server/src/db/schema.sql
-
-# 5. Start backend
+# Install server dependencies
 cd server
-npm run dev
-
-# 6. Start frontend (in new terminal)
+npm install
 cd ..
+```
+
+3. **Set up environment variables**
+
+Create `server/.env`:
+```env
+DATABASE_URL=postgresql://user:password@localhost:5432/mintchat
+JWT_SECRET=your-super-secret-jwt-key-minimum-32-characters
+DEEPSEEK_API_KEY=your-deepseek-api-key
+OPENAI_API_KEY=your-openai-api-key
+NODE_ENV=development
+PORT=3000
+```
+
+4. **Set up database**
+```bash
+cd server
+
+# Generate Prisma client
+npx prisma generate
+
+# Push schema to database
+npx prisma db push
+
+# Enable pgvector extension (in PostgreSQL)
+# Run this SQL: CREATE EXTENSION IF NOT EXISTS vector;
+```
+
+5. **Run development servers**
+
+Terminal 1 (Frontend):
+```bash
 npm run dev
 ```
 
-Visit: `http://localhost:5173`
+Terminal 2 (Backend):
+```bash
+npm run dev:server
+```
+
+Visit http://localhost:5173
 
 ---
 
-## 🚂 Deploy to Railway
+## 🚂 Railway Deployment
 
-**Complete deployment guide**: See [`RAILWAY_DEPLOYMENT.md`](./RAILWAY_DEPLOYMENT.md)
+### Step 1: Prepare Repository
 
-### Quick Deploy
+```bash
+git init
+git add .
+git commit -m "Initial commit"
+git remote add origin YOUR_GITHUB_REPO_URL
+git push -u origin main
+```
 
-1. **Push to GitHub**
-2. **Create Railway Project**
-3. **Add PostgreSQL** (pgvector template)
-4. **Deploy Backend** (root: `/server`)
-5. **Deploy Frontend** (root: `/`)
-6. **Add Environment Variables** (see [`RAILWAY_ENV_VARIABLES.md`](./RAILWAY_ENV_VARIABLES.md))
+### Step 2: Deploy on Railway
 
-[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/new)
+1. Go to https://railway.app/new
+2. Click "Deploy from GitHub repo"
+3. Select your repository
+4. Add PostgreSQL database (Railway provides `DATABASE_URL` automatically)
+
+### Step 3: Configure Environment Variables
+
+In Railway Dashboard → Variables:
+
+```env
+JWT_SECRET=your-super-secret-jwt-key-minimum-32-characters
+DEEPSEEK_API_KEY=your-deepseek-api-key
+OPENAI_API_KEY=your-openai-api-key
+NODE_ENV=production
+PORT=3000
+```
+
+### Step 4: Enable pgvector
+
+After first deployment, in PostgreSQL service → Data → Query:
+
+```sql
+CREATE EXTENSION IF NOT EXISTS vector;
+```
+
+### Step 5: Verify
+
+Check deployment logs for:
+- ✅ Database connected
+- ✅ pgvector extension enabled
+- 🚀 Server running
+
+Visit your Railway URL!
+
+**Full deployment guide:** See [RAILWAY_SETUP.md](./RAILWAY_SETUP.md)
 
 ---
 
 ## 📁 Project Structure
 
 ```
-sanad/
+mintchat/
 ├── src/                      # Frontend source
 │   ├── components/
-│   │   ├── widget/          # Chat Widget
-│   │   ├── appearance/      # Customization
-│   │   └── ui/              # Shadcn components
+│   │   ├── widget/          # ChatWidget (unified component)
+│   │   ├── appearance/      # Appearance controls
+│   │   ├── conversations/   # Conversation views
+│   │   ├── training/        # Training material management
+│   │   ├── layout/          # App layout & sidebar
+│   │   └── ui/              # shadcn/ui components
+│   ├── pages/
+│   │   ├── auth/            # Sign in/up pages
+│   │   └── app/             # Main app pages
 │   ├── contexts/            # React contexts
-│   ├── pages/               # Application pages
-│   ├── services/
-│   │   └── api/             # API clients
-│   └── hooks/               # Custom hooks
+│   ├── services/            # API services
+│   └── lib/                 # Utilities
 │
 ├── server/                   # Backend source
-│   └── src/
-│       ├── db/
-│       │   ├── schema.sql   # Database schema
-│       │   ├── client.ts    # DB connection
-│       │   ├── migrate.ts   # Auto-migration
-│       │   └── repositories/
-│       ├── services/
-│       │   ├── deepseek.service.ts
-│       │   ├── rag.service.ts
-│       │   └── chat.service.ts
-│       ├── routes/          # API routes
-│       ├── middleware/      # Express middleware
-│       └── types/           # TypeScript types
+│   ├── src/
+│   │   ├── routes/          # API routes
+│   │   ├── services/        # Business logic
+│   │   │   ├── auth.service.ts
+│   │   │   ├── chat.service.ts
+│   │   │   └── rag.service.ts
+│   │   ├── middleware/      # Express middleware
+│   │   ├── lib/             # Libraries (Prisma, DeepSeek, OpenAI)
+│   │   ├── config/          # Configuration
+│   │   └── index.ts         # Server entry point
+│   └── prisma/
+│       ├── schema.prisma    # Database schema
+│       └── migrations/      # Database migrations
 │
-├── railway.json             # Railway config (Frontend)
-├── nixpacks.toml           # Build config (Frontend)
-├── RAILWAY_DEPLOYMENT.md   # Deployment guide
-└── RAILWAY_ENV_VARIABLES.md # Environment variables
+├── railway.json             # Railway configuration
+├── nixpacks.toml            # Nixpacks build config
+└── package.json             # Root package.json
 ```
 
 ---
 
-## 🛠️ Tech Stack
+## 🎨 The ChatWidget
 
-### Frontend
-- **React 18** - UI framework
-- **TypeScript** - Type safety
-- **Vite** - Build tool
-- **TailwindCSS** - Styling
-- **Shadcn/ui** - Component library
-- **React Router** - Routing
-- **React Hook Form** - Forms
-- **Zod** - Validation
+### Key Features
 
-### Backend
-- **Node.js** - Runtime
-- **Express** - Web framework
-- **TypeScript** - Type safety
-- **PostgreSQL** - Database
-- **pgvector** - Vector search
-- **OpenAI** - Embeddings
-- **DeepSeek** - AI responses
+- **Unified Component** - Single implementation used everywhere
+- **Container-Aware** - Adapts to any container size
+- **Ask-bar** - Fixed center-bottom input (360px max-width)
+- **Modal** - Opens above ask-bar (720px × 80vh)
+- **RGB Glow** - Animated border on ask-bar
+- **Responsive** - Desktop modal, mobile bottom sheet
+- **Accessible** - Keyboard navigation, ARIA labels
 
-### Infrastructure
-- **Railway** - Hosting
-- **GitHub** - Version control
+### Usage
 
----
+```tsx
+import { ChatWidget } from '@/components/widget/ChatWidget';
 
-## 🔑 Environment Variables
-
-### Backend (`server/.env`)
-
-```env
-# Required
-DATABASE_URL=postgresql://...
-DEEPSEEK_API_KEY=sk-...
-OPENAI_API_KEY=sk-...
-
-# Optional
-NODE_ENV=production
-PORT=3000
-RAG_CHUNK_SIZE=750
-RATE_LIMIT_PER_MINUTE=10
-```
-
-### Frontend (`.env`)
-
-```env
-# Required
-VITE_API_URL=https://your-backend.railway.app/api
-
-# Optional
-VITE_APP_NAME=Sanad
-VITE_ENABLE_DEBUG=false
-```
-
-**Full guide**: [`RAILWAY_ENV_VARIABLES.md`](./RAILWAY_ENV_VARIABLES.md)
-
----
-
-## 📖 Documentation
-
-- **[Railway Deployment Guide](./RAILWAY_DEPLOYMENT.md)** - Complete deployment instructions
-- **[Environment Variables](./RAILWAY_ENV_VARIABLES.md)** - All environment variables
-- **[Backend Architecture](./BACKEND_ARCHITECTURE.md)** - System architecture
-- **[Implementation Guide](./IMPLEMENTATION_GUIDE.md)** - Development guide
-- **[Final Summary](./FINAL_SUMMARY.md)** - Project overview
-- **[Quick Start](./QUICK_START.md)** - Local setup guide
-
----
-
-## 🔒 Multi-tenant Security
-
-### Complete User Isolation
-
-```sql
--- Every table has user_id
-CREATE TABLE conversations (
-  id UUID PRIMARY KEY,
-  user_id UUID NOT NULL,  -- Isolation
-  ...
-);
-
--- Every query filters by user_id
-SELECT * FROM conversations 
-WHERE user_id = $1;  -- No cross-user access
-```
-
-### Security Features
-- ✅ Row-level user isolation
-- ✅ API key protection (server-side only)
-- ✅ Rate limiting
-- ✅ Input validation (Zod)
-- ✅ SQL injection protection
-- ✅ XSS prevention
-- ✅ CORS configuration
-
-**Result**: Perfect for SaaS - each user sees only their data
-
----
-
-## 🧪 Testing
-
-```bash
-# Backend tests
-cd server
-npm test
-
-# Frontend tests
-npm test
-
-# E2E tests
-npm run test:e2e
+<ChatWidget
+  config={{
+    primaryColor: '#17B26A',
+    glowingBorder: true,
+    title: 'Chat with us',
+    placeholder: 'Ask me anything...',
+    suggestedQuestions: ['Question 1', 'Question 2'],
+  }}
+  messages={messages}
+  onSendMessage={handleSend}
+  isTyping={isTyping}
+  containerAware={true}
+/>
 ```
 
 ---
 
-## 📊 API Endpoints
+## 🔐 API Endpoints
+
+### Authentication
+- `POST /api/auth/signup` - Create account
+- `POST /api/auth/signin` - Sign in
+
+### Bot Management
+- `GET /api/bot` - Get user's bot
+- `PATCH /api/bot/:id` - Update bot config
+
+### Training Materials
+- `GET /api/training` - List materials
+- `POST /api/training` - Add material
+- `POST /api/training/:id/retrain` - Retrain material
+- `DELETE /api/training/:id` - Delete material
 
 ### Chat
-- `POST /api/chat` - Send message
-- `GET /api/chat/conversations` - List conversations
-- `GET /api/chat/conversations/:id` - Get conversation
-- `DELETE /api/chat/conversations/:id` - Delete conversation
+- `POST /api/chat` - Send message (with RAG)
 
-### Materials
-- `GET /api/materials` - List training materials
-- `POST /api/materials` - Add material
-- `DELETE /api/materials/:id` - Delete material
+### Conversations
+- `GET /api/conversations` - List conversations
+- `GET /api/conversations/:id` - Get conversation
+- `DELETE /api/conversations/:id` - Delete conversation
 
-### Health
-- `GET /health` - Health check
-
-**Full API docs**: See [`server/README.md`](./server/README.md)
+### Dashboard
+- `GET /api/dashboard/stats` - Get dashboard stats
 
 ---
 
-## 🤝 Contributing
+## 🧠 RAG System
 
-Contributions are welcome! Please read our contributing guidelines first.
+### How It Works
 
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+1. **Indexing** (when material is added):
+   - Split content into chunks (500 chars, 50 overlap)
+   - Generate embeddings using OpenAI ada-002
+   - Store in PostgreSQL with pgvector
+
+2. **Retrieval** (when user asks question):
+   - Generate embedding for question
+   - Find top-K similar chunks (cosine similarity)
+   - Extract sources for citation
+
+3. **Generation** (DeepSeek):
+   - Format context from retrieved chunks
+   - Send to DeepSeek with system prompt
+   - Return response with source chips
+
+### Vector Search Query
+
+```sql
+SELECT content, title, source,
+  1 - (embedding <=> $query_embedding) as similarity
+FROM chunks
+JOIN training_materials ON chunks.materialId = training_materials.id
+WHERE training_materials.botId = $botId
+ORDER BY embedding <=> $query_embedding
+LIMIT 5
+```
+
+---
+
+## 🔒 Security
+
+- ✅ JWT authentication with secure secrets
+- ✅ Password hashing with bcrypt
+- ✅ Rate limiting on all endpoints
+- ✅ CORS configuration
+- ✅ SQL injection protection (Prisma)
+- ✅ XSS protection (React)
+- ✅ Environment variable validation (Zod)
+
+---
+
+## 📊 Database Schema
+
+### Key Tables
+
+- **users** - User accounts
+- **bots** - Bot configurations (one per user)
+- **training_materials** - Files, links, text
+- **chunks** - Embedded text chunks (with vectors)
+- **conversations** - Chat sessions
+- **messages** - Individual messages
+- **usage_logs** - Usage tracking (for future billing)
+
+See [server/prisma/schema.prisma](./server/prisma/schema.prisma) for full schema.
+
+---
+
+## 🛠️ Development
+
+### Useful Commands
+
+```bash
+# Frontend
+npm run dev              # Start dev server
+npm run build            # Build for production
+npm run lint             # Lint code
+
+# Backend
+npm run dev:server       # Start dev server
+npm run build:server     # Build for production
+
+# Database
+npm run db:generate      # Generate Prisma client
+npm run db:push          # Push schema to database
+npm run db:studio        # Open Prisma Studio
+
+# Full Build (for Railway)
+npm run build:all        # Build frontend + backend + migrations
+```
+
+### Adding New Features
+
+1. **Frontend**: Add components in `src/components/`
+2. **Backend**: Add routes in `server/src/routes/`
+3. **Database**: Update `server/prisma/schema.prisma` and run `npm run db:push`
+
+---
+
+## 🐛 Troubleshooting
+
+### Database Connection Issues
+- Verify `DATABASE_URL` is set correctly
+- Ensure PostgreSQL is running
+- Check pgvector extension is enabled
+
+### Build Failures
+- Clear `node_modules` and reinstall
+- Check all environment variables are set
+- Verify Prisma schema is valid
+
+### Widget Not Showing
+- Check console for errors
+- Verify container has `.live-preview__widget-slot`
+- Ensure CSS is imported
+
+---
+
+## 📚 Resources
+
+- [Railway Docs](https://docs.railway.app)
+- [Prisma Docs](https://www.prisma.io/docs)
+- [DeepSeek API](https://platform.deepseek.com/docs)
+- [OpenAI Embeddings](https://platform.openai.com/docs/guides/embeddings)
+- [pgvector](https://github.com/pgvector/pgvector)
 
 ---
 
 ## 📝 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+MIT License - See LICENSE file for details
 
 ---
 
-## 🙏 Acknowledgments
+## 🤝 Contributing
 
-- **DeepSeek** - AI model
-- **OpenAI** - Embeddings
-- **Railway** - Hosting platform
-- **Shadcn/ui** - Component library
-- **pgvector** - Vector search
+Contributions welcome! Please open an issue or PR.
 
 ---
 
-## 📞 Support
+## 💬 Support
 
-- **Documentation**: See `/docs` folder
-- **Issues**: [GitHub Issues](https://github.com/your-username/sanad/issues)
-- **Email**: support@sanad.com
+For issues or questions, please open a GitHub issue.
 
 ---
 
-## 🗺️ Roadmap
-
-- [x] Chat Widget
-- [x] RAG Pipeline
-- [x] Multi-tenant Architecture
-- [x] Railway Deployment
-- [ ] File Upload UI
-- [ ] Conversation Export
-- [ ] Analytics Dashboard
-- [ ] Mobile App
-- [ ] WhatsApp Integration
-- [ ] Voice Support
-
----
-
-**Built with ❤️ for better customer support**
-
----
-
-## 🚀 What technologies are used?
-
-This project is built with:
-- **Frontend**: React 18, TypeScript, Vite, TailwindCSS, Shadcn/ui
-- **Backend**: Node.js, Express, TypeScript, PostgreSQL, pgvector
-- **AI**: DeepSeek, OpenAI, RAG
-- **Deployment**: Railway
-
-For complete list see `package.json` files.
-
-## 🌐 How can I deploy this project?
+**Built with ❤️ using React, Node.js, and DeepSeek AI**

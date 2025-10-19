@@ -1,0 +1,43 @@
+# ============================================
+# MintChat Environment Variables
+# Copy these to Railway Dashboard → Variables
+# ============================================
+
+# ============================================
+# REQUIRED - Generate/Obtain These
+# ============================================
+
+# JWT Secret (generate with: openssl rand -base64 32)
+JWT_SECRET=PASTE_YOUR_32_CHARACTER_SECRET_HERE
+
+# DeepSeek API Key (get from: https://platform.deepseek.com)
+DEEPSEEK_API_KEY=sk-PASTE_YOUR_DEEPSEEK_KEY_HERE
+
+# OpenAI API Key (get from: https://platform.openai.com)
+OPENAI_API_KEY=sk-PASTE_YOUR_OPENAI_KEY_HERE
+
+# ============================================
+# OPTIONAL - Defaults Work Fine
+# ============================================
+
+NODE_ENV=production
+PORT=3000
+JWT_EXPIRES_IN=7d
+DEEPSEEK_BASE_URL=https://api.deepseek.com/v1
+RATE_LIMIT_WINDOW_MS=60000
+RATE_LIMIT_MAX_REQUESTS=30
+
+# ============================================
+# AUTO-PROVIDED BY RAILWAY - DO NOT SET
+# ============================================
+# DATABASE_URL - Railway PostgreSQL plugin provides this automatically
+# RAILWAY_PUBLIC_DOMAIN - Railway provides this automatically
+
+# ============================================
+# NOTES
+# ============================================
+# 1. DATABASE_URL is automatically provided when you add PostgreSQL service
+# 2. Generate JWT_SECRET: openssl rand -base64 32
+# 3. Or use: https://generate-secret.vercel.app/32
+# 4. After deployment, enable pgvector:
+#    PostgreSQL service → Data → Query → CREATE EXTENSION IF NOT EXISTS vector;

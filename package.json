@@ -1,15 +1,21 @@
 {
-  "name": "sanad-frontend",
+  "name": "mintchat-fullstack",
   "private": true,
   "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite dev",
+    "dev:server": "cd server && npm run dev",
     "build": "tsc -b && vite build",
-    "start": "vite preview --host 0.0.0.0 --port $PORT",
+    "build:server": "cd server && npm run build",
+    "build:all": "npm run build && npm run build:server && cd server && npx prisma generate && npx prisma migrate deploy",
+    "start": "cd server && npm start",
     "lint": "eslint .",
     "typecheck": "tsc -b --noEmit",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "db:generate": "cd server && npx prisma generate",
+    "db:push": "cd server && npx prisma db push",
+    "db:studio": "cd server && npx prisma studio"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.0.1",
@@ -68,6 +74,7 @@
     "@types/node": "^22.15.17",
     "@types/react": "^18.3.21",
     "@types/react-dom": "^18.3.7",
+    "@types/uuid": "^10.0.0",
     "@vitejs/plugin-react": "^4.4.1",
     "autoprefixer": "^10.4.21",
     "eslint": "^9.26.0",

@@ -4,11 +4,10 @@ import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
 import { Upload, Plus, X } from 'lucide-react';
-import { WidgetConfig } from '@/contexts/ChatWidgetContext';
 
 interface AppearanceControlsProps {
-  config: WidgetConfig;
-  setConfig: (config: WidgetConfig) => void;
+  config: any;
+  setConfig: (config: any) => void;
 }
 
 const AppearanceControls: React.FC<AppearanceControlsProps> = ({ config, setConfig }) => {

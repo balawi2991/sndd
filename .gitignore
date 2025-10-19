@@ -1,31 +1,28 @@
+# Dependencies
+node_modules/
+server/node_modules/
+
+# Environment variables
+.env
+.env.local
+.env.production
+server/.env
+server/.env.local
+server/.env.production
+
+# Build outputs
+dist/
+server/dist/
+build/
+
 # Logs
-logs
+logs/
 *.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
-
-# Dependencies
-node_modules
-.pnp
-.pnp.js
-
-# Build outputs
-dist
-dist-ssr
-build
-.next
-out
-
-# Environment variables
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-*.local
 
 # Editor directories and files
 .vscode/*
@@ -38,35 +35,19 @@ out
 *.sln
 *.sw?
 
-# Vite
-.vite
-
-# TypeScript
-*.tsbuildinfo
-.eslintcache
+# Prisma
+server/prisma/dev.db
+server/prisma/dev.db-journal
 
 # Testing
-coverage
-.nyc_output
+coverage/
+.nyc_output/
 
-# OS
-.DS_Store
-Thumbs.db
+# Misc
+.cache/
+.temp/
+.tmp/
+*.tsbuildinfo
 
-# Railway (keep these for deployment)
-# railway.json - KEEP
-# nixpacks.toml - KEEP
-
-# Database
-*.sqlite
-*.sqlite3
-*.db
-
-# Temporary files
-*.tmp
-*.temp
-.cache
-
-# Backup files
-*.bak
-*.backup
+# Railway
+.railway/
