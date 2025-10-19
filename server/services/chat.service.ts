@@ -1,6 +1,6 @@
-import Conversation from '../models/Conversation.model';
-import { retrieveContext } from './rag.service';
-import { callDeepSeek } from './deepseek.service';
+import Conversation from '../models/Conversation.model.js';
+import { retrieveContext } from './rag.service.js';
+import { callDeepSeek } from './deepseek.service.js';
 
 export const sendMessage = async (
   userId: string,

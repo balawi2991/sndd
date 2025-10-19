@@ -1,4 +1,4 @@
-import TrainingMaterial from '../models/TrainingMaterial.model';
+import TrainingMaterial from '../models/TrainingMaterial.model.js';
 
 interface Source {
   title: string;

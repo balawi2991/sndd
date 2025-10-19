@@ -1,7 +1,7 @@
 import express from 'express';
-import { authenticate, AuthRequest } from '../middleware/auth';
-import TrainingMaterial from '../models/TrainingMaterial.model';
-import { indexMaterial } from '../services/rag.service';
+import { authenticate, AuthRequest } from '../middleware/auth.js';
+import TrainingMaterial from '../models/TrainingMaterial.model.js';
+import { indexMaterial } from '../services/rag.service.js';
 
 const router = express.Router();
 

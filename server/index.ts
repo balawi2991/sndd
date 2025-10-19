@@ -3,14 +3,14 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import path from 'path';
-import { connectDB } from './config/database';
-import authRoutes from './routes/auth.routes';
-import chatRoutes from './routes/chat.routes';
-import trainingRoutes from './routes/training.routes';
-import conversationRoutes from './routes/conversation.routes';
-import appearanceRoutes from './routes/appearance.routes';
-import { errorHandler } from './middleware/errorHandler';
-import { rateLimiter } from './middleware/rateLimiter';
+import { connectDB } from './config/database.js';
+import authRoutes from './routes/auth.routes.js';
+import chatRoutes from './routes/chat.routes.js';
+import trainingRoutes from './routes/training.routes.js';
+import conversationRoutes from './routes/conversation.routes.js';
+import appearanceRoutes from './routes/appearance.routes.js';
+import { errorHandler } from './middleware/errorHandler.js';
+import { rateLimiter } from './middleware/rateLimiter.js';
 
 const __dirname = path.resolve();
 

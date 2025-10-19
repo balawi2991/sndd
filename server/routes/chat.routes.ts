@@ -1,7 +1,7 @@
 import express from 'express';
-import { authenticate, AuthRequest } from '../middleware/auth';
-import { chatRateLimiter } from '../middleware/rateLimiter';
-import { sendMessage } from '../services/chat.service';
+import { authenticate, AuthRequest } from '../middleware/auth.js';
+import { chatRateLimiter } from '../middleware/rateLimiter.js';
+import { sendMessage } from '../services/chat.service.js';
 
 const router = express.Router();
 

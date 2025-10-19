@@ -1,6 +1,6 @@
 import express from 'express';
-import { authenticate, AuthRequest } from '../middleware/auth';
-import Conversation from '../models/Conversation.model';
+import { authenticate, AuthRequest } from '../middleware/auth.js';
+import Conversation from '../models/Conversation.model.js';
 
 const router = express.Router();
 
