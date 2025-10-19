@@ -1,240 +1,270 @@
-# ⚡ MintChat - Quick Start Guide
+# ⚡ Quick Start Guide - MintChat
 
-## 🎯 Goal
-Get MintChat running on Railway in under 10 minutes.
+## 🎯 What You Have Now
 
----
-
-## 📋 Prerequisites
-
-Before you start, get these ready:
-
-1. **GitHub Account** - https://github.com
-2. **Railway Account** - https://railway.app (sign up with GitHub)
-3. **DeepSeek API Key** - https://platform.deepseek.com
-4. **OpenAI API Key** - https://platform.openai.com
+✅ **Full-Stack Application** - Frontend + Backend in one project
+✅ **MongoDB Integration** - Ready for Railway
+✅ **AI Chat Widget** - Complete with RAG system
+✅ **Authentication** - JWT-based user system
+✅ **Railway Ready** - One-click deployment
 
 ---
 
-## 🚀 Step-by-Step Deployment
+## 🚀 Deploy to Railway (5 Minutes)
 
-### Step 1: Push to GitHub (2 minutes)
-
+### Step 1: Push to GitHub
 ```bash
-# In your project directory
-git init
 git add .
-git commit -m "Initial MintChat deployment"
-
-# Create a new repo on GitHub, then:
-git remote add origin https://github.com/YOUR_USERNAME/mintchat.git
-git push -u origin main
+git commit -m "Initial MintChat setup"
+git push origin main
 ```
 
-### Step 2: Deploy on Railway (3 minutes)
-
+### Step 2: Create Railway Project
 1. Go to https://railway.app/new
-2. Click **"Deploy from GitHub repo"**
-3. Select your `mintchat` repository
-4. Railway will start building automatically
+2. Click "Deploy from GitHub repo"
+3. Select your repository
+4. Wait for initial deployment
 
-### Step 3: Add PostgreSQL (1 minute)
+### Step 3: Add MongoDB
+1. In Railway project, click "+ New"
+2. Select "Database" → "MongoDB"
+3. Railway auto-connects it to your app
 
-1. In your Railway project, click **"+ New"**
-2. Select **"Database"** → **"PostgreSQL"**
-3. Railway automatically provides `DATABASE_URL` ✅
-
-### Step 4: Set Environment Variables (2 minutes)
-
-Click on your service → **"Variables"** tab → Add these:
+### Step 4: Set Environment Variables
+Go to your service → Variables tab and add:
 
 ```env
-JWT_SECRET=paste-a-random-32-character-string-here
-DEEPSEEK_API_KEY=sk-your-deepseek-key
-OPENAI_API_KEY=sk-your-openai-key
+JWT_SECRET=<run: node -e "console.log(require('crypto').randomBytes(32).toString('hex'))">
+DEEPSEEK_API_KEY=<get from https://platform.deepseek.com>
 NODE_ENV=production
 ```
 
-**Generate JWT_SECRET:**
-```bash
-# On Mac/Linux:
-openssl rand -base64 32
+### Step 5: Redeploy
+- Railway will automatically redeploy
+- Get your URL from Settings → Networking → Generate Domain
 
-# Or use: https://generate-secret.vercel.app/32
-```
-
-### Step 5: Enable pgvector (1 minute)
-
-1. Click on **PostgreSQL service** → **"Data"** tab
-2. Click **"Query"**
-3. Run this SQL:
-```sql
-CREATE EXTENSION IF NOT EXISTS vector;
-```
-4. Click **"Execute"**
-
-### Step 6: Verify Deployment (1 minute)
-
-1. Wait for build to complete (check **"Deployments"** tab)
-2. Click **"View Logs"** - look for:
-   ```
-   ✅ Database connected
-   ✅ pgvector extension enabled
-   🚀 Server running on port 3000
-   ```
-3. Click on your app URL (Railway provides this)
-4. You should see the MintChat login page! 🎉
+### Step 6: Test
+1. Visit your Railway URL
+2. Sign up for an account
+3. Go to "Try My Agent" page
+4. Test the chat widget!
 
 ---
 
-## ✅ Test Your Deployment
+## 💻 Local Development
 
-### 1. Create Account
-- Click **"Sign Up"**
-- Enter name, email, password
-- Click **"Create Account"**
+### Prerequisites
+- Node.js 18+
+- MongoDB running locally OR MongoDB Atlas account
 
-### 2. Add Training Material
-- Go to **"Training Materials"**
-- Click **"Add Material"**
-- Add some text (e.g., "We offer 24/7 customer support")
-- Wait ~10 seconds for indexing
+### Setup
 
-### 3. Try Your Agent
-- Go to **"Try My Agent"**
-- Type a question in the chat widget
-- Get AI response with sources! 🤖
+1. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+2. **Create .env file**
+   ```bash
+   cp .env.example .env
+   ```
+
+3. **Edit .env**
+   ```env
+   MONGODB_URI=mongodb://localhost:27017/mintchat
+   JWT_SECRET=any-random-string-for-development
+   DEEPSEEK_API_KEY=your-api-key-here
+   NODE_ENV=development
+   ```
+
+4. **Start MongoDB** (if local)
+   ```bash
+   # macOS
+   brew services start mongodb-community
+   
+   # Linux
+   sudo systemctl start mongod
+   
+   # Windows
+   net start MongoDB
+   ```
+
+5. **Run development servers**
+   ```bash
+   npm run dev
+   ```
+
+6. **Open browser**
+   - Frontend: http://localhost:5173
+   - Backend: http://localhost:3000
+
+---
+
+## 📋 What's Included
+
+### Pages
+- ✅ **Dashboard** - Overview & quick actions
+- ✅ **Training Materials** - Upload files, links, text
+- ✅ **Appearance** - Customize widget look
+- ✅ **Conversations** - View chat history
+- ✅ **Try My Agent** - Test widget in browser frame
+- ✅ **Embed Code** - Get code to add to website
+- ✅ **Settings** - User settings (placeholder)
+
+### Features
+- ✅ **Chat Widget** - Ask-bar + Modal with animations
+- ✅ **RAG System** - Train AI with your content
+- ✅ **DeepSeek AI** - Intelligent responses
+- ✅ **Source Citations** - Show where answers come from
+- ✅ **Typing Indicator** - Real-time feedback
+- ✅ **Suggested Questions** - Help users get started
+- ✅ **Glow Effect** - Optional RGB border animation
+- ✅ **Responsive** - Works on mobile & desktop
+
+### Backend
+- ✅ **Express API** - RESTful endpoints
+- ✅ **MongoDB** - User data, conversations, training
+- ✅ **JWT Auth** - Secure authentication
+- ✅ **Rate Limiting** - Prevent abuse
+- ✅ **Error Handling** - Graceful failures
+
+---
+
+## 🎨 Using the Widget
+
+### In Appearance Page
+1. Customize colors, logo, title
+2. Add suggested questions
+3. See live preview on right side
+4. Click "Save Changes"
+
+### In Try My Agent Page
+1. See widget in realistic browser frame
+2. Type a message in the ask-bar
+3. Modal opens automatically
+4. Get AI responses with sources
+
+### Training Your AI
+1. Go to "Training Materials"
+2. Add files, links, or text
+3. Content is automatically indexed
+4. AI uses this in responses
+
+---
+
+## 🔧 Common Tasks
+
+### Change Primary Color
+1. Go to Appearance
+2. Click color preset or enter hex code
+3. See preview update instantly
+4. Save changes
+
+### Add Training Content
+1. Go to Training Materials
+2. Click "+ Add File/Link/Text"
+3. Fill in details
+4. Content trains automatically
+
+### View Conversations
+1. Go to Conversations
+2. Click conversation in left panel
+3. See full message history
+4. Delete or rename as needed
+
+### Get Embed Code
+1. Go to Embed Code
+2. Copy the code snippet
+3. Paste before `</body>` in your website
+4. Replace `YOUR_BOT_ID` with actual ID
 
 ---
 
 ## 🐛 Troubleshooting
 
-### Build Failed?
-**Check:**
-- All environment variables are set
-- `DATABASE_URL` exists (auto-provided by Railway)
-- No syntax errors in code
+### "Cannot connect to MongoDB"
+- **Local**: Start MongoDB service
+- **Railway**: Ensure MongoDB service is added
 
-**Fix:**
-- Go to **"Deployments"** → Click failed deployment → **"View Logs"**
-- Fix the issue
-- Push to GitHub again (auto-redeploys)
+### "DeepSeek API error"
+- Check API key is valid
+- Verify key is active on platform
+- Check for typos in environment variable
 
-### Database Connection Error?
-**Check:**
-- PostgreSQL service is running
-- `DATABASE_URL` variable exists
-- pgvector extension is enabled
+### "Widget not showing"
+- Check browser console for errors
+- Verify you're logged in
+- Try refreshing the page
 
-**Fix:**
-```sql
--- Run in PostgreSQL Query tab:
-CREATE EXTENSION IF NOT EXISTS vector;
-```
-
-### Widget Not Showing?
-**Check:**
-- Frontend built successfully
-- No console errors (F12 in browser)
-- Try hard refresh (Ctrl+Shift+R)
+### "Build failed on Railway"
+- Check Railway build logs
+- Verify all dependencies in package.json
+- Ensure tsconfig.server.json exists
 
 ---
 
-## 📊 What's Next?
+## 📚 Next Steps
 
-### Customize Your Bot
-1. Go to **"Appearance"**
-2. Change colors, title, placeholder
-3. Add suggested questions
-4. See live preview!
+1. **Customize Branding**
+   - Upload your logo
+   - Set brand colors
+   - Add custom questions
 
-### Add More Training Data
-1. Go to **"Training Materials"**
-2. Add files, links, or text
-3. Wait for indexing
-4. Test improved responses
+2. **Train Your AI**
+   - Add product documentation
+   - Include FAQ content
+   - Link to help pages
 
-### Monitor Usage
-1. Go to **"Dashboard"**
-2. See knowledge base stats
-3. Track training status
+3. **Test Thoroughly**
+   - Try different questions
+   - Check source citations
+   - Test on mobile
 
----
-
-## 🔗 Important URLs
-
-After deployment, save these:
-
-- **Your App:** `https://your-app.railway.app`
-- **API Health:** `https://your-app.railway.app/api/health`
-- **Railway Dashboard:** https://railway.app/project/YOUR_PROJECT_ID
-- **PostgreSQL:** Railway Dashboard → PostgreSQL service
+4. **Deploy to Website**
+   - Get embed code
+   - Add to your site
+   - Monitor conversations
 
 ---
 
-## 💡 Pro Tips
+## 📖 Documentation Files
 
-### Faster Deployments
-- Railway auto-deploys on every push to `main`
-- Use branches for testing
-- Merge to `main` when ready
-
-### Cost Optimization
-- Railway free tier: $5/month credit
-- Monitor usage in Railway dashboard
-- Optimize database queries
-- Use rate limiting (already configured)
-
-### Security
-- Never commit `.env` files
-- Rotate API keys regularly
-- Use strong JWT_SECRET
-- Monitor error logs
-
----
-
-## 📚 Learn More
-
-- **Full Documentation:** [README.md](./README.md)
-- **Deployment Guide:** [RAILWAY_SETUP.md](./RAILWAY_SETUP.md)
-- **Project Status:** [PROJECT_STATUS.md](./PROJECT_STATUS.md)
-- **Deployment Checklist:** [DEPLOYMENT_CHECKLIST.md](./DEPLOYMENT_CHECKLIST.md)
+- `README_DEPLOYMENT.md` - Full deployment guide
+- `RAILWAY_SETUP.md` - Detailed Railway instructions
+- `ENV_VARIABLES.md` - Environment variables reference
+- `.env.example` - Template for local development
 
 ---
 
 ## 🆘 Need Help?
 
-### Railway Issues
-- Check Railway logs first
-- Railway Discord: https://discord.gg/railway
-- Railway Docs: https://docs.railway.app
+### Check Logs
+- **Railway**: Dashboard → Deployments → View Logs
+- **Local**: Terminal where `npm run dev` is running
 
-### Code Issues
-- Check browser console (F12)
-- Check server logs in Railway
-- Review error messages
-
-### API Issues
-- Verify API keys are correct
-- Check API provider status pages
-- Review rate limits
+### Common Issues
+- MongoDB connection → Check MONGODB_URI
+- API errors → Check DEEPSEEK_API_KEY
+- Auth errors → Check JWT_SECRET
+- Build errors → Check package.json
 
 ---
 
-## 🎉 Success!
+## ✅ Success Checklist
 
-If you see the MintChat dashboard and can chat with your AI agent, you're all set!
-
-**Next Steps:**
-1. Add more training materials
-2. Customize appearance
-3. Test thoroughly
-4. Share with users!
+- [ ] Code pushed to GitHub
+- [ ] Railway project created
+- [ ] MongoDB added to Railway
+- [ ] Environment variables set
+- [ ] Deployment successful
+- [ ] Can access Railway URL
+- [ ] Can sign up/sign in
+- [ ] Widget works in Try My Agent
+- [ ] Can add training materials
+- [ ] AI responds to questions
 
 ---
 
-**Deployment Time:** ~10 minutes
-**Difficulty:** Easy
-**Cost:** Free tier available
+🎉 **You're all set!** Your MintChat platform is ready to use.
 
-**Happy chatting! 🌿**
+For detailed information, see `README_DEPLOYMENT.md`

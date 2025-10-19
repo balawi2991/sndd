@@ -1,418 +1,272 @@
-# 🌿 MintChat - AI-Powered Customer Support Platform
+# 🚀 MintChat - AI Chat Widget SaaS Platform
 
-A modern SaaS platform for creating intelligent chatbots powered by DeepSeek AI and RAG (Retrieval-Augmented Generation).
+A complete full-stack SaaS platform for creating and deploying AI-powered chat widgets with RAG (Retrieval-Augmented Generation) capabilities.
 
-## ✨ Features
+## ⚡ Quick Start
 
-### Core Functionality
-- 🤖 **AI-Powered Chatbot** - DeepSeek integration with RAG for accurate responses
-- 📚 **Training Materials** - Upload files, add links, or paste text to train your bot
-- 🎨 **Customizable Widget** - Fully customizable chat widget with live preview
-- 💬 **Conversation History** - View and manage all customer conversations
-- 🔐 **Secure Authentication** - JWT-based auth with bcrypt password hashing
-- 📊 **Dashboard Analytics** - Track knowledge base and training status
+### 📖 New Here? Start Here!
+**→ Read [`START_HERE.md`](START_HERE.md)** for a complete overview and quick start guide.
 
-### Technical Highlights
-- **RAG System** - Vector embeddings with pgvector for semantic search
-- **Multi-tenancy** - Complete isolation between users and bots
-- **Rate Limiting** - Protection against abuse
-- **Responsive Design** - Works on desktop, tablet, and mobile
-- **Container-Aware Widget** - Adapts to any container size
+### 🏃 Quick Commands
 
----
+```bash
+# Install dependencies
+npm install
 
-## 🏗️ Architecture
+# Run development (frontend + backend)
+npm run dev
 
-### Tech Stack
+# Build for production
+npm run build
 
-**Frontend:**
+# Start production server
+npm start
+```
+
+## 🎯 What is MintChat?
+
+MintChat is a **full-stack SaaS platform** that allows users to:
+- ✅ Create AI-powered chat widgets
+- ✅ Train AI with custom knowledge (files, links, text)
+- ✅ Customize widget appearance (colors, logo, branding)
+- ✅ Embed widgets on any website
+- ✅ View and manage conversations
+- ✅ Get AI responses powered by DeepSeek with RAG
+
+## 🏗️ Tech Stack
+
+### Frontend
 - React 18 + TypeScript
-- Vite (build tool)
-- TailwindCSS + shadcn/ui
-- React Query (data fetching)
-- React Router (routing)
+- Vite (Build tool)
+- TailwindCSS + Shadcn/ui
+- React Query (Data fetching)
+- React Router (Routing)
 
-**Backend:**
-- Node.js + Express
-- TypeScript
-- Prisma ORM
-- PostgreSQL + pgvector
+### Backend
+- Express.js + TypeScript
+- MongoDB + Mongoose
 - JWT Authentication
+- DeepSeek AI API
+- RAG System
 
-**AI & ML:**
-- DeepSeek API (chat completions)
-- OpenAI API (embeddings)
-- Vector similarity search
+### Deployment
+- Railway (Single deployment)
+- MongoDB (Railway managed)
+- Environment variables
+- Auto-scaling
 
-**Deployment:**
-- Railway (fullstack hosting)
-- PostgreSQL on Railway
-- Automatic deployments from GitHub
+## 📚 Documentation
 
----
+| File | Description |
+|------|-------------|
+| **[START_HERE.md](START_HERE.md)** | 👈 **Start here!** Complete overview |
+| **[QUICK_START.md](QUICK_START.md)** | 5-minute quick start guide |
+| **[RAILWAY_SETUP.md](RAILWAY_SETUP.md)** | Detailed Railway deployment guide |
+| **[ENV_VARIABLES.md](ENV_VARIABLES.md)** | Environment variables reference |
+| **[DEPLOYMENT_CHECKLIST.md](DEPLOYMENT_CHECKLIST.md)** | Pre-deployment checklist |
+| **[README_DEPLOYMENT.md](README_DEPLOYMENT.md)** | Complete technical documentation |
+| **[PROJECT_SUMMARY.md](PROJECT_SUMMARY.md)** | Technical project summary |
+| **[DONE.md](DONE.md)** | What's been completed |
 
-## 🚀 Quick Start
+## 🚂 Deploy to Railway
 
 ### Prerequisites
-- Node.js 20+
-- PostgreSQL 14+ (or Railway account)
+- GitHub account
+- Railway account (https://railway.app)
+- DeepSeek API key (https://platform.deepseek.com)
+
+### Steps
+1. Push code to GitHub
+2. Create new Railway project from GitHub repo
+3. Add MongoDB database to project
+4. Set environment variables:
+   - `JWT_SECRET` (generate with: `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`)
+   - `DEEPSEEK_API_KEY` (from DeepSeek platform)
+   - `NODE_ENV=production`
+5. Deploy!
+
+**Detailed instructions:** [RAILWAY_SETUP.md](RAILWAY_SETUP.md)
+
+## 💻 Local Development
+
+### Prerequisites
+- Node.js 18+
+- MongoDB (local or cloud)
 - DeepSeek API key
-- OpenAI API key
 
-### Local Development
+### Setup
 
-1. **Clone the repository**
-```bash
-git clone <your-repo-url>
-cd mintchat
-```
+1. **Install dependencies**
+   ```bash
+   npm install
+   ```
 
-2. **Install dependencies**
-```bash
-# Install root dependencies
-npm install
+2. **Create environment file**
+   ```bash
+   cp .env.example .env
+   ```
 
-# Install server dependencies
-cd server
-npm install
-cd ..
-```
+3. **Edit .env with your credentials**
+   ```env
+   MONGODB_URI=mongodb://localhost:27017/mintchat
+   JWT_SECRET=your-secret-key
+   DEEPSEEK_API_KEY=your-api-key
+   NODE_ENV=development
+   ```
 
-3. **Set up environment variables**
+4. **Start development servers**
+   ```bash
+   npm run dev
+   ```
+   - Frontend: http://localhost:5173
+   - Backend: http://localhost:3000
 
-Create `server/.env`:
-```env
-DATABASE_URL=postgresql://user:password@localhost:5432/mintchat
-JWT_SECRET=your-super-secret-jwt-key-minimum-32-characters
-DEEPSEEK_API_KEY=your-deepseek-api-key
-OPENAI_API_KEY=your-openai-api-key
-NODE_ENV=development
-PORT=3000
-```
+## 🎨 Features
 
-4. **Set up database**
-```bash
-cd server
+### ✅ Complete Chat Widget
+- **Ask-bar**: Fixed center-bottom input with RGB glow effect
+- **Modal**: Smooth animations, message history, source citations
+- **Responsive**: Works on desktop and mobile
+- **Customizable**: Colors, logo, title, suggested questions
 
-# Generate Prisma client
-npx prisma generate
+### ✅ RAG System
+- Train AI with files, links, and text
+- Automatic document indexing
+- Context retrieval for accurate responses
+- Source citations in answers
 
-# Push schema to database
-npx prisma db push
+### ✅ Multi-tenant SaaS
+- Complete user isolation
+- JWT authentication
+- Per-user training materials
+- Per-user conversations
+- Per-user appearance settings
 
-# Enable pgvector extension (in PostgreSQL)
-# Run this SQL: CREATE EXTENSION IF NOT EXISTS vector;
-```
+### ✅ Admin Dashboard
+- Overview statistics
+- Training materials management
+- Appearance customization
+- Conversation history
+- Embed code generation
 
-5. **Run development servers**
-
-Terminal 1 (Frontend):
-```bash
-npm run dev
-```
-
-Terminal 2 (Backend):
-```bash
-npm run dev:server
-```
-
-Visit http://localhost:5173
-
----
-
-## 🚂 Railway Deployment
-
-### Step 1: Prepare Repository
-
-```bash
-git init
-git add .
-git commit -m "Initial commit"
-git remote add origin YOUR_GITHUB_REPO_URL
-git push -u origin main
-```
-
-### Step 2: Deploy on Railway
-
-1. Go to https://railway.app/new
-2. Click "Deploy from GitHub repo"
-3. Select your repository
-4. Add PostgreSQL database (Railway provides `DATABASE_URL` automatically)
-
-### Step 3: Configure Environment Variables
-
-In Railway Dashboard → Variables:
-
-```env
-JWT_SECRET=your-super-secret-jwt-key-minimum-32-characters
-DEEPSEEK_API_KEY=your-deepseek-api-key
-OPENAI_API_KEY=your-openai-api-key
-NODE_ENV=production
-PORT=3000
-```
-
-### Step 4: Enable pgvector
-
-After first deployment, in PostgreSQL service → Data → Query:
-
-```sql
-CREATE EXTENSION IF NOT EXISTS vector;
-```
-
-### Step 5: Verify
-
-Check deployment logs for:
-- ✅ Database connected
-- ✅ pgvector extension enabled
-- 🚀 Server running
-
-Visit your Railway URL!
-
-**Full deployment guide:** See [RAILWAY_SETUP.md](./RAILWAY_SETUP.md)
-
----
-
-## 📁 Project Structure
+## 📦 Project Structure
 
 ```
 mintchat/
-├── src/                      # Frontend source
+├── src/                    # Frontend (React)
 │   ├── components/
-│   │   ├── widget/          # ChatWidget (unified component)
-│   │   ├── appearance/      # Appearance controls
-│   │   ├── conversations/   # Conversation views
-│   │   ├── training/        # Training material management
-│   │   ├── layout/          # App layout & sidebar
-│   │   └── ui/              # shadcn/ui components
-│   ├── pages/
-│   │   ├── auth/            # Sign in/up pages
-│   │   └── app/             # Main app pages
-│   ├── contexts/            # React contexts
-│   ├── services/            # API services
-│   └── lib/                 # Utilities
+│   │   ├── widget/        # Chat widget components
+│   │   ├── appearance/    # Appearance controls
+│   │   └── ui/            # Shadcn UI components
+│   ├── pages/             # Page components
+│   ├── lib/               # API client
+│   └── contexts/          # React contexts
 │
-├── server/                   # Backend source
-│   ├── src/
-│   │   ├── routes/          # API routes
-│   │   ├── services/        # Business logic
-│   │   │   ├── auth.service.ts
-│   │   │   ├── chat.service.ts
-│   │   │   └── rag.service.ts
-│   │   ├── middleware/      # Express middleware
-│   │   ├── lib/             # Libraries (Prisma, DeepSeek, OpenAI)
-│   │   ├── config/          # Configuration
-│   │   └── index.ts         # Server entry point
-│   └── prisma/
-│       ├── schema.prisma    # Database schema
-│       └── migrations/      # Database migrations
+├── server/                # Backend (Express)
+│   ├── models/           # MongoDB models
+│   ├── routes/           # API routes
+│   ├── services/         # Business logic
+│   ├── middleware/       # Express middleware
+│   └── config/           # Configuration
 │
-├── railway.json             # Railway configuration
-├── nixpacks.toml            # Nixpacks build config
-└── package.json             # Root package.json
+├── dist/                 # Build output
+│   ├── client/          # Frontend build
+│   └── server/          # Backend build
+│
+└── [config files]        # Railway, TypeScript, etc.
 ```
 
----
+## 🔐 Security
 
-## 🎨 The ChatWidget
+- JWT authentication with bcrypt password hashing
+- Rate limiting (100 req/15min, 10 msg/min)
+- CORS protection
+- Helmet security headers
+- User data isolation in MongoDB
+- Environment variable protection
 
-### Key Features
+## 🧪 Testing
 
-- **Unified Component** - Single implementation used everywhere
-- **Container-Aware** - Adapts to any container size
-- **Ask-bar** - Fixed center-bottom input (360px max-width)
-- **Modal** - Opens above ask-bar (720px × 80vh)
-- **RGB Glow** - Animated border on ask-bar
-- **Responsive** - Desktop modal, mobile bottom sheet
-- **Accessible** - Keyboard navigation, ARIA labels
-
-### Usage
-
-```tsx
-import { ChatWidget } from '@/components/widget/ChatWidget';
-
-<ChatWidget
-  config={{
-    primaryColor: '#17B26A',
-    glowingBorder: true,
-    title: 'Chat with us',
-    placeholder: 'Ask me anything...',
-    suggestedQuestions: ['Question 1', 'Question 2'],
-  }}
-  messages={messages}
-  onSendMessage={handleSend}
-  isTyping={isTyping}
-  containerAware={true}
-/>
-```
-
----
-
-## 🔐 API Endpoints
-
-### Authentication
-- `POST /api/auth/signup` - Create account
-- `POST /api/auth/signin` - Sign in
-
-### Bot Management
-- `GET /api/bot` - Get user's bot
-- `PATCH /api/bot/:id` - Update bot config
-
-### Training Materials
-- `GET /api/training` - List materials
-- `POST /api/training` - Add material
-- `POST /api/training/:id/retrain` - Retrain material
-- `DELETE /api/training/:id` - Delete material
-
-### Chat
-- `POST /api/chat` - Send message (with RAG)
-
-### Conversations
-- `GET /api/conversations` - List conversations
-- `GET /api/conversations/:id` - Get conversation
-- `DELETE /api/conversations/:id` - Delete conversation
-
-### Dashboard
-- `GET /api/dashboard/stats` - Get dashboard stats
-
----
-
-## 🧠 RAG System
-
-### How It Works
-
-1. **Indexing** (when material is added):
-   - Split content into chunks (500 chars, 50 overlap)
-   - Generate embeddings using OpenAI ada-002
-   - Store in PostgreSQL with pgvector
-
-2. **Retrieval** (when user asks question):
-   - Generate embedding for question
-   - Find top-K similar chunks (cosine similarity)
-   - Extract sources for citation
-
-3. **Generation** (DeepSeek):
-   - Format context from retrieved chunks
-   - Send to DeepSeek with system prompt
-   - Return response with source chips
-
-### Vector Search Query
-
-```sql
-SELECT content, title, source,
-  1 - (embedding <=> $query_embedding) as similarity
-FROM chunks
-JOIN training_materials ON chunks.materialId = training_materials.id
-WHERE training_materials.botId = $botId
-ORDER BY embedding <=> $query_embedding
-LIMIT 5
-```
-
----
-
-## 🔒 Security
-
-- ✅ JWT authentication with secure secrets
-- ✅ Password hashing with bcrypt
-- ✅ Rate limiting on all endpoints
-- ✅ CORS configuration
-- ✅ SQL injection protection (Prisma)
-- ✅ XSS protection (React)
-- ✅ Environment variable validation (Zod)
-
----
-
-## 📊 Database Schema
-
-### Key Tables
-
-- **users** - User accounts
-- **bots** - Bot configurations (one per user)
-- **training_materials** - Files, links, text
-- **chunks** - Embedded text chunks (with vectors)
-- **conversations** - Chat sessions
-- **messages** - Individual messages
-- **usage_logs** - Usage tracking (for future billing)
-
-See [server/prisma/schema.prisma](./server/prisma/schema.prisma) for full schema.
-
----
-
-## 🛠️ Development
-
-### Useful Commands
-
+### Local
 ```bash
-# Frontend
-npm run dev              # Start dev server
-npm run build            # Build for production
-npm run lint             # Lint code
-
-# Backend
-npm run dev:server       # Start dev server
-npm run build:server     # Build for production
-
-# Database
-npm run db:generate      # Generate Prisma client
-npm run db:push          # Push schema to database
-npm run db:studio        # Open Prisma Studio
-
-# Full Build (for Railway)
-npm run build:all        # Build frontend + backend + migrations
+npm run dev
+# Visit http://localhost:5173
+# Sign up → Test features
 ```
 
-### Adding New Features
+### Production
+```bash
+npm run build
+npm start
+# Visit http://localhost:3000
+```
 
-1. **Frontend**: Add components in `src/components/`
-2. **Backend**: Add routes in `server/src/routes/`
-3. **Database**: Update `server/prisma/schema.prisma` and run `npm run db:push`
+## 📊 API Endpoints
 
----
+- `POST /api/auth/signup` - Register
+- `POST /api/auth/signin` - Login
+- `POST /api/chat/message` - Send message
+- `GET /api/training` - List training materials
+- `GET /api/conversations` - List conversations
+- `GET /api/appearance` - Get appearance settings
 
-## 🐛 Troubleshooting
+**Full API documentation:** [README_DEPLOYMENT.md](README_DEPLOYMENT.md)
 
-### Database Connection Issues
-- Verify `DATABASE_URL` is set correctly
-- Ensure PostgreSQL is running
-- Check pgvector extension is enabled
+## 🆘 Troubleshooting
 
-### Build Failures
-- Clear `node_modules` and reinstall
-- Check all environment variables are set
-- Verify Prisma schema is valid
+### Build fails
+- Check `package.json` dependencies
+- Run `npm run typecheck`
+- Review Railway build logs
 
-### Widget Not Showing
-- Check console for errors
-- Verify container has `.live-preview__widget-slot`
-- Ensure CSS is imported
+### Database connection error
+- Verify MongoDB is running
+- Check `MONGODB_URI` environment variable
+- Test connection string
 
----
+### API errors
+- Verify `DEEPSEEK_API_KEY` is valid
+- Check `JWT_SECRET` is set
+- Review browser console
 
-## 📚 Resources
+**More help:** [DEPLOYMENT_CHECKLIST.md](DEPLOYMENT_CHECKLIST.md)
 
-- [Railway Docs](https://docs.railway.app)
-- [Prisma Docs](https://www.prisma.io/docs)
-- [DeepSeek API](https://platform.deepseek.com/docs)
-- [OpenAI Embeddings](https://platform.openai.com/docs/guides/embeddings)
-- [pgvector](https://github.com/pgvector/pgvector)
+## 🎯 What's Next?
 
----
+1. **Read Documentation**: Start with [START_HERE.md](START_HERE.md)
+2. **Local Testing**: Follow [QUICK_START.md](QUICK_START.md)
+3. **Deploy**: Use [RAILWAY_SETUP.md](RAILWAY_SETUP.md)
+4. **Customize**: Add training materials, customize appearance
+5. **Embed**: Get embed code and add to your website
 
-## 📝 License
+## 📝 Environment Variables
 
-MIT License - See LICENSE file for details
+Required variables:
+- `MONGODB_URI` - MongoDB connection (auto-provided by Railway)
+- `JWT_SECRET` - Secret for JWT tokens (you generate)
+- `DEEPSEEK_API_KEY` - DeepSeek API key (from platform)
+- `NODE_ENV` - Environment (development/production)
 
----
+**Full reference:** [ENV_VARIABLES.md](ENV_VARIABLES.md)
 
 ## 🤝 Contributing
 
-Contributions welcome! Please open an issue or PR.
+This is a private SaaS project. For issues or questions, contact the development team.
+
+## 📄 License
+
+Proprietary - All rights reserved
 
 ---
 
-## 💬 Support
+## 🎉 Ready to Start?
 
-For issues or questions, please open a GitHub issue.
+1. **Quick Local Test**: Read [QUICK_START.md](QUICK_START.md) → "Local Development"
+2. **Deploy to Railway**: Read [QUICK_START.md](QUICK_START.md) → "Deploy to Railway"
+3. **Deep Dive**: Read [PROJECT_SUMMARY.md](PROJECT_SUMMARY.md) + [README_DEPLOYMENT.md](README_DEPLOYMENT.md)
+
+**Need help?** Check the documentation files above or Railway logs.
 
 ---
 
-**Built with ❤️ using React, Node.js, and DeepSeek AI**
+Built with ❤️ using React, Express, MongoDB, and DeepSeek AI

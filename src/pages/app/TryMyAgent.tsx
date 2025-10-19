@@ -1,38 +1,41 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { SidebarTrigger } from '@/components/ui/sidebar';
-import { ChatWidget, WidgetMessage } from '@/components/widget/ChatWidget';
-import { v4 as uuidv4 } from 'uuid';
+import Widget from '@/components/widget/Widget';
+import { appearanceAPI } from '@/lib/api';
 
 const TryMyAgent = () => {
-  const [messages, setMessages] = useState<WidgetMessage[]>([]);
-  const [isTyping, setIsTyping] = useState(false);
+  const [config, setConfig] = useState({
+    logo: '',
+    primaryColor: '#17B26A',
+    glowingBorder: true,
+    avatar: '',
+    showFloatingAvatar: true,
+    title: 'Chat with us',
+    placeholder: 'Ask me anything...',
+    suggestedQuestions: [
+      'How can I get started?',
+      'What are your pricing plans?',
+      'Do you offer support?',
+    ],
+  });
 
-  const handleSendMessage = async (message: string) => {
-    // Add user message
-    const userMessage: WidgetMessage = {
-      id: uuidv4(),
-      role: 'user',
-      content: message,
-      timestamp: new Date(),
-    };
-    setMessages(prev => [...prev, userMessage]);
-
-    // Simulate AI response
-    setIsTyping(true);
-    await new Promise(resolve => setTimeout(resolve, 1500));
-
-    const aiMessage: WidgetMessage = {
-      id: uuidv4(),
-      role: 'assistant',
-      content: 'This is a demo response. Connect your training materials and DeepSeek API to get real AI responses!',
-      sources: [
-        { title: 'Demo Source', url: '#' },
-      ],
-      timestamp: new Date(),
-    };
-    setMessages(prev => [...prev, aiMessage]);
-    setIsTyping(false);
-  };
+  useEffect(() => {
+    // Load appearance settings
+    appearanceAPI.get()
+      .then(({ data }) => {
+        setConfig({
+          logo: data.logo || '',
+          primaryColor: data.primaryColor || '#17B26A',
+          glowingBorder: data.glowingBorder ?? true,
+          avatar: data.avatar || '',
+          showFloatingAvatar: data.showFloatingAvatar ?? true,
+          title: data.title || 'Chat with us',
+          placeholder: data.placeholder || 'Ask me anything...',
+          suggestedQuestions: data.suggestedQuestions || [],
+        });
+      })
+      .catch(console.error);
+  }, []);
 
   return (
     <div className="flex flex-col h-full w-full">
@@ -65,7 +68,7 @@ const TryMyAgent = () => {
             </div>
 
             {/* Preview Canvas */}
-            <div className="live-preview-canvas relative" style={{ minHeight: '70vh' }}>
+            <div className="live-preview-canvas" style={{ minHeight: '70vh', position: 'relative' }}>
               {/* Hero Section */}
               <div className="p-16 bg-gradient-to-br from-mint-50 to-white">
                 <div className="max-w-3xl mx-auto text-center">
@@ -102,25 +105,9 @@ const TryMyAgent = () => {
                 </div>
               </div>
 
-              {/* Widget Slot */}
+              {/* Widget */}
               <div className="live-preview__widget-slot">
-                <ChatWidget
-                  config={{
-                    primaryColor: '#17B26A',
-                    glowingBorder: true,
-                    title: 'Chat with us',
-                    placeholder: 'Ask me anything...',
-                    suggestedQuestions: [
-                      'How can I get started?',
-                      'What are your pricing plans?',
-                      'Do you offer support?',
-                    ],
-                  }}
-                  messages={messages}
-                  onSendMessage={handleSendMessage}
-                  isTyping={isTyping}
-                  containerAware={true}
-                />
+                <Widget config={config} />
               </div>
             </div>
           </div>

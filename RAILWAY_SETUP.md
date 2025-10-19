@@ -1,195 +1,133 @@
 # 🚂 Railway Deployment Guide for MintChat
 
 ## Prerequisites
-- GitHub account
 - Railway account (https://railway.app)
-- DeepSeek API key
-- OpenAI API key (for embeddings)
+- GitHub repository with this code
 
----
+## Step 1: Create New Project on Railway
 
-## 📦 Step 1: Push to GitHub
-
-```bash
-git init
-git add .
-git commit -m "Initial commit"
-git remote add origin YOUR_GITHUB_REPO_URL
-git push -u origin main
-```
-
----
-
-## 🚀 Step 2: Deploy on Railway
-
-### 2.1 Create New Project
 1. Go to https://railway.app/new
 2. Click "Deploy from GitHub repo"
 3. Select your MintChat repository
-4. Railway will auto-detect the configuration
+4. Railway will automatically detect the configuration
 
-### 2.2 Add PostgreSQL Database
+## Step 2: Add MongoDB Database
+
 1. In your Railway project, click "+ New"
-2. Select "Database" → "PostgreSQL"
-3. Railway will automatically provide `DATABASE_URL`
+2. Select "Database" → "Add MongoDB"
+3. Railway will automatically create a MongoDB instance
+4. The `MONGODB_URI` and `MONGO_URL` variables will be automatically injected
 
-### 2.3 Configure Environment Variables
+## Step 3: Configure Environment Variables
+
 Go to your service → Variables tab and add:
 
-```env
-# Required
-JWT_SECRET=your-super-secret-jwt-key-minimum-32-characters
-DEEPSEEK_API_KEY=sk-your-deepseek-api-key
-OPENAI_API_KEY=sk-your-openai-api-key
-
-# Optional (defaults work)
+### Required Variables:
+```
+JWT_SECRET=<generate-a-random-32-character-string>
+DEEPSEEK_API_KEY=<your-deepseek-api-key>
 NODE_ENV=production
+```
+
+### Optional Variables:
+```
 PORT=3000
-JWT_EXPIRES_IN=7d
-DEEPSEEK_BASE_URL=https://api.deepseek.com/v1
-FRONTEND_URL=${{RAILWAY_PUBLIC_DOMAIN}}
-RATE_LIMIT_WINDOW_MS=60000
-RATE_LIMIT_MAX_REQUESTS=30
 ```
 
-**Note:** `DATABASE_URL` is automatically provided by Railway PostgreSQL plugin.
+**Note:** `MONGODB_URI` and `MONGO_URL` are automatically provided by Railway's MongoDB service.
 
----
+## Step 4: Generate JWT Secret
 
-## 🔧 Step 3: Enable pgvector Extension
-
-After first deployment, run this command in Railway PostgreSQL:
-
-1. Go to PostgreSQL service → Data tab
-2. Click "Query" and run:
-
-```sql
-CREATE EXTENSION IF NOT EXISTS vector;
+Run this command locally to generate a secure JWT secret:
+```bash
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 ```
 
-Or connect via CLI and run the same command.
+Copy the output and paste it as `JWT_SECRET` in Railway.
 
----
+## Step 5: Get DeepSeek API Key
 
-## ✅ Step 4: Verify Deployment
+1. Go to https://platform.deepseek.com
+2. Sign up / Sign in
+3. Navigate to API Keys section
+4. Create a new API key
+5. Copy and paste it as `DEEPSEEK_API_KEY` in Railway
 
-1. Check deployment logs for:
-   - ✅ Database connected
-   - ✅ pgvector extension enabled
-   - 🚀 Server running on port 3000
+## Step 6: Deploy
 
-2. Visit your app URL (Railway provides this)
+1. Railway will automatically deploy after you push to GitHub
+2. Or click "Deploy" button in Railway dashboard
+3. Wait for build to complete (~2-3 minutes)
 
-3. Test health endpoint:
-   ```
-   https://your-app.railway.app/api/health
-   ```
+## Step 7: Access Your App
 
----
+1. Go to Settings → Networking
+2. Click "Generate Domain"
+3. Your app will be available at: `https://your-app-name.up.railway.app`
 
-## 🔐 Security Checklist
+## Automatic Features
 
-- ✅ JWT_SECRET is strong (32+ characters)
-- ✅ API keys are set in Railway (not in code)
-- ✅ DATABASE_URL is auto-provided by Railway
-- ✅ CORS is configured for production domain
-- ✅ Rate limiting is enabled
+✅ **Auto-scaling**: Railway handles scaling automatically
+✅ **HTTPS**: Automatic SSL certificates
+✅ **Monitoring**: Built-in logs and metrics
+✅ **CI/CD**: Auto-deploy on git push
+✅ **Database Backups**: MongoDB backups included
 
----
+## Environment Variables Reference
 
-## 📊 Monitoring
+| Variable | Description | Required | Auto-provided |
+|----------|-------------|----------|---------------|
+| `MONGODB_URI` | MongoDB connection string | ✅ | ✅ (by Railway) |
+| `MONGO_URL` | Alternative MongoDB variable | ✅ | ✅ (by Railway) |
+| `JWT_SECRET` | Secret for JWT tokens | ✅ | ❌ (you provide) |
+| `DEEPSEEK_API_KEY` | DeepSeek API key | ✅ | ❌ (you provide) |
+| `NODE_ENV` | Environment (production) | ✅ | ❌ (you provide) |
+| `PORT` | Server port | ❌ | ✅ (Railway sets) |
 
-Railway provides:
-- Real-time logs
-- Metrics (CPU, Memory, Network)
-- Automatic restarts on failure
-- Health checks
+## Troubleshooting
 
----
+### Build fails
+- Check that all dependencies are in `package.json`
+- Verify `tsconfig.server.json` exists
+- Check build logs in Railway dashboard
 
-## 🔄 Updates
+### Database connection fails
+- Ensure MongoDB service is running
+- Check that `MONGODB_URI` or `MONGO_URL` is set
+- Verify network connectivity in Railway
 
-To deploy updates:
+### API errors
+- Check `DEEPSEEK_API_KEY` is valid
+- Verify `JWT_SECRET` is set
+- Check application logs in Railway
+
+## Local Development
 
 ```bash
-git add .
-git commit -m "Your update message"
-git push
+# Install dependencies
+npm install
+
+# Copy environment file
+cp .env.example .env
+
+# Edit .env with your local MongoDB and API keys
+
+# Run development server
+npm run dev
 ```
 
-Railway will automatically rebuild and redeploy.
+## Production Checklist
 
----
+- [ ] MongoDB service added to Railway
+- [ ] `JWT_SECRET` generated and added
+- [ ] `DEEPSEEK_API_KEY` obtained and added
+- [ ] `NODE_ENV=production` set
+- [ ] Domain generated in Railway
+- [ ] Test authentication flow
+- [ ] Test chat functionality
+- [ ] Test training materials upload
 
-## 🐛 Troubleshooting
+## Support
 
-### Database Connection Issues
-- Verify PostgreSQL service is running
-- Check `DATABASE_URL` is present in variables
-- Ensure pgvector extension is enabled
-
-### Build Failures
-- Check build logs in Railway
-- Verify all dependencies are in package.json
-- Ensure Prisma schema is valid
-
-### Runtime Errors
-- Check application logs
-- Verify all environment variables are set
-- Test API endpoints individually
-
----
-
-## 📚 Useful Commands
-
-```bash
-# View logs
-railway logs
-
-# Connect to database
-railway connect postgres
-
-# Run migrations
-railway run npm run db:migrate
-
-# Open Prisma Studio
-railway run npm run db:studio
-```
-
----
-
-## 🎯 Production Checklist
-
-Before going live:
-
-- [ ] All environment variables set
-- [ ] Database migrations applied
-- [ ] pgvector extension enabled
-- [ ] Health check passing
-- [ ] CORS configured correctly
-- [ ] Rate limiting tested
-- [ ] Error handling verified
-- [ ] Backup strategy in place
-
----
-
-## 💡 Tips
-
-1. **Use Railway's PostgreSQL plugin** - It handles DATABASE_URL automatically
-2. **Enable auto-deploy** - Push to main branch = automatic deployment
-3. **Monitor usage** - Railway shows resource consumption
-4. **Set up alerts** - Get notified of deployment failures
-5. **Use staging environment** - Test changes before production
-
----
-
-## 🔗 Resources
-
-- Railway Docs: https://docs.railway.app
-- Prisma Docs: https://www.prisma.io/docs
-- DeepSeek API: https://platform.deepseek.com/docs
-- OpenAI Embeddings: https://platform.openai.com/docs/guides/embeddings
-
----
-
-**Need help?** Check Railway community or project documentation.
+For Railway-specific issues: https://railway.app/help
+For MintChat issues: Check application logs in Railway dashboard

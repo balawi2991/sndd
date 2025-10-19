@@ -1,0 +1,75 @@
+import axios from 'axios';
+
+const DEEPSEEK_API_URL = 'https://api.deepseek.com/v1/chat/completions';
+
+export const callDeepSeek = async (
+  userMessage: string,
+  context: string
+): Promise<string> => {
+  try {
+    const apiKey = process.env.DEEPSEEK_API_KEY;
+    
+    if (!apiKey) {
+      throw new Error('DeepSeek API key not configured');
+    }
+
+    // Build system prompt with context
+    const systemPrompt = context
+      ? `You are a helpful AI assistant. Use the following context to answer the user's question accurately. If the context doesn't contain relevant information, provide a helpful general response.
+
+Context:
+${context}
+
+Instructions:
+- Answer based on the context when relevant
+- Be concise and clear
+- If you're not sure, say so
+- Be friendly and professional`
+      : 'You are a helpful AI assistant. Provide clear, concise, and friendly responses.';
+
+    const response = await axios.post(
+      DEEPSEEK_API_URL,
+      {
+        model: 'deepseek-chat',
+        messages: [
+          {
+            role: 'system',
+            content: systemPrompt,
+          },
+          {
+            role: 'user',
+            content: userMessage,
+          },
+        ],
+        temperature: 0.7,
+        max_tokens: 500,
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${apiKey}`,
+        },
+        timeout: 30000, // 30 seconds
+      }
+    );
+
+    const assistantMessage = response.data.choices[0]?.message?.content;
+    
+    if (!assistantMessage) {
+      throw new Error('No response from DeepSeek');
+    }
+
+    return assistantMessage.trim();
+  } catch (error: any) {
+    console.error('DeepSeek API error:', error.response?.data || error.message);
+    
+    // Fallback response
+    if (error.response?.status === 401) {
+      throw new Error('API authentication failed');
+    } else if (error.response?.status === 429) {
+      throw new Error('Rate limit exceeded, please try again later');
+    } else {
+      throw new Error('Failed to get AI response, please try again');
+    }
+  }
+};

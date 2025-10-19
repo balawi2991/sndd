@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { authAPI } from '@/lib/api';
 
 interface User {
   id: string;
@@ -31,52 +32,60 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const signIn = async (email: string, password: string, remember = false) => {
-    console.log('Signing in:', { email, remember });
-    
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 500));
-    
-    const mockUser: User = {
-      id: '1',
-      name: email.split('@')[0],
-      email,
-    };
-    
-    setUser(mockUser);
-    setIsAuthenticated(true);
-    
-    if (remember) {
-      localStorage.setItem('mintchat_user', JSON.stringify(mockUser));
+    try {
+      const { data } = await authAPI.signIn(email, password);
+      
+      const user: User = {
+        id: data.user.id,
+        name: data.user.name,
+        email: data.user.email,
+      };
+      
+      setUser(user);
+      setIsAuthenticated(true);
+      
+      localStorage.setItem('mintchat_token', data.token);
+      if (remember) {
+        localStorage.setItem('mintchat_user', JSON.stringify(user));
+      }
+    } catch (error: any) {
+      throw new Error(error.response?.data?.error || 'Sign in failed');
     }
   };
 
   const signUp = async (name: string, email: string, password: string) => {
-    console.log('Signing up:', { name, email });
-    
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 500));
-    
-    const mockUser: User = {
-      id: '1',
-      name,
-      email,
-    };
-    
-    setUser(mockUser);
-    setIsAuthenticated(true);
-    localStorage.setItem('mintchat_user', JSON.stringify(mockUser));
+    try {
+      const { data } = await authAPI.signUp(name, email, password);
+      
+      const user: User = {
+        id: data.user.id,
+        name: data.user.name,
+        email: data.user.email,
+      };
+      
+      setUser(user);
+      setIsAuthenticated(true);
+      
+      localStorage.setItem('mintchat_token', data.token);
+      localStorage.setItem('mintchat_user', JSON.stringify(user));
+    } catch (error: any) {
+      throw new Error(error.response?.data?.error || 'Sign up failed');
+    }
   };
 
   const signOut = () => {
     setUser(null);
     setIsAuthenticated(false);
     localStorage.removeItem('mintchat_user');
+    localStorage.removeItem('mintchat_token');
   };
 
   const resetPassword = async (email: string) => {
-    console.log('Resetting password for:', email);
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 500));
+    try {
+      await authAPI.resetPassword(email);
+    } catch (error: any) {
+      throw new Error(error.response?.data?.error || 'Password reset failed');
+    }
   };
 
   return (

@@ -35,10 +35,10 @@ const AddLinkDialog: React.FC<AddLinkDialogProps> = ({ open, onOpenChange }) => 
       });
       onOpenChange(false);
       setUrl('');
-    } catch (error: any) {
+    } catch (error) {
       toast({
         title: "Failed to add link",
-        description: error?.message || "Please check the URL and try again.",
+        description: "Please check the URL and try again.",
         variant: "destructive",
       });
     } finally {

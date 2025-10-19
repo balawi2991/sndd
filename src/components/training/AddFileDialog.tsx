@@ -36,10 +36,10 @@ const AddFileDialog: React.FC<AddFileDialogProps> = ({ open, onOpenChange }) => 
       });
       onOpenChange(false);
       setFiles(null);
-    } catch (error: any) {
+    } catch (error) {
       toast({
         title: "Upload failed",
-        description: error?.message || "Something went wrong. Please try again.",
+        description: "Something went wrong. Please try again.",
         variant: "destructive",
       });
     } finally {

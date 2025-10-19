@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { ExternalLink } from 'lucide-react';
+import Widget from '@/components/widget/Widget';
 
 interface LivePreviewProps {
   config: any;
@@ -30,7 +31,7 @@ const LivePreview: React.FC<LivePreviewProps> = ({ config }) => {
           </Button>
         </div>
 
-        <div className="live-preview-canvas" style={{ minHeight: '600px' }}>
+        <div className="live-preview-canvas" style={{ minHeight: '600px', position: 'relative' }}>
           {/* Hero Section */}
           <div className="p-12 bg-gradient-to-br from-gray-50 to-white">
             <div className="max-w-2xl">
@@ -62,14 +63,10 @@ const LivePreview: React.FC<LivePreviewProps> = ({ config }) => {
             </div>
           </div>
 
-          {/* Widget Slot */}
-          <div 
-            className="live-preview__widget-slot"
-            style={{
-              backgroundColor: config.primaryColor,
-              boxShadow: config.glowingBorder ? `0 0 20px ${config.primaryColor}40` : undefined,
-            }}
-          />
+          {/* Widget */}
+          <div className="live-preview__widget-slot">
+            <Widget config={config} />
+          </div>
         </div>
       </div>
     </div>
