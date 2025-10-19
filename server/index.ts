@@ -44,10 +44,13 @@ app.use('/api/appearance', appearanceRoutes);
 
 // Serve static files in production
 if (isProduction) {
-  // In production, files are in dist/client (built by Vite)
-  // __dirname is dist/server, so we go up one level then to client
-  const clientPath = path.join(__dirname, '..', 'client');
+  // In Railway, the working directory is /app
+  // After build: /app/dist/client contains frontend files
+  // After build: /app/dist/server contains backend files
+  const clientPath = path.resolve(process.cwd(), 'dist', 'client');
   
+  console.log('📁 Current working directory:', process.cwd());
+  console.log('📁 __dirname:', __dirname);
   console.log('📁 Serving static files from:', clientPath);
   
   app.use(express.static(clientPath));
