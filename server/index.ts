@@ -3,7 +3,6 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import path from 'path';
-import { fileURLToPath } from 'url';
 import { connectDB } from './config/database';
 import authRoutes from './routes/auth.routes';
 import chatRoutes from './routes/chat.routes';
@@ -13,8 +12,7 @@ import appearanceRoutes from './routes/appearance.routes';
 import { errorHandler } from './middleware/errorHandler';
 import { rateLimiter } from './middleware/rateLimiter';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const __dirname = path.resolve();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
