@@ -1,6 +1,7 @@
 import Conversation from '../models/Conversation.model.js';
 import { retrieveContext } from './rag.service.js';
 import { callDeepSeek } from './deepseek.service.js';
+import { updateUsage } from '../middleware/usageLimit.js';
 
 export const sendMessage = async (
   userId: string,
@@ -54,6 +55,12 @@ export const sendMessage = async (
     conversation.lastActivity = new Date();
     conversation.unread = true;
     await conversation.save();
+
+    // Update usage (estimate tokens: message + response)
+    const estimatedTokens = Math.ceil(
+      (message.length + assistantResponse.length) / 4
+    );
+    await updateUsage(userId, estimatedTokens);
 
     return {
       conversationId: conversation._id,

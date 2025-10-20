@@ -316,6 +316,14 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  outline: none;
+  border: none;
+  background: transparent;
+}
+
+.mintchat-modal__close:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(23, 178, 106, 0.2);
 }
 
 .mintchat-modal__close:hover {
@@ -324,6 +332,7 @@
 
 .mintchat-modal__close:active {
   transform: scale(0.95);
+  outline: none;
 }
 
 /* Modal Content */

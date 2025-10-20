@@ -5,6 +5,16 @@ export interface IUser extends Document {
   name: string;
   email: string;
   password: string;
+  plan: 'free' | 'pro' | 'enterprise';
+  usage: {
+    messagesCount: number;
+    tokensUsed: number;
+    lastReset: Date;
+  };
+  limits: {
+    messagesPerMonth: number;
+    tokensPerMonth: number;
+  };
   createdAt: Date;
   updatedAt: Date;
   comparePassword(candidatePassword: string): Promise<boolean>;
@@ -28,6 +38,35 @@ const UserSchema = new Schema<IUser>(
       type: String,
       required: true,
       minlength: 6,
+    },
+    plan: {
+      type: String,
+      enum: ['free', 'pro', 'enterprise'],
+      default: 'free',
+    },
+    usage: {
+      messagesCount: {
+        type: Number,
+        default: 0,
+      },
+      tokensUsed: {
+        type: Number,
+        default: 0,
+      },
+      lastReset: {
+        type: Date,
+        default: Date.now,
+      },
+    },
+    limits: {
+      messagesPerMonth: {
+        type: Number,
+        default: 100, // Free plan: 100 messages/month
+      },
+      tokensPerMonth: {
+        type: Number,
+        default: 50000, // Free plan: 50k tokens/month
+      },
     },
   },
   {

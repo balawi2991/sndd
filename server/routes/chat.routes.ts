@@ -1,12 +1,13 @@
 import express from 'express';
 import { authenticate, AuthRequest } from '../middleware/auth.js';
 import { chatRateLimiter } from '../middleware/rateLimiter.js';
+import { checkUsageLimit } from '../middleware/usageLimit.js';
 import { sendMessage } from '../services/chat.service.js';
 
 const router = express.Router();
 
 // Send message and get AI response
-router.post('/message', authenticate, chatRateLimiter, async (req: AuthRequest, res) => {
+router.post('/message', authenticate, chatRateLimiter, checkUsageLimit, async (req: AuthRequest, res) => {
   try {
     const { message, conversationId } = req.body;
     const userId = req.userId!;
