@@ -55,11 +55,17 @@ if (isProduction) {
   // After build: /app/dist/client contains frontend files
   // After build: /app/dist/server contains backend files
   const clientPath = path.resolve(process.cwd(), 'dist', 'client');
+  const publicPath = path.resolve(process.cwd(), 'public');
   
   console.log('📁 Current working directory:', process.cwd());
   console.log('📁 __dirname:', __dirname);
   console.log('📁 Serving static files from:', clientPath);
+  console.log('📁 Serving public files from:', publicPath);
   
+  // Serve public files (widget.js)
+  app.use(express.static(publicPath));
+  
+  // Serve client files
   app.use(express.static(clientPath));
   
   // Serve index.html for all non-API routes (SPA)
