@@ -230,13 +230,13 @@
         position: fixed;
         left: 50%;
         transform: translateX(-50%);
-        bottom: 88px;
+        bottom: 96px;
         width: 720px;
         max-width: 90vw;
         height: 80vh;
         max-height: 600px;
         background: white;
-        border-radius: 16px;
+        border-radius: 12px;
         border: 1px solid rgba(0, 0, 0, 0.08);
         box-shadow: 
           0 0 0 1px rgba(0, 0, 0, 0.05),
