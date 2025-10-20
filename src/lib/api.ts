@@ -77,3 +77,8 @@ export const appearanceAPI = {
   get: () => api.get('/appearance'),
   update: (data: any) => api.put('/appearance', data),
 };
+
+// Usage API
+export const usageAPI = {
+  getStats: () => api.get('/usage/stats'),
+};

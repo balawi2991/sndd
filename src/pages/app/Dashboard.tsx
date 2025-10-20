@@ -13,11 +13,20 @@ import {
 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { getDashboardStats } from '@/services/dashboardService';
+import { usageAPI } from '@/lib/api';
 
 const Dashboard = () => {
   const { data: stats, isLoading } = useQuery({
     queryKey: ['dashboard-stats'],
     queryFn: getDashboardStats,
+  });
+
+  const { data: usage } = useQuery({
+    queryKey: ['usage-stats'],
+    queryFn: async () => {
+      const { data } = await usageAPI.getStats();
+      return data;
+    },
   });
 
   const quickActions = [
@@ -40,6 +49,78 @@ const Dashboard = () => {
 
       <main className="flex-1 overflow-auto p-6">
         <div className="max-w-7xl mx-auto space-y-8">
+          {/* Usage Stats */}
+          {usage && (
+            <div className="enterprise-card p-6 space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-semibold text-gray-900">Usage This Month</h3>
+                <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
+                  {usage.plan.toUpperCase()}
+                </span>
+              </div>
+
+              {/* Messages Usage */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-gray-600">Messages</span>
+                  <span className="font-medium text-gray-900">
+                    {usage.usage.messages.used} / {usage.usage.messages.limit}
+                  </span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+                  <div
+                    className={`h-full rounded-full transition-all duration-300 ${
+                      usage.usage.messages.percent >= 90
+                        ? 'bg-red-500'
+                        : usage.usage.messages.percent >= 70
+                        ? 'bg-yellow-500'
+                        : 'bg-mint-500'
+                    }`}
+                    style={{ width: `${Math.min(usage.usage.messages.percent, 100)}%` }}
+                  />
+                </div>
+                {usage.usage.messages.percent >= 80 && (
+                  <p className="text-xs text-yellow-600">
+                    ⚠️ You're approaching your monthly limit
+                  </p>
+                )}
+              </div>
+
+              {/* Tokens Usage */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-gray-600">Tokens</span>
+                  <span className="font-medium text-gray-900">
+                    {usage.usage.tokens.used.toLocaleString()} / {usage.usage.tokens.limit.toLocaleString()}
+                  </span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+                  <div
+                    className={`h-full rounded-full transition-all duration-300 ${
+                      usage.usage.tokens.percent >= 90
+                        ? 'bg-red-500'
+                        : usage.usage.tokens.percent >= 70
+                        ? 'bg-yellow-500'
+                        : 'bg-mint-500'
+                    }`}
+                    style={{ width: `${Math.min(usage.usage.tokens.percent, 100)}%` }}
+                  />
+                </div>
+              </div>
+
+              {/* Reset Date */}
+              <div className="pt-2 border-t border-gray-200">
+                <p className="text-xs text-gray-500">
+                  Resets on {new Date(usage.nextReset).toLocaleDateString('en-US', { 
+                    month: 'short', 
+                    day: 'numeric',
+                    year: 'numeric'
+                  })}
+                </p>
+              </div>
+            </div>
+          )}
+
           {/* Stats Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {isLoading ? (
