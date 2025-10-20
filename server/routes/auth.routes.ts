@@ -94,6 +94,11 @@ router.post('/reset-password', async (req, res) => {
   }
 });
 
+// Generate unique bot ID
+const generateBotId = (): string => {
+  return 'bot_' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+};
+
 // Get user profile (with botId)
 router.get('/profile', authenticate, async (req: AuthRequest, res) => {
   try {
@@ -101,6 +106,13 @@ router.get('/profile', authenticate, async (req: AuthRequest, res) => {
     
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Fix: If user doesn't have botId, generate one
+    if (!user.botId) {
+      user.botId = generateBotId();
+      await user.save();
+      console.log(`✅ Generated botId for user ${user.email}: ${user.botId}`);
     }
 
     res.json({
