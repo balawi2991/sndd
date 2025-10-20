@@ -39,7 +39,7 @@ const Settings = () => {
   });
 
   const handleWorkspaceSave = () => {
-    console.log('Saving workspace:', workspace);
+    // TODO: Implement workspace settings API
     toast({
       title: "Settings saved",
       description: "Your workspace settings have been updated.",
@@ -47,7 +47,7 @@ const Settings = () => {
   };
 
   const handleProfileSave = () => {
-    console.log('Saving profile:', profile);
+    // TODO: Implement profile update API
     toast({
       title: "Profile updated",
       description: "Your profile has been updated successfully.",
@@ -55,7 +55,7 @@ const Settings = () => {
   };
 
   const handleDeleteWorkspace = () => {
-    console.log('Deleting workspace');
+    // TODO: Implement workspace deletion API
     toast({
       title: "Workspace deleted",
       description: "Your workspace has been permanently deleted.",
