@@ -221,7 +221,7 @@
   @apply bg-white rounded-xl;
   @apply flex flex-col;
   left: 50%;
-  bottom: 96px; /* 56px (askbar) + 40px (gap) */
+  bottom: 104px; /* 56px (askbar) + 48px (gap) */
   width: 720px;
   max-width: 90vw;
   height: 80vh;
@@ -239,7 +239,7 @@
 /* Preview mode modal - scaled down proportionally */
 .live-preview-canvas .mintchat-modal {
   @apply absolute;
-  bottom: 76px; /* Proportional to preview size */
+  bottom: 80px; /* Proportional to preview size */
   left: 50%;
   width: 720px;
   height: 80vh;
@@ -252,7 +252,7 @@
 
 /* Try My Agent - larger scale */
 .live-preview-canvas--try .mintchat-modal {
-  bottom: 96px;
+  bottom: 104px;
   max-height: 600px;
   transform: translateX(-50%) scale(0.85);
   animation: modal-slide-up-try 200ms ease-out forwards;

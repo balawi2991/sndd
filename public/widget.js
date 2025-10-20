@@ -230,7 +230,7 @@
         position: fixed;
         left: 50%;
         transform: translateX(-50%);
-        bottom: 96px;
+        bottom: 104px;
         width: 720px;
         max-width: 90vw;
         height: 80vh;
@@ -379,9 +379,9 @@
       }
       
       .mintchat-message__bubble {
-        padding: 12px 16px;
-        border-radius: 16px;
-        font-size: 14px;
+        padding: 0.75rem 1rem;
+        border-radius: 1rem;
+        font-size: 0.875rem;
         line-height: 1.5;
         word-wrap: break-word;
       }
