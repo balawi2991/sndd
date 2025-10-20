@@ -120,22 +120,17 @@
 /* Ask Bar */
 .mintchat-askbar-wrapper {
   @apply fixed left-1/2 -translate-x-1/2 pointer-events-auto;
-  bottom: clamp(16px, 4vh, 32px);
+  bottom: 16px;
   z-index: 1002;
 }
 
-/* Preview mode ask bar */
+/* Preview mode ask bar - scaled down proportionally */
 .live-preview-canvas .mintchat-askbar-wrapper {
   @apply absolute;
   bottom: 16px;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translateX(-50%) scale(0.65);
   z-index: 12;
-}
-
-.mintchat-askbar--preview {
-  /* Scale down slightly in preview */
-  transform: scale(0.9);
   transform-origin: center bottom;
 }
 
@@ -215,21 +210,24 @@
   @apply fixed left-1/2 -translate-x-1/2 pointer-events-auto;
   @apply bg-white rounded-2xl shadow-2xl;
   @apply flex flex-col;
-  bottom: clamp(80px, 8vh, 100px);
-  width: min(720px, 90vw);
-  height: min(80vh, 600px);
+  bottom: 88px; /* 56px (askbar) + 32px (gap) */
+  width: 720px;
+  max-width: 90vw;
+  height: 80vh;
+  max-height: 600px;
   z-index: 1001;
   animation: modal-slide-up 200ms ease-out;
 }
 
-/* Preview mode modal */
+/* Preview mode modal - scaled down proportionally */
 .live-preview-canvas .mintchat-modal {
   @apply absolute;
-  bottom: 80px;
+  bottom: 72px; /* Proportional to preview size */
   left: 50%;
-  transform: translateX(-50%) scale(0.8);
-  width: min(400px, 90%);
-  height: min(60vh, 400px);
+  transform: translateX(-50%) scale(0.65);
+  width: 720px;
+  height: 80vh;
+  max-height: 500px;
   z-index: 11;
   transform-origin: center bottom;
 }
