@@ -205,6 +205,8 @@
         align-items: center;
         justify-content: center;
         color: white;
+        -webkit-tap-highlight-color: transparent;
+        touch-action: manipulation;
       }
       
       .mintchat-askbar__send:disabled {
@@ -311,6 +313,8 @@
         align-items: center;
         justify-content: center;
         transition: all 150ms;
+        -webkit-tap-highlight-color: transparent;
+        touch-action: manipulation;
       }
       
       .mintchat-modal__close:hover {
@@ -324,6 +328,8 @@
         padding: 24px;
         scroll-behavior: smooth;
         background: linear-gradient(to bottom, rgba(249, 250, 251, 0.3), white);
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior: contain;
       }
       
       .mintchat-modal__content::-webkit-scrollbar {
@@ -501,6 +507,8 @@
         font-size: 14px;
         cursor: pointer;
         transition: all 150ms;
+        -webkit-tap-highlight-color: transparent;
+        touch-action: manipulation;
       }
       
       .mintchat-suggestion-btn:hover {
@@ -509,21 +517,99 @@
         box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
       }
       
-      /* Mobile */
+      /* Tablet (768px - 1024px) */
+      @media (max-width: 1024px) and (min-width: 769px) {
+        .mintchat-modal {
+          width: 90vw;
+          max-width: 680px;
+          height: 70vh;
+          max-height: 550px;
+          bottom: 88px;
+        }
+        
+        .mintchat-askbar-wrapper {
+          bottom: 14px;
+        }
+        
+        .mintchat-askbar {
+          max-width: 90vw;
+        }
+      }
+      
+      /* Mobile (< 768px) */
       @media (max-width: 768px) {
         .mintchat-modal {
-          border-radius: 1rem 1rem 0 0;
+          border-radius: 1.25rem 1.25rem 0 0;
           bottom: 0;
-          height: 85vh;
+          height: 65vh;
+          max-height: 65vh;
           width: 100vw;
+          max-width: 100vw;
         }
         
         .mintchat-askbar-wrapper {
           bottom: 12px;
+          left: 50%;
+          transform: translateX(-50%);
+          width: calc(100% - 24px);
+          max-width: calc(100vw - 24px);
+        }
+        
+        .mintchat-askbar {
+          width: 100%;
+          max-width: 100%;
         }
         
         .mintchat-message__content {
           max-width: 85%;
+        }
+        
+        .mintchat-modal__header {
+          padding: 14px 20px;
+        }
+        
+        .mintchat-modal__content {
+          padding: 20px 16px;
+        }
+      }
+      
+      /* Small Mobile (< 480px) */
+      @media (max-width: 480px) {
+        .mintchat-modal {
+          height: 70vh;
+          max-height: 70vh;
+          border-radius: 1rem 1rem 0 0;
+        }
+        
+        .mintchat-askbar-wrapper {
+          bottom: 10px;
+          width: calc(100% - 20px);
+          max-width: calc(100vw - 20px);
+        }
+        
+        .mintchat-modal__header {
+          padding: 12px 16px;
+        }
+        
+        .mintchat-modal__header h2 {
+          font-size: 16px;
+        }
+        
+        .mintchat-modal__content {
+          padding: 16px 12px;
+        }
+        
+        .mintchat-message__bubble {
+          font-size: 14px;
+          padding: 10px 14px;
+        }
+      }
+      
+      /* Landscape Mobile */
+      @media (max-width: 768px) and (orientation: landscape) {
+        .mintchat-modal {
+          height: 85vh;
+          max-height: 85vh;
         }
       }
     `;
@@ -775,6 +861,17 @@
     form.addEventListener('submit', handleSubmit);
   }
 
+  // Ensure viewport meta tag for mobile
+  function ensureViewport() {
+    let viewport = document.querySelector('meta[name="viewport"]');
+    if (!viewport) {
+      viewport = document.createElement('meta');
+      viewport.name = 'viewport';
+      viewport.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no';
+      document.head.appendChild(viewport);
+    }
+  }
+
   // Main initialization
   async function init(botIdParam) {
     if (!botIdParam) {
@@ -784,6 +881,9 @@
 
     botId = botIdParam;
     console.log('MintChat: Initializing widget with Bot ID:', botId);
+    
+    // Ensure viewport for mobile
+    ensureViewport();
 
     // Load configuration
     widgetConfig = await loadConfig(botId);
