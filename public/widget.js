@@ -137,7 +137,7 @@
           0 4px 6px -1px rgba(0, 0, 0, 0.08),
           0 2px 4px -1px rgba(0, 0, 0, 0.04);
         max-width: 360px;
-        min-height: 56px;
+        height: 56px;
         width: 90vw;
         transition: all 150ms;
       }
@@ -181,12 +181,13 @@
         resize: none;
         font-size: 0.875rem;
         color: #111827;
-        padding: 1rem 0;
-        max-height: 120px;
+        padding: 0;
+        height: 24px;
         line-height: 1.5;
         font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
+        overflow: hidden;
       }
       
       .mintchat-askbar__input::placeholder {
@@ -241,7 +242,7 @@
         height: 80vh;
         max-height: 600px;
         background: white;
-        border-radius: 12px;
+        border-radius: 0.75rem;
         border: 1px solid rgba(0, 0, 0, 0.08);
         box-shadow: 
           0 0 0 1px rgba(0, 0, 0, 0.05),
@@ -508,7 +509,7 @@
       /* Mobile */
       @media (max-width: 768px) {
         .mintchat-modal {
-          border-radius: 16px 16px 0 0;
+          border-radius: 1rem 1rem 0 0;
           bottom: 0;
           height: 85vh;
           width: 100vw;
@@ -600,15 +601,8 @@
     let conversationId = null;
     let isTyping = false;
 
-    // Auto-expand textarea
+    // Open modal on first character
     textarea.addEventListener('input', function() {
-      // Reset to base height first
-      this.style.height = '56px';
-      // Calculate and set new height
-      const scrollHeight = this.scrollHeight;
-      this.style.height = Math.min(scrollHeight, 120) + 'px';
-      
-      // Open modal on first character
       if (this.value.length === 1 && this.value.trim()) {
         openModal();
       }
@@ -748,7 +742,6 @@
       
       // Clear input
       textarea.value = '';
-      textarea.style.height = '56px';
 
       // Show typing
       isTyping = true;

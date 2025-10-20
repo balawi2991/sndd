@@ -28,9 +28,6 @@ const AskBar: React.FC<AskBarProps> = ({
     if (message.trim() && !disabled) {
       onSend(message.trim());
       setMessage('');
-      if (textareaRef.current) {
-        textareaRef.current.style.height = '56px';
-      }
     }
   };
 
@@ -44,13 +41,6 @@ const AskBar: React.FC<AskBarProps> = ({
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const value = e.target.value;
     setMessage(value);
-    
-    // Auto-resize
-    if (textareaRef.current) {
-      textareaRef.current.style.height = '56px';
-      const scrollHeight = textareaRef.current.scrollHeight;
-      textareaRef.current.style.height = Math.min(scrollHeight, 120) + 'px';
-    }
     
     // Open modal on first character
     if (value.length === 1 && value.trim()) {

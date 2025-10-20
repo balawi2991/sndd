@@ -148,7 +148,7 @@
   @apply bg-white rounded-full;
   @apply transition-all duration-150;
   max-width: 360px;
-  min-height: 56px;
+  height: 56px;
   width: 90vw;
   border: 1px solid rgba(0, 0, 0, 0.08);
   box-shadow: 
@@ -185,9 +185,9 @@
 .mintchat-askbar__input {
   @apply flex-1 bg-transparent border-none outline-none resize-none;
   @apply text-sm text-gray-900 placeholder:text-gray-500;
-  @apply py-4;
-  max-height: 120px;
+  height: 24px;
   line-height: 1.5;
+  overflow: hidden;
 }
 
 .mintchat-askbar__send {
@@ -218,8 +218,8 @@
 /* Modal */
 .mintchat-modal {
   @apply fixed pointer-events-auto;
-  @apply bg-white rounded-xl;
-  @apply flex flex-col;
+  @apply bg-white flex flex-col;
+  border-radius: 0.75rem;
   left: 50%;
   bottom: 112px; /* 56px (askbar) + 56px (gap) */
   width: 720px;
@@ -475,7 +475,7 @@
 /* Mobile Responsive */
 @media (max-width: 768px) {
   .mintchat-modal {
-    @apply rounded-t-2xl rounded-b-none;
+    border-radius: 1rem 1rem 0 0;
     bottom: 0;
     height: 85vh;
     width: 100vw;
