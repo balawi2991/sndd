@@ -278,6 +278,7 @@
         padding: 16px 24px;
         border-bottom: 1px solid rgba(0, 0, 0, 0.06);
         flex-shrink: 0;
+        background: linear-gradient(to bottom, rgba(255, 255, 255, 1), rgba(249, 250, 251, 0.4));
       }
       
       .mintchat-modal__header .flex {
@@ -321,6 +322,8 @@
         flex: 1;
         overflow-y: auto;
         padding: 24px;
+        scroll-behavior: smooth;
+        background: linear-gradient(to bottom, rgba(249, 250, 251, 0.3), white);
       }
       
       .mintchat-modal__content::-webkit-scrollbar {
