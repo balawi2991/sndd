@@ -21,10 +21,12 @@ const EmbedCode = () => {
       return data;
     },
     staleTime: Infinity, // Never refetch - botId never changes
-    cacheTime: Infinity,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
   });
 
-  const botId = userData?.botId;
+  const botId = userData?.botId as string | undefined;
   const productionUrl = 'https://sndd-production.up.railway.app';
 
   // Don't generate embed code until we have the botId
