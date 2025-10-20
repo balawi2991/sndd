@@ -111,6 +111,9 @@
         position: fixed;
         left: 50%;
         transform: translateX(-50%);
+        -webkit-transform: translateX(-50%);
+        -moz-transform: translateX(-50%);
+        -ms-transform: translateX(-50%);
         bottom: 16px;
         z-index: 10002;
         pointer-events: auto;
@@ -182,6 +185,8 @@
         max-height: 120px;
         line-height: 1.5;
         font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
       }
       
       .mintchat-askbar__input::placeholder {
@@ -230,7 +235,7 @@
         position: fixed;
         left: 50%;
         transform: translateX(-50%);
-        bottom: 104px;
+        bottom: 112px;
         width: 720px;
         max-width: 90vw;
         height: 80vh;
@@ -247,6 +252,11 @@
         display: flex;
         flex-direction: column;
         animation: modal-slide-up 200ms ease-out;
+        /* Cross-browser compatibility */
+        -webkit-transform: translateX(-50%);
+        -moz-transform: translateX(-50%);
+        -ms-transform: translateX(-50%);
+        box-sizing: border-box;
       }
       
       @keyframes modal-slide-up {
@@ -384,6 +394,9 @@
         font-size: 0.875rem;
         line-height: 1.5;
         word-wrap: break-word;
+        word-break: break-word;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
       }
       
       .mintchat-message--assistant .mintchat-message__bubble {
