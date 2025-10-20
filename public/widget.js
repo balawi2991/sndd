@@ -124,12 +124,15 @@
         position: relative;
         display: flex;
         align-items: center;
-        gap: 12px;
-        padding: 0 16px;
+        gap: 0.75rem;
+        padding: 0 1rem;
         background: white;
         border: 1px solid rgba(0, 0, 0, 0.08);
         border-radius: 9999px;
-        box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.02), 0 4px 6px -1px rgba(0, 0, 0, 0.08);
+        box-shadow: 
+          0 0 0 1px rgba(0, 0, 0, 0.02),
+          0 4px 6px -1px rgba(0, 0, 0, 0.08),
+          0 2px 4px -1px rgba(0, 0, 0, 0.04);
         max-width: 360px;
         min-height: 56px;
         width: 90vw;
@@ -173,12 +176,12 @@
         border: none;
         outline: none;
         resize: none;
-        font-size: 14px;
+        font-size: 0.875rem;
         color: #111827;
-        padding: 16px 0;
+        padding: 1rem 0;
         max-height: 120px;
         line-height: 1.5;
-        font-family: system-ui, -apple-system, sans-serif;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       }
       
       .mintchat-askbar__input::placeholder {
@@ -187,7 +190,7 @@
       
       .mintchat-askbar__send {
         flex-shrink: 0;
-        padding: 8px;
+        padding: 0.5rem;
         border-radius: 9999px;
         border: none;
         cursor: pointer;
@@ -581,8 +584,11 @@
 
     // Auto-expand textarea
     textarea.addEventListener('input', function() {
-      this.style.height = '56px';
-      this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+      // Reset height to calculate new scrollHeight
+      this.style.height = 'auto';
+      // Set new height (min 56px, max 120px)
+      const newHeight = Math.max(56, Math.min(this.scrollHeight, 120));
+      this.style.height = newHeight + 'px';
       
       // Open modal on first character
       if (this.value.length === 1 && this.value.trim()) {
