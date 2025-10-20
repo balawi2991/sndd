@@ -483,22 +483,42 @@
 /* Tablet Responsive (768px - 1024px) */
 @media (max-width: 1024px) and (min-width: 769px) {
   .mintchat-modal {
-    width: 90vw;
-    max-width: 680px;
-    height: 68vh;
-    max-height: 520px;
-    bottom: 72px;
+    width: 85vw;
+    max-width: 600px;
+    height: 65vh;
+    max-height: 480px;
+    bottom: 68px;
+  }
+  
+  .mintchat-modal__header h2 {
+    @apply text-[17px];
+  }
+  
+  .mintchat-modal__content {
+    @apply px-[18px] py-5;
+  }
+  
+  .mintchat-message__bubble {
+    @apply text-sm px-[15px] py-[11px];
   }
   
   .mintchat-askbar-wrapper {
     bottom: 16px;
-    width: 85%;
-    max-width: 85vw;
   }
   
   .mintchat-askbar {
-    width: 100%;
-    max-width: 100%;
+    max-width: 340px;
+    height: 52px;
+  }
+  
+  .mintchat-askbar__input {
+    font-size: 13px;
+    height: 22px;
+  }
+  
+  .mintchat-askbar__icon svg,
+  .mintchat-askbar__send svg {
+    @apply w-[18px] h-[18px];
   }
   
   .live-preview-canvas .mintchat-modal {
@@ -514,36 +534,54 @@
 @media (max-width: 768px) {
   .mintchat-modal {
     border-radius: 1.25rem 1.25rem 0 0;
-    bottom: 68px;
-    height: calc(100vh - 136px);
-    max-height: calc(100vh - 136px);
-    width: 100vw;
-    max-width: 100vw;
-  }
-  
-  .mintchat-askbar-wrapper {
-    bottom: 16px;
+    bottom: 64px;
+    height: 60vh;
+    max-height: 60vh;
+    width: 94vw;
+    max-width: 94vw;
     left: 50%;
     transform: translateX(-50%);
-    width: 92%;
-    max-width: 92vw;
   }
   
-  .mintchat-askbar {
-    width: 100%;
-    max-width: 100%;
+  .mintchat-modal__header {
+    @apply px-[18px] py-[13px];
+  }
+  
+  .mintchat-modal__header h2 {
+    @apply text-base;
+  }
+  
+  .mintchat-modal__content {
+    @apply px-[14px] py-[18px];
+  }
+  
+  .mintchat-message__bubble {
+    @apply text-sm px-[14px] py-[10px];
   }
   
   .mintchat-message__content {
     @apply max-w-[85%];
   }
   
-  .mintchat-modal__header {
-    @apply px-5 py-3.5;
+  .mintchat-askbar-wrapper {
+    bottom: 14px;
+    left: 50%;
+    transform: translateX(-50%);
   }
   
-  .mintchat-modal__content {
-    @apply px-4 py-5;
+  .mintchat-askbar {
+    max-width: 320px;
+    height: 48px;
+  }
+  
+  .mintchat-askbar__input {
+    font-size: 13px;
+    height: 20px;
+  }
+  
+  .mintchat-askbar__icon svg,
+  .mintchat-askbar__send svg {
+    @apply w-[18px] h-[18px];
   }
   
   .live-preview-canvas .mintchat-modal {
@@ -558,24 +596,20 @@
 /* Small Mobile (< 480px) */
 @media (max-width: 480px) {
   .mintchat-modal {
-    bottom: 68px;
-    height: calc(100vh - 136px);
-    max-height: calc(100vh - 136px);
+    bottom: 60px;
+    height: 58vh;
+    max-height: 58vh;
+    width: 96vw;
+    max-width: 96vw;
     border-radius: 1rem 1rem 0 0;
   }
   
-  .mintchat-askbar-wrapper {
-    bottom: 14px;
-    width: 94%;
-    max-width: 94vw;
-  }
-  
   .mintchat-modal__header {
-    @apply px-4 py-3;
+    @apply px-[14px] py-[11px];
   }
   
   .mintchat-modal__header h2 {
-    @apply text-base;
+    @apply text-[15px];
   }
   
   .mintchat-modal__content {
@@ -583,16 +617,35 @@
   }
   
   .mintchat-message__bubble {
-    @apply text-sm px-3.5 py-2.5;
+    @apply text-[13px] px-[13px] py-[9px];
+  }
+  
+  .mintchat-askbar {
+    max-width: 300px;
+    height: 46px;
+  }
+  
+  .mintchat-askbar__input {
+    font-size: 12px;
+    height: 18px;
+  }
+  
+  .mintchat-askbar__icon svg,
+  .mintchat-askbar__send svg {
+    @apply w-[17px] h-[17px];
+  }
+  
+  .mintchat-askbar__send {
+    @apply p-[0.4rem];
   }
 }
 
 /* Landscape Mobile */
 @media (max-width: 768px) and (orientation: landscape) {
   .mintchat-modal {
-    bottom: 68px;
-    height: calc(100vh - 136px);
-    max-height: calc(100vh - 136px);
+    bottom: 64px;
+    height: 75vh;
+    max-height: 75vh;
   }
 }
 
