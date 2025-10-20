@@ -212,16 +212,23 @@
 
 /* Modal */
 .mintchat-modal {
-  @apply fixed left-1/2 -translate-x-1/2 pointer-events-auto;
-  @apply bg-white rounded-2xl shadow-2xl;
+  @apply fixed pointer-events-auto;
+  @apply bg-white rounded-2xl;
   @apply flex flex-col;
+  left: 50%;
   bottom: 88px; /* 56px (askbar) + 32px (gap) */
   width: 720px;
   max-width: 90vw;
   height: 80vh;
   max-height: 600px;
   z-index: 1001;
-  animation: modal-slide-up 200ms ease-out;
+  transform: translateX(-50%);
+  animation: modal-slide-up 200ms ease-out forwards;
+  box-shadow: 
+    0 0 0 1px rgba(0, 0, 0, 0.05),
+    0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.08);
 }
 
 /* Preview mode modal - scaled down proportionally */
@@ -233,15 +240,17 @@
   height: 80vh;
   max-height: 500px;
   z-index: 11;
+  transform: translateX(-50%) scale(0.65);
   transform-origin: center bottom;
-  animation: modal-slide-up-preview 200ms ease-out;
+  animation: modal-slide-up-preview 200ms ease-out forwards;
 }
 
 /* Try My Agent - larger scale */
 .live-preview-canvas--try .mintchat-modal {
   bottom: 88px;
   max-height: 600px;
-  animation: modal-slide-up-try 200ms ease-out;
+  transform: translateX(-50%) scale(0.85);
+  animation: modal-slide-up-try 200ms ease-out forwards;
 }
 
 .mintchat-modal--preview {
@@ -257,7 +266,7 @@
 @keyframes modal-slide-up {
   from {
     opacity: 0;
-    transform: translateX(-50%) translateY(20px);
+    transform: translateX(-50%) translateY(16px);
   }
   to {
     opacity: 1;
@@ -268,52 +277,65 @@
 @keyframes modal-slide-up-preview {
   from {
     opacity: 0;
-    transform: translateX(-50%) translateY(20px) scale(0.65);
+    transform: translateX(-50%) scale(0.65) translateY(16px);
   }
   to {
     opacity: 1;
-    transform: translateX(-50%) translateY(0) scale(0.65);
+    transform: translateX(-50%) scale(0.65) translateY(0);
   }
 }
 
 @keyframes modal-slide-up-try {
   from {
     opacity: 0;
-    transform: translateX(-50%) translateY(20px) scale(0.85);
+    transform: translateX(-50%) scale(0.85) translateY(16px);
   }
   to {
     opacity: 1;
-    transform: translateX(-50%) translateY(0) scale(0.85);
+    transform: translateX(-50%) scale(0.85) translateY(0);
   }
 }
 
 /* Modal Header */
 .mintchat-modal__header {
   @apply flex items-center justify-between px-6 py-4;
-  @apply border-b border-gray-200 flex-shrink-0;
+  @apply border-b flex-shrink-0;
+  border-color: rgba(0, 0, 0, 0.08);
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 1), rgba(249, 250, 251, 0.5));
 }
 
 .mintchat-modal__close {
-  @apply p-2 rounded-lg hover:bg-gray-100 transition-colors;
-  @apply text-gray-600 hover:text-gray-900;
+  @apply p-2 rounded-lg transition-all duration-150;
+  @apply text-gray-500 hover:text-gray-900;
+  @apply hover:bg-gray-100;
+}
+
+.mintchat-modal__close:hover {
+  transform: scale(1.05);
 }
 
 /* Modal Content */
 .mintchat-modal__content {
   @apply flex-1 overflow-y-auto p-6;
   scroll-behavior: smooth;
+  background: linear-gradient(to bottom, rgba(249, 250, 251, 0.3), white);
 }
 
 .mintchat-modal__content::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
 }
 
 .mintchat-modal__content::-webkit-scrollbar-track {
-  @apply bg-gray-100 rounded-full;
+  @apply bg-transparent;
 }
 
 .mintchat-modal__content::-webkit-scrollbar-thumb {
-  @apply bg-gray-300 rounded-full hover:bg-gray-400;
+  @apply bg-gray-300 rounded-full;
+  transition: background-color 150ms;
+}
+
+.mintchat-modal__content::-webkit-scrollbar-thumb:hover {
+  @apply bg-gray-400;
 }
 
 /* Messages */
