@@ -237,7 +237,11 @@
         max-height: 600px;
         background: white;
         border-radius: 16px;
-        box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.05), 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(0, 0, 0, 0.08);
+        box-shadow: 
+          0 0 0 1px rgba(0, 0, 0, 0.05),
+          0 10px 15px -3px rgba(0, 0, 0, 0.1),
+          0 4px 6px -2px rgba(0, 0, 0, 0.05);
         z-index: 10001;
         pointer-events: auto;
         display: flex;
