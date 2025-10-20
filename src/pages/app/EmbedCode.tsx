@@ -4,19 +4,31 @@ import { SidebarTrigger } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
 import { Check, Copy, ExternalLink } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
+import { useQuery } from '@tanstack/react-query';
+import api from '@/lib/api';
 
 const EmbedCode = () => {
   const { toast } = useToast();
+  const { user } = useAuth();
   const [copied, setCopied] = useState(false);
 
+  // Get user's botId
+  const { data: userData } = useQuery({
+    queryKey: ['user-profile'],
+    queryFn: async () => {
+      const { data } = await api.get('/auth/profile');
+      return data;
+    },
+  });
+
+  const botId = userData?.botId || 'loading...';
+  const siteUrl = window.location.origin;
+
   const embedCode = `<!-- MintChat Widget -->
+<script src="${siteUrl}/widget.js"></script>
 <script>
-  (function(w,d,s,o,f,js,fjs){
-    w['MintChat']=o;w[o] = w[o] || function () { (w[o].q = w[o].q || []).push(arguments) };
-    js = d.createElement(s), fjs = d.getElementsByTagName(s)[0];
-    js.id = o; js.src = f; js.async = 1; fjs.parentNode.insertBefore(js, fjs);
-  }(window, document, 'script', 'mc', 'https://cdn.mintchat.ai/widget.js'));
-  mc('init', 'YOUR_BOT_ID');
+  MintChat.init('${botId}');
 </script>`;
 
   const handleCopy = () => {
@@ -104,9 +116,14 @@ const EmbedCode = () => {
                 <code>{embedCode}</code>
               </pre>
             </div>
-            <p className="text-sm text-gray-600 mt-3">
-              Replace <code className="px-1.5 py-0.5 bg-gray-100 rounded text-xs font-mono">YOUR_BOT_ID</code> with your actual bot ID
-            </p>
+            <div className="mt-4 p-3 bg-mint-50 border border-mint-200 rounded-lg">
+              <p className="text-sm text-gray-700">
+                <strong>Your Bot ID:</strong> <code className="px-2 py-1 bg-white rounded text-xs font-mono">{botId}</code>
+              </p>
+              <p className="text-xs text-gray-600 mt-1">
+                This ID is unique to your account and loads your custom widget configuration.
+              </p>
+            </div>
           </div>
 
           {/* Demo Link */}

@@ -5,6 +5,7 @@ export interface IUser extends Document {
   name: string;
   email: string;
   password: string;
+  botId: string; // Unique ID for widget embedding
   plan: 'free' | 'pro' | 'enterprise';
   usage: {
     messagesCount: number;
@@ -19,6 +20,11 @@ export interface IUser extends Document {
   updatedAt: Date;
   comparePassword(candidatePassword: string): Promise<boolean>;
 }
+
+// Generate unique bot ID
+const generateBotId = (): string => {
+  return 'bot_' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+};
 
 const UserSchema = new Schema<IUser>(
   {
@@ -38,6 +44,11 @@ const UserSchema = new Schema<IUser>(
       type: String,
       required: true,
       minlength: 6,
+    },
+    botId: {
+      type: String,
+      unique: true,
+      default: generateBotId,
     },
     plan: {
       type: String,

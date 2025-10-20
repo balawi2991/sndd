@@ -10,6 +10,7 @@ import trainingRoutes from './routes/training.routes.js';
 import conversationRoutes from './routes/conversation.routes.js';
 import appearanceRoutes from './routes/appearance.routes.js';
 import usageRoutes from './routes/usage.routes.js';
+import widgetRoutes from './routes/widget.routes.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import { rateLimiter } from './middleware/rateLimiter.js';
 
@@ -46,6 +47,7 @@ app.use('/api/training', trainingRoutes);
 app.use('/api/conversations', conversationRoutes);
 app.use('/api/appearance', appearanceRoutes);
 app.use('/api/usage', usageRoutes);
+app.use('/api/widget', widgetRoutes); // Public widget API
 
 // Serve static files in production
 if (isProduction) {

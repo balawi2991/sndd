@@ -93,4 +93,24 @@ router.post('/reset-password', async (req, res) => {
   }
 });
 
+// Get user profile (with botId)
+router.get('/profile', authenticate, async (req: AuthRequest, res) => {
+  try {
+    const user = await User.findById(req.userId).select('name email botId plan');
+    
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    res.json({
+      name: user.name,
+      email: user.email,
+      botId: user.botId,
+      plan: user.plan,
+    });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 export default router;
