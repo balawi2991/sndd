@@ -308,7 +308,7 @@ export const indexMaterial = async (materialId: string): Promise<void> => {
         chunk,
         embedding,
         metadata: {
-          materialId: material._id.toString(),
+          materialId: String(material._id),
           title: material.title,
         },
       });
