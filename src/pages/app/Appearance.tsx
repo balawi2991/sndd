@@ -41,7 +41,9 @@ const Appearance = () => {
           suggestedQuestions: data.suggestedQuestions || [],
         });
       })
-      .catch(console.error);
+      .catch((error) => {
+        console.error('Failed to load appearance settings:', error);
+      });
   }, []);
 
   const handleSave = async () => {

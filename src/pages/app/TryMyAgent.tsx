@@ -34,7 +34,9 @@ const TryMyAgent = () => {
           suggestedQuestions: data.suggestedQuestions || [],
         });
       })
-      .catch(console.error);
+      .catch((error) => {
+        console.error('Failed to load appearance settings:', error);
+      });
   }, []);
 
   return (

@@ -42,7 +42,7 @@ const TrainingTable: React.FC<TrainingTableProps> = ({ materials, isLoading }) =
   };
 
   const handleBulkRetrain = async () => {
-    console.log('Bulk retraining:', Array.from(selected));
+    // TODO: Implement bulk retraining API
     toast({ title: "Bulk training started", description: `Retraining ${selected.size} items.` });
     setSelected(new Set());
   };

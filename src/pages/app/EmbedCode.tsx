@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
@@ -12,25 +12,47 @@ const EmbedCode = () => {
   const { toast } = useToast();
   const { user } = useAuth();
   const [copied, setCopied] = useState(false);
+  const [cachedBotId, setCachedBotId] = useState<string>('');
 
-  // Get user's botId
+  // Get user's botId - fetch once and cache
   const { data: userData, isLoading } = useQuery({
-    queryKey: ['user-profile'],
+    queryKey: ['user-profile-embed'],
     queryFn: async () => {
       const { data } = await api.get('/auth/profile');
       return data;
     },
-    staleTime: Infinity, // Never refetch - botId never changes
+    staleTime: Infinity,
+    gcTime: Infinity, // Keep in cache forever
     refetchOnMount: false,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
   });
 
-  const botId = userData?.botId as string | undefined;
+  // Cache botId in state once loaded
+  useEffect(() => {
+    if (userData?.botId && !cachedBotId) {
+      setCachedBotId(userData.botId);
+      // Also cache in localStorage for extra persistence
+      localStorage.setItem('mintchat_botId', userData.botId);
+    }
+  }, [userData, cachedBotId]);
+
+  // Try to get from cache first
+  useEffect(() => {
+    const stored = localStorage.getItem('mintchat_botId');
+    if (stored && !cachedBotId) {
+      setCachedBotId(stored);
+    }
+  }, [cachedBotId]);
+
+  const botId = cachedBotId || userData?.botId;
   const productionUrl = 'https://sndd-production.up.railway.app';
 
-  // Don't generate embed code until we have the botId
-  const embedCode = botId ? `<!-- MintChat Widget -->
+  // Memoize embed code so it never changes once botId is loaded
+  const embedCode = useMemo(() => {
+    if (!botId) return '';
+    
+    return `<!-- MintChat Widget -->
 <script src="${productionUrl}/widget.js" crossorigin="anonymous"></script>
 <script>
   window.addEventListener('load', function() {
@@ -40,7 +62,8 @@ const EmbedCode = () => {
       console.error('MintChat failed to load');
     }
   });
-</script>` : '';
+</script>`;
+  }, [botId, productionUrl]);
 
   const handleCopy = () => {
     navigator.clipboard.writeText(embedCode);
@@ -108,6 +131,7 @@ const EmbedCode = () => {
                 size="sm"
                 variant="outline"
                 className="gap-2"
+                disabled={!botId}
               >
                 {copied ? (
                   <>
@@ -122,11 +146,17 @@ const EmbedCode = () => {
                 )}
               </Button>
             </div>
-            <div className="bg-gray-900 rounded-lg p-4 overflow-x-auto">
-              <pre className="text-sm text-gray-100 font-mono">
-                <code>{embedCode}</code>
-              </pre>
-            </div>
+            {!botId ? (
+              <div className="bg-gray-900 rounded-lg p-4">
+                <div className="skeleton h-20 w-full bg-gray-800" />
+              </div>
+            ) : (
+              <div className="bg-gray-900 rounded-lg p-4 overflow-x-auto">
+                <pre className="text-sm text-gray-100 font-mono">
+                  <code>{embedCode}</code>
+                </pre>
+              </div>
+            )}
             <div className="mt-4 space-y-3">
               <div className="p-3 bg-mint-50 border border-mint-200 rounded-lg">
                 <p className="text-sm text-gray-700">
