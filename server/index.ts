@@ -49,6 +49,27 @@ app.use('/api/appearance', appearanceRoutes);
 app.use('/api/usage', usageRoutes);
 app.use('/api/widget', widgetRoutes); // Public widget API
 
+// Serve widget.js with proper CORS headers (must be before other static files)
+app.get('/widget.js', (req, res) => {
+  const widgetPath = path.resolve(process.cwd(), 'public', 'widget.js');
+  
+  res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Cache-Control', 'public, max-age=3600');
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.sendFile(widgetPath);
+});
+
+// Serve test-embed.html
+app.get('/test-embed.html', (req, res) => {
+  const testPath = path.resolve(process.cwd(), 'public', 'test-embed.html');
+  
+  res.setHeader('Content-Type', 'text/html; charset=utf-8');
+  res.sendFile(testPath);
+});
+
 // Serve static files in production
 if (isProduction) {
   // In Railway, the working directory is /app
@@ -62,7 +83,7 @@ if (isProduction) {
   console.log('📁 Serving static files from:', clientPath);
   console.log('📁 Serving public files from:', publicPath);
   
-  // Serve public files (widget.js)
+  // Serve public files (other than widget.js which is handled above)
   app.use(express.static(publicPath));
   
   // Serve client files

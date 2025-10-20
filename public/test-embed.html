@@ -143,11 +143,19 @@
     </div>
   </div>
 
-  <!-- MintChat Widget - Replace with your actual botId -->
-  <script src="https://sndd-production.up.railway.app/widget.js"></script>
+  <!-- MintChat Widget -->
+  <!-- IMPORTANT: Replace 'YOUR_BOT_ID_HERE' with your actual Bot ID from the dashboard -->
+  <script src="https://sndd-production.up.railway.app/widget.js" crossorigin="anonymous"></script>
   <script>
-    // Replace 'demo' with your actual botId from the dashboard
-    MintChat.init('demo');
+    // Wait for script to load
+    window.addEventListener('load', function() {
+      if (typeof MintChat !== 'undefined') {
+        // Replace 'YOUR_BOT_ID_HERE' with your actual botId
+        MintChat.init('YOUR_BOT_ID_HERE');
+      } else {
+        console.error('MintChat failed to load. Check your internet connection.');
+      }
+    });
   </script>
 </body>
 </html>

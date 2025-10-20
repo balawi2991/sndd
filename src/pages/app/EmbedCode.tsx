@@ -14,22 +14,31 @@ const EmbedCode = () => {
   const [copied, setCopied] = useState(false);
 
   // Get user's botId
-  const { data: userData } = useQuery({
+  const { data: userData, isLoading } = useQuery({
     queryKey: ['user-profile'],
     queryFn: async () => {
       const { data } = await api.get('/auth/profile');
       return data;
     },
+    staleTime: Infinity, // Never refetch - botId never changes
+    cacheTime: Infinity,
   });
 
-  const botId = userData?.botId || 'loading...';
+  const botId = userData?.botId;
   const productionUrl = 'https://sndd-production.up.railway.app';
 
-  const embedCode = `<!-- MintChat Widget -->
-<script src="${productionUrl}/widget.js"></script>
+  // Don't generate embed code until we have the botId
+  const embedCode = botId ? `<!-- MintChat Widget -->
+<script src="${productionUrl}/widget.js" crossorigin="anonymous"></script>
 <script>
-  MintChat.init('${botId}');
-</script>`;
+  window.addEventListener('load', function() {
+    if (typeof MintChat !== 'undefined') {
+      MintChat.init('${botId}');
+    } else {
+      console.error('MintChat failed to load');
+    }
+  });
+</script>` : '';
 
   const handleCopy = () => {
     navigator.clipboard.writeText(embedCode);
