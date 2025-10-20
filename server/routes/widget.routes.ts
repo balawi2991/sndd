@@ -93,7 +93,7 @@ router.post('/:botId/message', chatRateLimiter, async (req, res) => {
     });
 
     // Retrieve context from training materials
-    const { context, sources } = await retrieveContext(user._id.toString(), message);
+    const { context, sources } = await retrieveContext(String(user._id), message);
 
     // Call DeepSeek API
     const assistantResponse = await callDeepSeek(message, context);
