@@ -24,8 +24,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   useEffect(() => {
     // Check for stored auth
+    const token = localStorage.getItem('mintchat_token');
     const storedUser = localStorage.getItem('mintchat_user');
-    if (storedUser) {
+    
+    if (token && storedUser) {
       setUser(JSON.parse(storedUser));
       setIsAuthenticated(true);
     }
@@ -44,10 +46,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUser(user);
       setIsAuthenticated(true);
       
+      // Always save token and user for session persistence
       localStorage.setItem('mintchat_token', data.token);
-      if (remember) {
-        localStorage.setItem('mintchat_user', JSON.stringify(user));
-      }
+      localStorage.setItem('mintchat_user', JSON.stringify(user));
     } catch (error: any) {
       throw new Error(error.response?.data?.error || 'Sign in failed');
     }

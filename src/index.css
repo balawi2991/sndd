@@ -134,6 +134,11 @@
   transform-origin: center bottom;
 }
 
+/* Try My Agent - larger scale */
+.live-preview-canvas--try .mintchat-askbar-wrapper {
+  transform: translateX(-50%) scale(0.85);
+}
+
 .mintchat-askbar-form {
   @apply w-full;
 }
@@ -224,12 +229,19 @@
   @apply absolute;
   bottom: 72px; /* Proportional to preview size */
   left: 50%;
-  transform: translateX(-50%) scale(0.65);
   width: 720px;
   height: 80vh;
   max-height: 500px;
   z-index: 11;
   transform-origin: center bottom;
+  animation: modal-slide-up-preview 200ms ease-out;
+}
+
+/* Try My Agent - larger scale */
+.live-preview-canvas--try .mintchat-modal {
+  bottom: 88px;
+  max-height: 600px;
+  animation: modal-slide-up-try 200ms ease-out;
 }
 
 .mintchat-modal--preview {
@@ -245,11 +257,33 @@
 @keyframes modal-slide-up {
   from {
     opacity: 0;
-    transform: translateX(-50%) translateY(20px) scale(0.95);
+    transform: translateX(-50%) translateY(20px);
   }
   to {
     opacity: 1;
-    transform: translateX(-50%) translateY(0) scale(1);
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+@keyframes modal-slide-up-preview {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(20px) scale(0.65);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(0.65);
+  }
+}
+
+@keyframes modal-slide-up-try {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(20px) scale(0.85);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(0.85);
   }
 }
 

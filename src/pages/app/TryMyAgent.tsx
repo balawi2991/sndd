@@ -68,7 +68,7 @@ const TryMyAgent = () => {
             </div>
 
             {/* Preview Canvas */}
-            <div className="live-preview-canvas" style={{ minHeight: '70vh', position: 'relative' }}>
+            <div className="live-preview-canvas live-preview-canvas--try" style={{ minHeight: '70vh', position: 'relative' }}>
               {/* Hero Section */}
               <div className="p-16 bg-gradient-to-br from-mint-50 to-white">
                 <div className="max-w-3xl mx-auto text-center">
