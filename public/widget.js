@@ -389,6 +389,7 @@
       }
       
       .mintchat-message--user .mintchat-message__bubble {
+        background-color: var(--primary-color, #17B26A);
         color: white;
         border-top-right-radius: 4px;
       }
@@ -584,11 +585,11 @@
 
     // Auto-expand textarea
     textarea.addEventListener('input', function() {
-      // Reset height to calculate new scrollHeight
-      this.style.height = 'auto';
-      // Set new height (min 56px, max 120px)
-      const newHeight = Math.max(56, Math.min(this.scrollHeight, 120));
-      this.style.height = newHeight + 'px';
+      // Reset to base height first
+      this.style.height = '56px';
+      // Calculate and set new height
+      const scrollHeight = this.scrollHeight;
+      this.style.height = Math.min(scrollHeight, 120) + 'px';
       
       // Open modal on first character
       if (this.value.length === 1 && this.value.trim()) {
