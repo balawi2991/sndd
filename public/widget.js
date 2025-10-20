@@ -7,7 +7,7 @@
   'use strict';
 
   // Configuration
-  const API_BASE = window.location.origin;
+  const API_BASE = 'https://sndd-production.up.railway.app'; // Your production URL
   let widgetConfig = null;
   let botId = null;
   let sessionId = null;
@@ -37,7 +37,14 @@
   // Load widget configuration
   async function loadConfig(botIdParam) {
     try {
-      const response = await fetch(`${API_BASE}/api/widget/${botIdParam}/config`);
+      const response = await fetch(`${API_BASE}/api/widget/${botIdParam}/config`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        mode: 'cors', // Enable CORS
+        credentials: 'omit', // Don't send cookies
+      });
       if (!response.ok) {
         throw new Error('Failed to load widget configuration');
       }
@@ -57,6 +64,8 @@
         headers: {
           'Content-Type': 'application/json',
         },
+        mode: 'cors', // Enable CORS
+        credentials: 'omit', // Don't send cookies
         body: JSON.stringify({
           message,
           conversationId,
@@ -749,18 +758,21 @@
   // Main initialization
   async function init(botIdParam) {
     if (!botIdParam) {
-      console.error('MintChat: Bot ID is required');
+      console.error('MintChat: Bot ID is required. Get your Bot ID from the dashboard.');
       return;
     }
 
     botId = botIdParam;
+    console.log('MintChat: Initializing widget with Bot ID:', botId);
 
     // Load configuration
     widgetConfig = await loadConfig(botId);
     if (!widgetConfig) {
-      console.error('MintChat: Failed to initialize widget');
+      console.error('MintChat: Failed to load widget configuration. Please check your Bot ID.');
       return;
     }
+
+    console.log('MintChat: Configuration loaded successfully');
 
     // Inject styles
     injectStyles();
@@ -771,7 +783,7 @@
     // Initialize behavior
     initializeWidget(container, widgetConfig);
 
-    console.log('MintChat: Widget initialized successfully');
+    console.log('MintChat: Widget initialized successfully ✓');
   }
 
   // Expose global API

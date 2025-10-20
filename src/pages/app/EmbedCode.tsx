@@ -23,10 +23,10 @@ const EmbedCode = () => {
   });
 
   const botId = userData?.botId || 'loading...';
-  const siteUrl = window.location.origin;
+  const productionUrl = 'https://sndd-production.up.railway.app';
 
   const embedCode = `<!-- MintChat Widget -->
-<script src="${siteUrl}/widget.js"></script>
+<script src="${productionUrl}/widget.js"></script>
 <script>
   MintChat.init('${botId}');
 </script>`;
@@ -116,28 +116,82 @@ const EmbedCode = () => {
                 <code>{embedCode}</code>
               </pre>
             </div>
-            <div className="mt-4 p-3 bg-mint-50 border border-mint-200 rounded-lg">
-              <p className="text-sm text-gray-700">
-                <strong>Your Bot ID:</strong> <code className="px-2 py-1 bg-white rounded text-xs font-mono">{botId}</code>
-              </p>
-              <p className="text-xs text-gray-600 mt-1">
-                This ID is unique to your account and loads your custom widget configuration.
-              </p>
+            <div className="mt-4 space-y-3">
+              <div className="p-3 bg-mint-50 border border-mint-200 rounded-lg">
+                <p className="text-sm text-gray-700">
+                  <strong>Your Bot ID:</strong> <code className="px-2 py-1 bg-white rounded text-xs font-mono">{botId}</code>
+                </p>
+                <p className="text-xs text-gray-600 mt-1">
+                  This ID is unique and permanent for your account. It will never change.
+                </p>
+              </div>
+              
+              <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                <p className="text-sm text-blue-900 font-medium mb-1">
+                  ✓ Your embed code is ready to use
+                </p>
+                <p className="text-xs text-blue-700">
+                  Paste this code before the closing &lt;/body&gt; tag on any page where you want the chat widget to appear.
+                </p>
+              </div>
             </div>
           </div>
 
-          {/* Demo Link */}
+          {/* Testing */}
           <div className="enterprise-card p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-2">Preview Your Widget</h2>
+            <h2 className="text-lg font-semibold text-gray-900 mb-2">Test Your Widget</h2>
             <p className="text-gray-600 mb-4">
-              See how your chat widget will look on a real website
+              Test the widget on a sample page to see how it will look on your website
             </p>
-            <Button asChild className="bg-mint-600 hover:bg-mint-700 text-white">
-              <Link to="/demo">
-                <ExternalLink className="w-4 h-4 mr-2" />
-                Open Demo Page
-              </Link>
-            </Button>
+            <div className="flex gap-3">
+              <Button asChild className="bg-mint-600 hover:bg-mint-700 text-white">
+                <a href="/test-embed.html" target="_blank" rel="noopener noreferrer">
+                  <ExternalLink className="w-4 h-4 mr-2" />
+                  Open Test Page
+                </a>
+              </Button>
+              <Button asChild variant="outline">
+                <Link to="/demo">
+                  Preview in Dashboard
+                </Link>
+              </Button>
+            </div>
+          </div>
+          
+          {/* Instructions */}
+          <div className="enterprise-card p-6">
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">Installation Instructions</h2>
+            <div className="space-y-4">
+              <div className="flex gap-3">
+                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-mint-100 text-mint-700 flex items-center justify-center font-semibold">
+                  1
+                </div>
+                <div>
+                  <h3 className="font-medium text-gray-900 mb-1">Copy the embed code above</h3>
+                  <p className="text-sm text-gray-600">Click the "Copy Code" button to copy the code to your clipboard</p>
+                </div>
+              </div>
+              
+              <div className="flex gap-3">
+                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-mint-100 text-mint-700 flex items-center justify-center font-semibold">
+                  2
+                </div>
+                <div>
+                  <h3 className="font-medium text-gray-900 mb-1">Paste before &lt;/body&gt; tag</h3>
+                  <p className="text-sm text-gray-600">Add the code to your website's HTML, just before the closing &lt;/body&gt; tag</p>
+                </div>
+              </div>
+              
+              <div className="flex gap-3">
+                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-mint-100 text-mint-700 flex items-center justify-center font-semibold">
+                  3
+                </div>
+                <div>
+                  <h3 className="font-medium text-gray-900 mb-1">That's it!</h3>
+                  <p className="text-sm text-gray-600">The widget will appear automatically on your website. No additional configuration needed.</p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </main>
