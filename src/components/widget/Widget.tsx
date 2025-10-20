@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import AskBar from './AskBar';
 import ChatModal from './ChatModal';
 import { chatAPI } from '@/lib/api';
@@ -37,6 +37,20 @@ const Widget: React.FC<WidgetProps> = ({
   const [messages, setMessages] = useState<Message[]>([]);
   const [isTyping, setIsTyping] = useState(false);
   const [currentConversationId, setCurrentConversationId] = useState(conversationId);
+  const [containerType, setContainerType] = useState<'viewport' | 'preview'>('viewport');
+  const widgetRef = useRef<HTMLDivElement>(null);
+
+  // Detect container type
+  useEffect(() => {
+    if (widgetRef.current) {
+      const previewCanvas = widgetRef.current.closest('.live-preview-canvas');
+      if (previewCanvas) {
+        setContainerType('preview');
+      } else {
+        setContainerType('viewport');
+      }
+    }
+  }, []);
 
   const handleSendMessage = async (message: string) => {
     // Add user message immediately
@@ -85,7 +99,10 @@ const Widget: React.FC<WidgetProps> = ({
   };
 
   return (
-    <div className="mintchat-widget">
+    <div 
+      ref={widgetRef}
+      className={`mintchat-widget ${containerType === 'preview' ? 'mintchat-widget--preview' : ''}`}
+    >
       <ChatModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
@@ -98,6 +115,7 @@ const Widget: React.FC<WidgetProps> = ({
         suggestedQuestions={config.suggestedQuestions}
         onQuestionClick={handleQuestionClick}
         isTyping={isTyping}
+        containerType={containerType}
       />
       
       <AskBar
@@ -107,6 +125,7 @@ const Widget: React.FC<WidgetProps> = ({
         primaryColor={config.primaryColor}
         glowingBorder={config.glowingBorder}
         disabled={isTyping}
+        containerType={containerType}
       />
     </div>
   );

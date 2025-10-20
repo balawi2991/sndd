@@ -4,6 +4,50 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 
+// Date utilities
+const isSameDay = (date1: Date, date2: Date) => {
+  return date1.getFullYear() === date2.getFullYear() &&
+         date1.getMonth() === date2.getMonth() &&
+         date1.getDate() === date2.getDate();
+};
+
+const formatDateDivider = (date: Date) => {
+  const today = new Date();
+  const yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1);
+  
+  if (isSameDay(date, today)) return 'Today';
+  if (isSameDay(date, yesterday)) return 'Yesterday';
+  
+  return date.toLocaleDateString('en-US', { 
+    month: 'short', 
+    day: 'numeric',
+    year: date.getFullYear() !== today.getFullYear() ? 'numeric' : undefined
+  });
+};
+
+const groupMessagesByDate = (messages: Message[]) => {
+  const groups: Array<{ date: string; dateObj: Date; messages: Message[] }> = [];
+  
+  messages.forEach((msg) => {
+    const msgDate = new Date(msg.timestamp);
+    const dateStr = formatDateDivider(msgDate);
+    const lastGroup = groups[groups.length - 1];
+    
+    if (lastGroup && lastGroup.date === dateStr) {
+      lastGroup.messages.push(msg);
+    } else {
+      groups.push({ 
+        date: dateStr, 
+        dateObj: msgDate,
+        messages: [msg] 
+      });
+    }
+  });
+  
+  return groups;
+};
+
 interface Message {
   role: 'user' | 'assistant';
   content: string;
@@ -23,6 +67,7 @@ interface ChatModalProps {
   suggestedQuestions?: string[];
   onQuestionClick?: (question: string) => void;
   isTyping?: boolean;
+  containerType?: 'viewport' | 'preview';
 }
 
 const ChatModal: React.FC<ChatModalProps> = ({
@@ -37,14 +82,55 @@ const ChatModal: React.FC<ChatModalProps> = ({
   suggestedQuestions = [],
   onQuestionClick,
   isTyping = false,
+  containerType = 'viewport',
 }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const modalRef = useRef<HTMLDivElement>(null);
 
+  // Auto-scroll to bottom
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [messages, isTyping]);
+
+  // Focus trap and Esc key handling
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+      
+      // Focus trap
+      if (e.key === 'Tab' && modalRef.current) {
+        const focusableElements = modalRef.current.querySelectorAll(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        );
+        const firstElement = focusableElements[0] as HTMLElement;
+        const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
+
+        if (e.shiftKey && document.activeElement === firstElement) {
+          e.preventDefault();
+          lastElement?.focus();
+        } else if (!e.shiftKey && document.activeElement === lastElement) {
+          e.preventDefault();
+          firstElement?.focus();
+        }
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    
+    // Focus first element
+    const firstFocusable = modalRef.current?.querySelector('button') as HTMLElement;
+    firstFocusable?.focus();
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
@@ -61,7 +147,8 @@ const ChatModal: React.FC<ChatModalProps> = ({
       
       {/* Modal */}
       <div 
-        className="mintchat-modal"
+        ref={modalRef}
+        className={`mintchat-modal ${containerType === 'preview' ? 'mintchat-modal--preview' : ''}`}
         role="dialog"
         aria-modal="true"
         aria-labelledby="chat-title"
@@ -109,59 +196,69 @@ const ChatModal: React.FC<ChatModalProps> = ({
             </div>
           ) : (
             <div className="mintchat-messages">
-              {messages.map((msg, index) => (
-                <div
-                  key={index}
-                  className={`mintchat-message mintchat-message--${msg.role}`}
-                >
-                  {msg.role === 'assistant' && showFloatingAvatar && (
-                    <Avatar className="mintchat-message__avatar">
-                      <AvatarImage src={avatar} />
-                      <AvatarFallback style={{ backgroundColor: primaryColor }}>
-                        AI
-                      </AvatarFallback>
-                    </Avatar>
-                  )}
-                  
-                  <div className="mintchat-message__content">
-                    <div className="mintchat-message__bubble">
-                      {msg.content}
-                    </div>
-                    
-                    {msg.sources && msg.sources.length > 0 && (
-                      <div className="mintchat-message__sources">
-                        {msg.sources.map((source, idx) => (
-                          source.url ? (
-                            <a
-                              key={idx}
-                              href={source.url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="mintchat-source-chip"
-                            >
-                              <Badge variant="outline">
-                                {source.title}
-                              </Badge>
-                            </a>
-                          ) : (
-                            <Badge
-                              key={idx}
-                              variant="outline"
-                              className="mintchat-source-chip"
-                            >
-                              {source.title}
-                            </Badge>
-                          )
-                        ))}
-                      </div>
-                    )}
+              {groupMessagesByDate(messages).map((group, groupIndex) => (
+                <div key={groupIndex} className="mintchat-message-group">
+                  {/* Date Divider */}
+                  <div className="mintchat-date-divider">
+                    <span className="mintchat-date-divider__text">{group.date}</span>
                   </div>
                   
-                  {msg.role === 'user' && showFloatingAvatar && (
-                    <Avatar className="mintchat-message__avatar">
-                      <AvatarFallback>U</AvatarFallback>
-                    </Avatar>
-                  )}
+                  {/* Messages for this date */}
+                  {group.messages.map((msg, msgIndex) => (
+                    <div
+                      key={`${groupIndex}-${msgIndex}`}
+                      className={`mintchat-message mintchat-message--${msg.role}`}
+                    >
+                      {msg.role === 'assistant' && showFloatingAvatar && (
+                        <Avatar className="mintchat-message__avatar">
+                          <AvatarImage src={avatar} />
+                          <AvatarFallback style={{ backgroundColor: primaryColor }}>
+                            AI
+                          </AvatarFallback>
+                        </Avatar>
+                      )}
+                      
+                      <div className="mintchat-message__content">
+                        <div className="mintchat-message__bubble">
+                          {msg.content}
+                        </div>
+                        
+                        {msg.sources && msg.sources.length > 0 && (
+                          <div className="mintchat-message__sources">
+                            {msg.sources.map((source, idx) => (
+                              source.url ? (
+                                <a
+                                  key={idx}
+                                  href={source.url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="mintchat-source-chip"
+                                >
+                                  <Badge variant="outline">
+                                    {source.title}
+                                  </Badge>
+                                </a>
+                              ) : (
+                                <Badge
+                                  key={idx}
+                                  variant="outline"
+                                  className="mintchat-source-chip"
+                                >
+                                  {source.title}
+                                </Badge>
+                              )
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                      
+                      {msg.role === 'user' && showFloatingAvatar && (
+                        <Avatar className="mintchat-message__avatar">
+                          <AvatarFallback>U</AvatarFallback>
+                        </Avatar>
+                      )}
+                    </div>
+                  ))}
                 </div>
               ))}
               

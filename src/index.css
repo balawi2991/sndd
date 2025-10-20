@@ -106,11 +106,37 @@
   @apply fixed inset-0 pointer-events-none z-[9999];
 }
 
+/* Preview mode - inside .live-preview-canvas */
+.mintchat-widget--preview {
+  @apply absolute;
+  z-index: 10;
+}
+
+.live-preview-canvas .mintchat-widget {
+  @apply absolute inset-0;
+  z-index: 10;
+}
+
 /* Ask Bar */
 .mintchat-askbar-wrapper {
   @apply fixed left-1/2 -translate-x-1/2 pointer-events-auto;
   bottom: clamp(16px, 4vh, 32px);
   z-index: 1002;
+}
+
+/* Preview mode ask bar */
+.live-preview-canvas .mintchat-askbar-wrapper {
+  @apply absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 12;
+}
+
+.mintchat-askbar--preview {
+  /* Scale down slightly in preview */
+  transform: scale(0.9);
+  transform-origin: center bottom;
 }
 
 .mintchat-askbar-form {
@@ -177,6 +203,13 @@
   animation: fade-in 200ms ease-out;
 }
 
+/* Preview mode backdrop */
+.live-preview-canvas .mintchat-modal-backdrop {
+  @apply absolute inset-0;
+  z-index: 10;
+  background: rgba(0, 0, 0, 0.1);
+}
+
 /* Modal */
 .mintchat-modal {
   @apply fixed left-1/2 -translate-x-1/2 pointer-events-auto;
@@ -187,6 +220,23 @@
   height: min(80vh, 600px);
   z-index: 1001;
   animation: modal-slide-up 200ms ease-out;
+}
+
+/* Preview mode modal */
+.live-preview-canvas .mintchat-modal {
+  @apply absolute;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%) scale(0.8);
+  width: min(400px, 90%);
+  height: min(60vh, 400px);
+  z-index: 11;
+  transform-origin: center bottom;
+}
+
+.mintchat-modal--preview {
+  /* Additional preview-specific styles */
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
 }
 
 @keyframes fade-in {
@@ -237,6 +287,20 @@
 /* Messages */
 .mintchat-messages {
   @apply space-y-4;
+}
+
+.mintchat-message-group {
+  @apply space-y-4;
+}
+
+/* Date Dividers */
+.mintchat-date-divider {
+  @apply flex items-center justify-center py-4;
+}
+
+.mintchat-date-divider__text {
+  @apply px-3 py-1 text-xs font-medium text-gray-500 bg-gray-100 rounded-full;
+  @apply border border-gray-200;
 }
 
 .mintchat-message {

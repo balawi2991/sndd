@@ -8,6 +8,7 @@ interface AskBarProps {
   primaryColor?: string;
   glowingBorder?: boolean;
   disabled?: boolean;
+  containerType?: 'viewport' | 'preview';
 }
 
 const AskBar: React.FC<AskBarProps> = ({
@@ -17,6 +18,7 @@ const AskBar: React.FC<AskBarProps> = ({
   primaryColor = '#17B26A',
   glowingBorder = true,
   disabled = false,
+  containerType = 'viewport',
 }) => {
   const [message, setMessage] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -60,7 +62,7 @@ const AskBar: React.FC<AskBarProps> = ({
     <div className="mintchat-askbar-wrapper">
       <form onSubmit={handleSubmit} className="mintchat-askbar-form">
         <div 
-          className={`mintchat-askbar ${glowingBorder ? 'mintchat-askbar--glow' : ''}`}
+          className={`mintchat-askbar ${glowingBorder ? 'mintchat-askbar--glow' : ''} ${containerType === 'preview' ? 'mintchat-askbar--preview' : ''}`}
           style={{
             '--primary-color': primaryColor,
           } as React.CSSProperties}
