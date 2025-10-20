@@ -3,6 +3,9 @@ import { toast } from 'sonner';
 interface ErrorResponse {
   error: string;
   code?: string;
+  resetDate?: string;
+  limit?: number;
+  used?: number;
 }
 
 export const handleApiError = (error: any, customMessage?: string) => {
