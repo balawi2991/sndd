@@ -57,8 +57,9 @@ app.get('/widget.js', (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-  res.setHeader('Cache-Control', 'public, max-age=3600');
+  res.setHeader('Cache-Control', 'public, max-age=300, must-revalidate'); // 5 minutes
   res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('ETag', `"widget-${Date.now()}"`); // Force revalidation
   res.sendFile(widgetPath);
 });
 

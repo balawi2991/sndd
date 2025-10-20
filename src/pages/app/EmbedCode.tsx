@@ -52,8 +52,9 @@ const EmbedCode = () => {
   const embedCode = useMemo(() => {
     if (!botId) return '';
     
+    const version = '1.0.1'; // Update this when widget.js changes
     return `<!-- MintChat Widget -->
-<script src="${productionUrl}/widget.js" crossorigin="anonymous"></script>
+<script src="${productionUrl}/widget.js?v=${version}" crossorigin="anonymous"></script>
 <script>
   window.addEventListener('load', function() {
     if (typeof MintChat !== 'undefined') {
