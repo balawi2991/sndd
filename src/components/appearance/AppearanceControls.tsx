@@ -3,7 +3,15 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
-import { Upload, Plus, X } from 'lucide-react';
+import { Upload, Plus, X, Bot, MessageSquare } from 'lucide-react';
+import { Textarea } from '@/components/ui/textarea';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 interface AppearanceControlsProps {
   config: any;
@@ -37,6 +45,130 @@ const AppearanceControls: React.FC<AppearanceControlsProps> = ({ config, setConf
 
   return (
     <div className="enterprise-card p-6 space-y-6 h-fit">
+      {/* Bot Personality Section */}
+      <div className="space-y-4 pb-6 border-b border-gray-200">
+        <div className="flex items-center gap-2 mb-4">
+          <Bot className="w-5 h-5 text-primary" />
+          <h3 className="text-lg font-semibold text-gray-900">Bot Personality</h3>
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="botName" className="text-sm font-medium text-gray-700">
+            Bot Name
+          </Label>
+          <Input
+            id="botName"
+            value={config.botName || ''}
+            onChange={(e) => setConfig({ ...config, botName: e.target.value })}
+            placeholder="e.g., سليم حمود or Support Assistant"
+            className="focus-calm"
+          />
+          <p className="text-xs text-gray-500">The name your bot will use when introducing itself</p>
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="botRole" className="text-sm font-medium text-gray-700">
+            Bot Role
+          </Label>
+          <Input
+            id="botRole"
+            value={config.botRole || ''}
+            onChange={(e) => setConfig({ ...config, botRole: e.target.value })}
+            placeholder="e.g., Customer Support Assistant"
+            className="focus-calm"
+          />
+          <p className="text-xs text-gray-500">What role does your bot serve?</p>
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="companyName" className="text-sm font-medium text-gray-700">
+            Company Name
+          </Label>
+          <Input
+            id="companyName"
+            value={config.companyName || ''}
+            onChange={(e) => setConfig({ ...config, companyName: e.target.value })}
+            placeholder="e.g., Your Company Name"
+            className="focus-calm"
+          />
+          <p className="text-xs text-gray-500">The company your bot represents</p>
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="language" className="text-sm font-medium text-gray-700">
+            Language
+          </Label>
+          <Select
+            value={config.language || 'both'}
+            onValueChange={(value) => setConfig({ ...config, language: value })}
+          >
+            <SelectTrigger className="focus-calm">
+              <SelectValue placeholder="Select language" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="both">Both (Auto-detect)</SelectItem>
+              <SelectItem value="ar">Arabic Only</SelectItem>
+              <SelectItem value="en">English Only</SelectItem>
+            </SelectContent>
+          </Select>
+          <p className="text-xs text-gray-500">Preferred response language</p>
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="tone" className="text-sm font-medium text-gray-700">
+            Tone
+          </Label>
+          <Select
+            value={config.tone || 'professional'}
+            onValueChange={(value) => setConfig({ ...config, tone: value })}
+          >
+            <SelectTrigger className="focus-calm">
+              <SelectValue placeholder="Select tone" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="professional">Professional</SelectItem>
+              <SelectItem value="friendly">Friendly</SelectItem>
+              <SelectItem value="formal">Formal</SelectItem>
+            </SelectContent>
+          </Select>
+          <p className="text-xs text-gray-500">How should your bot communicate?</p>
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="greeting" className="text-sm font-medium text-gray-700">
+            Custom Greeting
+          </Label>
+          <Textarea
+            id="greeting"
+            value={config.greeting || ''}
+            onChange={(e) => setConfig({ ...config, greeting: e.target.value })}
+            placeholder="e.g., مرحباً! أنا هنا لمساعدتك"
+            className="focus-calm min-h-[60px]"
+          />
+          <p className="text-xs text-gray-500">Optional custom greeting message</p>
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="specialInstructions" className="text-sm font-medium text-gray-700">
+            Special Instructions
+          </Label>
+          <Textarea
+            id="specialInstructions"
+            value={config.specialInstructions || ''}
+            onChange={(e) => setConfig({ ...config, specialInstructions: e.target.value })}
+            placeholder="e.g., Always mention our 24/7 support availability"
+            className="focus-calm min-h-[80px]"
+          />
+          <p className="text-xs text-gray-500">Additional instructions for your bot's behavior</p>
+        </div>
+      </div>
+
+      {/* Appearance Section */}
+      <div className="flex items-center gap-2 mb-4">
+        <MessageSquare className="w-5 h-5 text-primary" />
+        <h3 className="text-lg font-semibold text-gray-900">Widget Appearance</h3>
+      </div>
+
       <div className="space-y-2">
         <Label className="text-sm font-medium text-gray-700">Company Logo</Label>
         <div className="flex items-center gap-3">

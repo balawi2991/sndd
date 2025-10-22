@@ -1,4 +1,5 @@
 import Conversation from '../models/Conversation.model.js';
+import Appearance from '../models/Appearance.model.js';
 import { retrieveContext } from './rag.service.js';
 import { callDeepSeek } from './deepseek.service.js';
 import { updateUsage } from '../middleware/usageLimit.js';
@@ -33,11 +34,38 @@ export const sendMessage = async (
       timestamp: new Date(),
     });
 
+    // Get bot personality settings
+    const appearance = await Appearance.findOne({ userId }).lean();
+    const personality = appearance
+      ? {
+          botName: appearance.botName,
+          botRole: appearance.botRole,
+          language: appearance.language,
+          tone: appearance.tone,
+          greeting: appearance.greeting,
+          companyName: appearance.companyName,
+          specialInstructions: appearance.specialInstructions,
+        }
+      : undefined;
+
     // Retrieve context from training materials
     const { context, sources } = await retrieveContext(userId, message);
 
-    // Call DeepSeek API
-    const assistantResponse = await callDeepSeek(message, context);
+    // Get conversation history for context
+    const conversationHistory = conversation.messages
+      .slice(-5)
+      .map((m) => ({
+        role: m.role as 'user' | 'assistant',
+        content: m.content,
+      }));
+
+    // Call DeepSeek API with personality and history
+    const assistantResponse = await callDeepSeek(
+      message,
+      context,
+      personality,
+      conversationHistory
+    );
 
     // Add assistant message with sources
     conversation.messages.push({

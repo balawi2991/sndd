@@ -10,6 +10,14 @@ export interface IAppearance extends Document {
   title: string;
   placeholder: string;
   suggestedQuestions: string[];
+  // Bot Personality Settings
+  botName?: string;
+  botRole?: string;
+  language: 'ar' | 'en' | 'both';
+  tone: 'formal' | 'friendly' | 'professional';
+  greeting?: string;
+  companyName?: string;
+  specialInstructions?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -56,6 +64,37 @@ const AppearanceSchema = new Schema<IAppearance>(
         'What are your pricing plans?',
         'Do you offer support?',
       ],
+    },
+    // Bot Personality Settings
+    botName: {
+      type: String,
+      default: '',
+    },
+    botRole: {
+      type: String,
+      default: 'Customer Support Assistant',
+    },
+    language: {
+      type: String,
+      enum: ['ar', 'en', 'both'],
+      default: 'both',
+    },
+    tone: {
+      type: String,
+      enum: ['formal', 'friendly', 'professional'],
+      default: 'professional',
+    },
+    greeting: {
+      type: String,
+      default: '',
+    },
+    companyName: {
+      type: String,
+      default: '',
+    },
+    specialInstructions: {
+      type: String,
+      default: '',
     },
   },
   {

@@ -34,6 +34,7 @@ router.get('/:botId/config', async (req, res) => {
         title: appearance?.title || 'Chat with us',
         placeholder: appearance?.placeholder || 'Ask me anything...',
         suggestedQuestions: appearance?.suggestedQuestions || [],
+        greeting: appearance?.greeting || '',
       },
     });
   } catch (error: any) {
@@ -92,11 +93,41 @@ router.post('/:botId/message', chatRateLimiter, async (req, res) => {
       timestamp: new Date(),
     });
 
-    // Retrieve context from training materials
-    const { context, sources } = await retrieveContext(String(user._id), message);
+    // Get bot personality settings
+    const appearance = await Appearance.findOne({ userId: user._id }).lean();
+    const personality = appearance
+      ? {
+          botName: appearance.botName,
+          botRole: appearance.botRole,
+          language: appearance.language,
+          tone: appearance.tone,
+          greeting: appearance.greeting,
+          companyName: appearance.companyName,
+          specialInstructions: appearance.specialInstructions,
+        }
+      : undefined;
 
-    // Call DeepSeek API
-    const assistantResponse = await callDeepSeek(message, context);
+    // Retrieve context from training materials
+    console.log(`🔍 Widget retrieving context for user: ${user._id}`);
+    const { context, sources } = await retrieveContext(String(user._id), message);
+    console.log(`📝 Widget context length: ${context.length}, sources: ${sources.length}`);
+
+    // Get conversation history for context
+    const conversationHistory = conversation.messages
+      .slice(-5)
+      .map((m) => ({
+        role: m.role as 'user' | 'assistant',
+        content: m.content,
+      }));
+
+    // Call DeepSeek API with personality and history
+    const assistantResponse = await callDeepSeek(
+      message,
+      context,
+      personality,
+      conversationHistory
+    );
+    console.log(`🤖 Widget response length: ${assistantResponse.length}`);
 
     // Add assistant message with sources
     conversation.messages.push({

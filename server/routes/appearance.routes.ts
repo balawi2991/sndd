@@ -24,9 +24,20 @@ router.get('/', authenticate, async (req: AuthRequest, res) => {
 // Update appearance settings
 router.put('/', authenticate, async (req: AuthRequest, res) => {
   try {
+    const updates = req.body;
+
+    // Validate personality fields if provided
+    if (updates.language && !['ar', 'en', 'both'].includes(updates.language)) {
+      return res.status(400).json({ error: 'Invalid language value' });
+    }
+
+    if (updates.tone && !['formal', 'friendly', 'professional'].includes(updates.tone)) {
+      return res.status(400).json({ error: 'Invalid tone value' });
+    }
+
     const appearance = await Appearance.findOneAndUpdate(
       { userId: req.userId },
-      { ...req.body, userId: req.userId },
+      { ...updates, userId: req.userId },
       { new: true, upsert: true }
     );
 
