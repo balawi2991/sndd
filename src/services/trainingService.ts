@@ -8,55 +8,10 @@ export interface TrainingMaterial {
   lastTrained?: Date;
 }
 
-const mockMaterials: TrainingMaterial[] = [
-  {
-    id: '1',
-    type: 'file',
-    title: 'Product Documentation.pdf',
-    source: 'product-docs.pdf',
-    characters: 45230,
-    status: 'trained',
-    lastTrained: new Date('2024-01-15'),
-  },
-  {
-    id: '2',
-    type: 'link',
-    title: 'Company Website',
-    source: 'https://example.com',
-    characters: 12450,
-    status: 'trained',
-    lastTrained: new Date('2024-01-14'),
-  },
-  {
-    id: '3',
-    type: 'text',
-    title: 'FAQ Responses',
-    characters: 8920,
-    status: 'untrained',
-  },
-  {
-    id: '4',
-    type: 'file',
-    title: 'User Guide.docx',
-    source: 'user-guide.docx',
-    characters: 32100,
-    status: 'untrained',
-  },
-  {
-    id: '5',
-    type: 'link',
-    title: 'Help Center',
-    source: 'https://help.example.com',
-    characters: 28340,
-    status: 'trained',
-    lastTrained: new Date('2024-01-13'),
-  },
-];
-
 export const getTrainingMaterials = async (filter: string): Promise<TrainingMaterial[]> => {
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem('mintchat_token');
   const type = filter === 'all' ? 'all' : filter;
-  
+
   const response = await fetch(`/api/training?type=${type}`, {
     headers: {
       'Authorization': `Bearer ${token}`,
@@ -80,8 +35,8 @@ export const getTrainingMaterials = async (filter: string): Promise<TrainingMate
 };
 
 export const retrainMaterial = async (id: string): Promise<void> => {
-  const token = localStorage.getItem('token');
-  
+  const token = localStorage.getItem('mintchat_token');
+
   const response = await fetch(`/api/training/${id}/retrain`, {
     method: 'POST',
     headers: {
@@ -95,8 +50,8 @@ export const retrainMaterial = async (id: string): Promise<void> => {
 };
 
 export const deleteMaterial = async (id: string): Promise<void> => {
-  const token = localStorage.getItem('token');
-  
+  const token = localStorage.getItem('mintchat_token');
+
   const response = await fetch(`/api/training/${id}`, {
     method: 'DELETE',
     headers: {
@@ -110,11 +65,11 @@ export const deleteMaterial = async (id: string): Promise<void> => {
 };
 
 export const addFile = async (file: File, title: string): Promise<void> => {
-  const token = localStorage.getItem('token');
-  
+  const token = localStorage.getItem('mintchat_token');
+
   // Read file content
   const content = await file.text();
-  
+
   const response = await fetch('/api/training/file', {
     method: 'POST',
     headers: {
@@ -136,12 +91,12 @@ export const addFile = async (file: File, title: string): Promise<void> => {
 };
 
 export const addLink = async (url: string, title?: string): Promise<void> => {
-  const token = localStorage.getItem('token');
-  
+  const token = localStorage.getItem('mintchat_token');
+
   // Fetch content from URL (this should be done on backend in production)
   // For now, we'll send a placeholder
   const content = `Content from ${url}`;
-  
+
   const response = await fetch('/api/training/link', {
     method: 'POST',
     headers: {
@@ -162,8 +117,8 @@ export const addLink = async (url: string, title?: string): Promise<void> => {
 };
 
 export const addText = async (title: string, content: string): Promise<void> => {
-  const token = localStorage.getItem('token');
-  
+  const token = localStorage.getItem('mintchat_token');
+
   const response = await fetch('/api/training/text', {
     method: 'POST',
     headers: {
