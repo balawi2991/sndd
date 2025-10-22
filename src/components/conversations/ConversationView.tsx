@@ -143,11 +143,12 @@ const ConversationView: React.FC<ConversationViewProps> = ({ conversationId, onD
 
   return (
     <>
-      <div className="h-full flex flex-col">
-        <div className="border-b border-gray-200 bg-white px-6 py-4 flex items-center justify-between">
+      <div className="h-full flex flex-col overflow-hidden">
+        {/* Header - Fixed */}
+        <div className="flex-shrink-0 border-b border-gray-200 bg-white px-6 py-3 flex items-center justify-between">
           <div>
-            <h2 className="text-lg font-semibold text-gray-900">{conversation.title}</h2>
-            <p className="text-sm text-gray-600">
+            <h2 className="text-base font-semibold text-gray-900">{conversation.title}</h2>
+            <p className="text-xs text-gray-600">
               {new Date(conversation.lastActivity).toLocaleDateString()} at{' '}
               {new Date(conversation.lastActivity).toLocaleTimeString([], {
                 hour: '2-digit',
@@ -180,8 +181,9 @@ const ConversationView: React.FC<ConversationViewProps> = ({ conversationId, onD
           </DropdownMenu>
         </div>
 
-        <div className="flex-1 overflow-auto p-6">
-          <div className="max-w-3xl mx-auto space-y-6">
+        {/* Messages - Scrollable */}
+        <div className="flex-1 overflow-y-auto p-6">
+          <div className="max-w-3xl mx-auto space-y-4">
             {conversation.messages.map((message, index) => {
               const messageDate = formatDate(message.timestamp);
               const showDateDivider = messageDate !== currentDate;
@@ -192,7 +194,7 @@ const ConversationView: React.FC<ConversationViewProps> = ({ conversationId, onD
               return (
                 <React.Fragment key={index}>
                   {showDateDivider && (
-                    <div className="flex items-center gap-4 my-6">
+                    <div className="flex items-center gap-4 my-4">
                       <div className="flex-1 h-px bg-gray-200" />
                       <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">
                         {messageDate}

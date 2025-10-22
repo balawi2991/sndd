@@ -26,15 +26,16 @@ const Conversations = () => {
   const filteredConversations = conversations
     ?.filter(c => {
       const matchesSearch = c.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                           c.preview.toLowerCase().includes(searchQuery.toLowerCase());
+        c.preview.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesFilter = filter === 'all' || (filter === 'unread' && c.unread);
       return matchesSearch && matchesFilter;
     });
 
   return (
-    <div className="flex flex-col h-full w-full">
-      <header className="sticky top-0 z-10 border-b border-gray-200 bg-white px-6 py-4">
-        <div className="flex items-center gap-4 mb-4">
+    <div className="flex flex-col h-screen w-full overflow-hidden">
+      {/* Header */}
+      <header className="flex-shrink-0 border-b border-gray-200 bg-white px-6 py-4">
+        <div className="flex items-center gap-4 mb-3">
           <SidebarTrigger />
           <div>
             <h1 className="text-2xl font-semibold text-gray-900">Conversations</h1>
@@ -42,48 +43,50 @@ const Conversations = () => {
           </div>
         </div>
 
-        {/* Stats Cards */}
+        {/* Stats Cards - Smaller */}
         {stats && (
-          <div className="grid grid-cols-4 gap-4">
-            <div className="enterprise-card p-4 space-y-2">
-              <div className="flex items-center gap-2 text-gray-600">
-                <MessageSquare className="w-4 h-4" strokeWidth={1.5} />
-                <span className="text-sm font-medium">Total</span>
+          <div className="grid grid-cols-4 gap-3">
+            <div className="enterprise-card p-3">
+              <div className="flex items-center gap-2 text-gray-600 mb-1">
+                <MessageSquare className="w-3.5 h-3.5" strokeWidth={1.5} />
+                <span className="text-xs font-medium">Total</span>
               </div>
-              <div className="text-2xl font-semibold text-gray-900">{stats.total}</div>
+              <div className="text-xl font-semibold text-gray-900">{stats.total}</div>
             </div>
 
-            <div className="enterprise-card p-4 space-y-2">
-              <div className="flex items-center gap-2 text-gray-600">
-                <CheckCircle2 className="w-4 h-4" strokeWidth={1.5} />
-                <span className="text-sm font-medium">Unread</span>
+            <div className="enterprise-card p-3">
+              <div className="flex items-center gap-2 text-gray-600 mb-1">
+                <CheckCircle2 className="w-3.5 h-3.5" strokeWidth={1.5} />
+                <span className="text-xs font-medium">Unread</span>
               </div>
-              <div className="text-2xl font-semibold text-gray-900">{stats.unread}</div>
+              <div className="text-xl font-semibold text-gray-900">{stats.unread}</div>
             </div>
 
-            <div className="enterprise-card p-4 space-y-2">
-              <div className="flex items-center gap-2 text-gray-600">
-                <Clock className="w-4 h-4" strokeWidth={1.5} />
-                <span className="text-sm font-medium">Today</span>
+            <div className="enterprise-card p-3">
+              <div className="flex items-center gap-2 text-gray-600 mb-1">
+                <Clock className="w-3.5 h-3.5" strokeWidth={1.5} />
+                <span className="text-xs font-medium">Today</span>
               </div>
-              <div className="text-2xl font-semibold text-gray-900">{stats.today}</div>
+              <div className="text-xl font-semibold text-gray-900">{stats.today}</div>
             </div>
 
-            <div className="enterprise-card p-4 space-y-2">
-              <div className="flex items-center gap-2 text-gray-600">
-                <MessageSquare className="w-4 h-4" strokeWidth={1.5} />
-                <span className="text-sm font-medium">This Week</span>
+            <div className="enterprise-card p-3">
+              <div className="flex items-center gap-2 text-gray-600 mb-1">
+                <MessageSquare className="w-3.5 h-3.5" strokeWidth={1.5} />
+                <span className="text-xs font-medium">This Week</span>
               </div>
-              <div className="text-2xl font-semibold text-gray-900">{stats.thisWeek}</div>
+              <div className="text-xl font-semibold text-gray-900">{stats.thisWeek}</div>
             </div>
           </div>
         )}
       </header>
 
-      <main className="flex-1 overflow-hidden flex">
-        {/* Left Rail */}
-        <div className="w-80 border-r border-gray-200 flex flex-col bg-white">
-          <div className="p-4 space-y-3 border-b border-gray-200">
+      {/* Main Content with proper flex */}
+      <main className="flex-1 flex overflow-hidden min-h-0">
+        {/* Left Sidebar - Conversations List */}
+        <div className="w-80 border-r border-gray-200 flex flex-col bg-white overflow-hidden">
+          {/* Search and Filters - Fixed */}
+          <div className="flex-shrink-0 p-4 space-y-3 border-b border-gray-200">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" strokeWidth={1.5} />
               <Input
@@ -96,16 +99,18 @@ const Conversations = () => {
 
             <Tabs value={filter} onValueChange={(v) => setFilter(v as 'all' | 'unread')} className="w-full">
               <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="all">
+                <TabsTrigger value="all" className="text-xs">
                   All {conversations && `(${conversations.length})`}
                 </TabsTrigger>
-                <TabsTrigger value="unread">
+                <TabsTrigger value="unread" className="text-xs">
                   Unread {stats && stats.unread > 0 && `(${stats.unread})`}
                 </TabsTrigger>
               </TabsList>
             </Tabs>
           </div>
-          <div className="flex-1 overflow-auto">
+
+          {/* Scrollable List */}
+          <div className="flex-1 overflow-y-auto">
             <ConversationList
               conversations={filteredConversations}
               isLoading={isLoading}
@@ -115,10 +120,10 @@ const Conversations = () => {
           </div>
         </div>
 
-        {/* Right Pane */}
-        <div className="flex-1 bg-gray-50">
-          <ConversationView 
-            conversationId={selectedId} 
+        {/* Right Panel - Conversation View */}
+        <div className="flex-1 bg-gray-50 overflow-hidden">
+          <ConversationView
+            conversationId={selectedId}
             onDelete={() => {
               setSelectedId(null);
               refetch();
