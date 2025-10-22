@@ -80,8 +80,9 @@ const TrainingMaterialSchema = new Schema<ITrainingMaterial>(
   }
 );
 
-// Indexes for efficient queries
+// Indexes for efficient queries and data isolation
 TrainingMaterialSchema.index({ userId: 1, status: 1 });
 TrainingMaterialSchema.index({ userId: 1, type: 1 });
+TrainingMaterialSchema.index({ userId: 1, _id: 1 }); // For secure lookups
 
 export default mongoose.model<ITrainingMaterial>('TrainingMaterial', TrainingMaterialSchema);

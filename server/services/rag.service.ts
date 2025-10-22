@@ -253,11 +253,18 @@ export const retrieveContext = async (
   query: string
 ): Promise<{ context: string; sources: Source[] }> => {
   try {
-    // Get all trained materials for user
+    // Validate inputs
+    if (!userId || !query || !query.trim()) {
+      return { context: '', sources: [] };
+    }
+
+    // Get all trained materials for user (with explicit userId filter for security)
     const materials = await TrainingMaterial.find({
       userId,
       status: 'trained',
-    }).lean();
+    })
+      .select('title content source metadata embeddings')
+      .lean();
 
     if (materials.length === 0) {
       return {
@@ -267,7 +274,7 @@ export const retrieveContext = async (
     }
 
     // Retrieve relevant sources using semantic search
-    const sources = await semanticRetrieval(query, materials);
+    const sources = await semanticRetrieval(query.trim(), materials);
 
     // Build context from sources
     const context = sources
@@ -281,15 +288,24 @@ export const retrieveContext = async (
   }
 };
 
-export const indexMaterial = async (materialId: string): Promise<void> => {
+export const indexMaterial = async (materialId: string, userId?: string): Promise<void> => {
   try {
-    const material = await TrainingMaterial.findById(materialId);
-    if (!material) return;
+    // Build query with userId if provided for extra security
+    const query: any = { _id: materialId };
+    if (userId) {
+      query.userId = userId;
+    }
+
+    const material = await TrainingMaterial.findOne(query);
+    if (!material) {
+      console.warn(`Material ${materialId} not found or access denied`);
+      return;
+    }
 
     material.status = 'training';
     await material.save();
 
-    console.log(`🔄 Indexing material: ${material.title}`);
+    console.log(`🔄 Indexing material: ${material.title} (User: ${material.userId})`);
 
     // Chunk the content with overlap
     const chunks = chunkText(material.content, 800, 200);
@@ -329,9 +345,16 @@ export const indexMaterial = async (materialId: string): Promise<void> => {
   } catch (error) {
     console.error('Indexing error:', error);
     
-    // Mark as failed
-    await TrainingMaterial.findByIdAndUpdate(materialId, {
-      status: 'untrained',
-    });
+    // Mark as failed - only if we can verify ownership
+    if (userId) {
+      await TrainingMaterial.findOneAndUpdate(
+        { _id: materialId, userId },
+        { status: 'untrained' }
+      );
+    } else {
+      await TrainingMaterial.findByIdAndUpdate(materialId, {
+        status: 'untrained',
+      });
+    }
   }
 };

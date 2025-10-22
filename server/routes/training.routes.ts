@@ -31,12 +31,26 @@ router.post('/file', authenticate, async (req: AuthRequest, res) => {
   try {
     const { title, content, fileType, fileSize } = req.body;
 
+    // Validation
+    if (!title || !title.trim()) {
+      return res.status(400).json({ error: 'Title is required' });
+    }
+    if (!content || !content.trim()) {
+      return res.status(400).json({ error: 'Content is required' });
+    }
+    if (content.length < 10) {
+      return res.status(400).json({ error: 'Content is too short (minimum 10 characters)' });
+    }
+    if (content.length > 1000000) {
+      return res.status(400).json({ error: 'Content is too large (maximum 1MB)' });
+    }
+
     const material = new TrainingMaterial({
       userId: req.userId,
       type: 'file',
-      title,
-      content,
-      characters: content.length,
+      title: title.trim(),
+      content: content.trim(),
+      characters: content.trim().length,
       metadata: { fileType, fileSize },
       status: 'untrained',
     });
@@ -44,7 +58,7 @@ router.post('/file', authenticate, async (req: AuthRequest, res) => {
     await material.save();
 
     // Index in background
-    indexMaterial(material._id.toString()).catch(console.error);
+    indexMaterial(material._id.toString(), req.userId!).catch(console.error);
 
     res.status(201).json(material);
   } catch (error: any) {
@@ -57,21 +71,42 @@ router.post('/link', authenticate, async (req: AuthRequest, res) => {
   try {
     const { url, title, content } = req.body;
 
+    // Validation
+    if (!url || !url.trim()) {
+      return res.status(400).json({ error: 'URL is required' });
+    }
+    if (!content || !content.trim()) {
+      return res.status(400).json({ error: 'Content is required' });
+    }
+    if (content.length < 10) {
+      return res.status(400).json({ error: 'Content is too short (minimum 10 characters)' });
+    }
+    if (content.length > 1000000) {
+      return res.status(400).json({ error: 'Content is too large (maximum 1MB)' });
+    }
+
+    // Basic URL validation
+    try {
+      new URL(url);
+    } catch {
+      return res.status(400).json({ error: 'Invalid URL format' });
+    }
+
     const material = new TrainingMaterial({
       userId: req.userId,
       type: 'link',
-      title: title || url,
-      content,
-      source: url,
-      characters: content.length,
-      metadata: { url },
+      title: (title || url).trim(),
+      content: content.trim(),
+      source: url.trim(),
+      characters: content.trim().length,
+      metadata: { url: url.trim() },
       status: 'untrained',
     });
 
     await material.save();
 
     // Index in background
-    indexMaterial(material._id.toString()).catch(console.error);
+    indexMaterial(material._id.toString(), req.userId!).catch(console.error);
 
     res.status(201).json(material);
   } catch (error: any) {
@@ -84,19 +119,33 @@ router.post('/text', authenticate, async (req: AuthRequest, res) => {
   try {
     const { title, content } = req.body;
 
+    // Validation
+    if (!title || !title.trim()) {
+      return res.status(400).json({ error: 'Title is required' });
+    }
+    if (!content || !content.trim()) {
+      return res.status(400).json({ error: 'Content is required' });
+    }
+    if (content.length < 10) {
+      return res.status(400).json({ error: 'Content is too short (minimum 10 characters)' });
+    }
+    if (content.length > 1000000) {
+      return res.status(400).json({ error: 'Content is too large (maximum 1MB)' });
+    }
+
     const material = new TrainingMaterial({
       userId: req.userId,
       type: 'text',
-      title,
-      content,
-      characters: content.length,
+      title: title.trim(),
+      content: content.trim(),
+      characters: content.trim().length,
       status: 'untrained',
     });
 
     await material.save();
 
     // Index in background
-    indexMaterial(material._id.toString()).catch(console.error);
+    indexMaterial(material._id.toString(), req.userId!).catch(console.error);
 
     res.status(201).json(material);
   } catch (error: any) {
@@ -120,7 +169,7 @@ router.post('/:id/retrain', authenticate, async (req: AuthRequest, res) => {
     await material.save();
 
     // Index in background
-    indexMaterial(material._id.toString()).catch(console.error);
+    indexMaterial(material._id.toString(), req.userId!).catch(console.error);
 
     res.json({ message: 'Retraining started' });
   } catch (error: any) {
