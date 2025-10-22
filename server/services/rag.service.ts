@@ -63,7 +63,7 @@ const getEmbedding = async (text: string): Promise<number[]> => {
     const apiKey = process.env.OPENAI_API_KEY;
     
     if (!apiKey) {
-      // Fallback: simple word frequency vector
+      console.log('⚠️ No OpenAI API key, using fallback embedding');
       return simpleEmbedding(text);
     }
 
@@ -82,38 +82,57 @@ const getEmbedding = async (text: string): Promise<number[]> => {
       }
     );
 
+    console.log('✅ OpenAI embedding generated successfully');
     return response.data.data[0].embedding;
-  } catch (error) {
-    console.warn('OpenAI embedding failed, using fallback:', error);
+  } catch (error: any) {
+    console.warn('⚠️ OpenAI embedding failed, using fallback:', error.message);
     return simpleEmbedding(text);
   }
 };
 
 // Simple embedding fallback (TF-IDF-like)
 const simpleEmbedding = (text: string): number[] => {
-  const words = text.toLowerCase().match(/\b\w+\b/g) || [];
+  console.log(`🔧 Using simple embedding for: "${text.substring(0, 50)}..."`);
+  
+  // Split by whitespace to handle Arabic and other languages better
+  const words = text.toLowerCase().split(/\s+/).filter(w => w.length > 0);
   const wordFreq: Record<string, number> = {};
   
-  // Count word frequencies
+  // Count word frequencies (no minimum length for Arabic support)
   for (const word of words) {
-    if (word.length > 3) { // Skip short words
-      wordFreq[word] = (wordFreq[word] || 0) + 1;
+    // Clean word (remove punctuation)
+    const cleanWord = word.replace(/[^\w\u0600-\u06FF]/g, '');
+    if (cleanWord.length > 0) {
+      wordFreq[cleanWord] = (wordFreq[cleanWord] || 0) + 1;
     }
   }
   
-  // Create a simple 100-dim vector
-  const vector = new Array(100).fill(0);
+  console.log(`📊 Found ${Object.keys(wordFreq).length} unique words`);
+  
+  // Create a 384-dim vector (same as text-embedding-3-small)
+  const vectorSize = 384;
+  const vector = new Array(vectorSize).fill(0);
   const entries = Object.entries(wordFreq);
   
-  for (let i = 0; i < Math.min(entries.length, 100); i++) {
-    const hash = entries[i][0].split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-    const index = hash % 100;
-    vector[index] += entries[i][1];
+  // Distribute words across vector dimensions
+  for (const [word, freq] of entries) {
+    // Use multiple hash functions for better distribution
+    const hash1 = word.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    const hash2 = word.split('').reduce((acc, char) => acc * 31 + char.charCodeAt(0), 1);
+    
+    const index1 = Math.abs(hash1) % vectorSize;
+    const index2 = Math.abs(hash2) % vectorSize;
+    
+    vector[index1] += freq;
+    vector[index2] += freq * 0.5; // Secondary contribution
   }
   
   // Normalize
   const magnitude = Math.sqrt(vector.reduce((sum, val) => sum + val * val, 0));
-  return magnitude > 0 ? vector.map(v => v / magnitude) : vector;
+  const normalized = magnitude > 0 ? vector.map(v => v / magnitude) : vector;
+  
+  console.log(`✅ Generated ${vectorSize}-dim embedding (magnitude: ${magnitude.toFixed(3)})`);
+  return normalized;
 };
 
 // Cosine similarity
