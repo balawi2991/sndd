@@ -757,6 +757,16 @@
     textarea.addEventListener('input', function() {
       if (this.value.length === 1 && this.value.trim()) {
         openModal();
+        // Re-focus textarea after modal opens
+        setTimeout(() => textarea.focus(), 100);
+      }
+    });
+
+    // Handle Enter key
+    textarea.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        handleSubmit(e);
       }
     });
 
@@ -769,6 +779,9 @@
       if (messagesContainer.children.length === 0 && config.suggestedQuestions.length > 0) {
         showSuggestedQuestions();
       }
+      
+      // Focus textarea after modal opens
+      setTimeout(() => textarea.focus(), 100);
     }
 
     // Close modal

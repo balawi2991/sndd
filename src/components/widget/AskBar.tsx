@@ -45,8 +45,17 @@ const AskBar: React.FC<AskBarProps> = ({
     // Open modal on first character
     if (value.length === 1 && value.trim()) {
       onFocus();
+      // Re-focus textarea after modal opens
+      setTimeout(() => textareaRef.current?.focus(), 100);
     }
   };
+
+  // Auto-focus when modal opens
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.focus();
+    }
+  }, []);
 
   return (
     <div className="mintchat-askbar-wrapper">

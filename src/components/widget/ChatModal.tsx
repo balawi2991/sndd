@@ -123,9 +123,8 @@ const ChatModal: React.FC<ChatModalProps> = ({
 
     document.addEventListener('keydown', handleKeyDown);
     
-    // Focus first element
-    const firstFocusable = modalRef.current?.querySelector('button') as HTMLElement;
-    firstFocusable?.focus();
+    // Don't steal focus - let the AskBar keep it
+    // The user is typing, so focus should stay in the input
 
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
