@@ -48,7 +48,9 @@ const chunkText = (text: string, chunkSize = 800, overlap = 200): string[] => {
     chunks.push(currentChunk.trim());
   }
   
-  return chunks.filter(c => c.length > 50); // Filter very short chunks
+  // Don't filter out short chunks - they might contain important info
+  // Just ensure we have at least one chunk
+  return chunks.length > 0 ? chunks : [text.trim()];
 };
 
 // Get embeddings from OpenAI (or fallback to simple)
