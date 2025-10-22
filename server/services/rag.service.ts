@@ -18,38 +18,42 @@ interface Embedding {
 }
 
 // Improved text chunking with overlap
-const chunkText = (text: string, chunkSize = 800, overlap = 200): string[] => {
+const chunkText = (text: string, chunkSize = 1000, overlap = 200): string[] => {
   const chunks: string[] = [];
+  const textLength = text.length;
   
-  // Split by sentences
-  const sentences = text.match(/[^.!?]+[.!?]+/g) || [text];
+  // If text is short, return as single chunk
+  if (textLength <= chunkSize) {
+    return [text.trim()];
+  }
+  
+  // Split by paragraphs first (double newline or single newline)
+  const paragraphs = text.split(/\n\n+|\n/).filter(p => p.trim().length > 0);
   
   let currentChunk = '';
-  let previousChunk = '';
   
-  for (const sentence of sentences) {
-    const trimmedSentence = sentence.trim();
+  for (const paragraph of paragraphs) {
+    const trimmedParagraph = paragraph.trim();
     
-    if ((currentChunk + trimmedSentence).length > chunkSize && currentChunk) {
+    // If adding this paragraph exceeds chunk size and we have content
+    if (currentChunk && (currentChunk.length + trimmedParagraph.length + 1) > chunkSize) {
       chunks.push(currentChunk.trim());
       
       // Add overlap from previous chunk
-      const words = currentChunk.split(' ');
-      const overlapWords = words.slice(-Math.floor(overlap / 5)); // ~5 chars per word
-      previousChunk = overlapWords.join(' ');
-      
-      currentChunk = previousChunk + ' ' + trimmedSentence;
+      const words = currentChunk.split(/\s+/);
+      const overlapWords = words.slice(-Math.floor(overlap / 5));
+      currentChunk = overlapWords.join(' ') + ' ' + trimmedParagraph;
     } else {
-      currentChunk += ' ' + trimmedSentence;
+      currentChunk += (currentChunk ? '\n' : '') + trimmedParagraph;
     }
   }
   
+  // Add remaining content
   if (currentChunk.trim()) {
     chunks.push(currentChunk.trim());
   }
   
-  // Don't filter out short chunks - they might contain important info
-  // Just ensure we have at least one chunk
+  // If no chunks created (shouldn't happen), return original text
   return chunks.length > 0 ? chunks : [text.trim()];
 };
 
@@ -328,10 +332,18 @@ export const indexMaterial = async (materialId: string, userId?: string): Promis
     await material.save();
 
     console.log(`🔄 Indexing material: ${material.title} (User: ${material.userId})`);
+    console.log(`📏 Content length: ${material.content.length} characters`);
 
     // Chunk the content with overlap
-    const chunks = chunkText(material.content, 800, 200);
+    const chunks = chunkText(material.content, 1000, 200);
     console.log(`📄 Created ${chunks.length} chunks`);
+
+    // Limit chunks to prevent excessive API calls (max 50 chunks)
+    const maxChunks = 50;
+    if (chunks.length > maxChunks) {
+      console.warn(`⚠️ Too many chunks (${chunks.length}), limiting to ${maxChunks}`);
+      chunks.splice(maxChunks);
+    }
 
     // Generate embeddings for each chunk
     const embeddings: Embedding[] = [];
