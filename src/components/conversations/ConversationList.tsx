@@ -1,7 +1,7 @@
 import React from 'react';
 import { ConversationListItem } from '@/services/conversationService';
 import { Badge } from '@/components/ui/badge';
-import { MessageSquare, Inbox } from 'lucide-react';
+import { Inbox } from 'lucide-react';
 
 interface ConversationListProps {
   conversations?: ConversationListItem[];
@@ -50,36 +50,26 @@ const ConversationList: React.FC<ConversationListProps> = ({
         <button
           key={conversation.id}
           onClick={() => onSelect(conversation.id)}
-          className={`w-full p-4 text-left hover:bg-gray-50 transition-colors relative ${
-            selectedId === conversation.id ? 'bg-mint-50 border-l-4 border-mint-600' : ''
+          className={`w-full p-4 text-left hover:bg-gray-50 transition-colors ${
+            selectedId === conversation.id ? 'bg-mint-50' : ''
           }`}
         >
           <div className="flex items-start justify-between mb-1">
-            <div className="flex items-center gap-2 flex-1 min-w-0">
-              <MessageSquare className="w-4 h-4 text-gray-400 flex-shrink-0" strokeWidth={1.5} />
-              <h3 className="font-medium text-gray-900 truncate">
-                {conversation.title}
-              </h3>
-            </div>
+            <h3 className="font-medium text-gray-900 truncate flex-1">
+              {conversation.title}
+            </h3>
             {conversation.unread && (
-              <Badge className="ml-2 bg-mint-600 hover:bg-mint-600 flex-shrink-0 text-xs">
-                New
-              </Badge>
+              <Badge className="ml-2 bg-mint-600 hover:bg-mint-600 flex-shrink-0">New</Badge>
             )}
           </div>
-          <p className="text-sm text-gray-600 truncate mb-2 pl-6">{conversation.preview}</p>
-          <div className="flex items-center justify-between pl-6">
-            <p className="text-xs text-gray-500">
-              {new Date(conversation.lastActivity).toLocaleDateString()} at{' '}
-              {new Date(conversation.lastActivity).toLocaleTimeString([], {
-                hour: '2-digit',
-                minute: '2-digit',
-              })}
-            </p>
-            <Badge variant="secondary" className="text-xs">
-              {conversation.messageCount} {conversation.messageCount === 1 ? 'message' : 'messages'}
-            </Badge>
-          </div>
+          <p className="text-sm text-gray-600 truncate mb-2">{conversation.preview}</p>
+          <p className="text-xs text-gray-500">
+            {new Date(conversation.lastActivity).toLocaleDateString()} at{' '}
+            {new Date(conversation.lastActivity).toLocaleTimeString([], {
+              hour: '2-digit',
+              minute: '2-digit',
+            })}
+          </p>
         </button>
       ))}
     </div>

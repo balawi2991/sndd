@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getConversation, deleteConversation, renameConversation } from '@/services/conversationService';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { MoreVertical, MessageSquare, Trash2, Edit2, ExternalLink, FileText } from 'lucide-react';
+import { MoreVertical, MessageSquare, Trash2, Edit2 } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -201,17 +201,16 @@ const ConversationView: React.FC<ConversationViewProps> = ({ conversationId, onD
                     </div>
                   )}
                   <div
-                    className={`flex gap-3 animate-slide-up ${
+                    className={`flex gap-3 ${
                       message.role === 'user' ? 'justify-end' : 'justify-start'
                     }`}
-                    style={{ animationDelay: `${index * 50}ms` }}
                   >
                     {message.role === 'assistant' && (
                       <div className="w-8 h-8 rounded-full bg-mint-100 flex items-center justify-center flex-shrink-0">
                         <span className="text-sm font-medium text-mint-700">AI</span>
                       </div>
                     )}
-                    <div className="max-w-lg space-y-2">
+                    <div className="max-w-lg">
                       <div
                         className={`rounded-lg px-4 py-3 ${
                           message.role === 'user'
@@ -219,7 +218,7 @@ const ConversationView: React.FC<ConversationViewProps> = ({ conversationId, onD
                             : 'bg-white border border-gray-200'
                         }`}
                       >
-                        <p className="text-sm leading-relaxed whitespace-pre-wrap">{message.content}</p>
+                        <p className="text-sm leading-relaxed">{message.content}</p>
                         <p
                           className={`text-xs mt-2 ${
                             message.role === 'user' ? 'text-mint-100' : 'text-gray-500'
@@ -234,33 +233,14 @@ const ConversationView: React.FC<ConversationViewProps> = ({ conversationId, onD
                       
                       {/* Sources */}
                       {message.sources && message.sources.length > 0 && (
-                        <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 space-y-2">
-                          <div className="flex items-center gap-2 text-xs font-medium text-gray-700">
-                            <FileText className="w-3.5 h-3.5" />
-                            <span>Sources ({message.sources.length})</span>
-                          </div>
-                          <div className="space-y-1.5">
-                            {message.sources.map((source, idx) => (
-                              <div key={idx} className="flex items-center gap-2">
-                                <Badge variant="secondary" className="text-xs">
-                                  {idx + 1}
-                                </Badge>
-                                <span className="text-xs text-gray-700 flex-1 truncate">
-                                  {source.title}
-                                </span>
-                                {source.url && (
-                                  <a
-                                    href={source.url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-mint-600 hover:text-mint-700"
-                                  >
-                                    <ExternalLink className="w-3.5 h-3.5" />
-                                  </a>
-                                )}
-                              </div>
-                            ))}
-                          </div>
+                        <div className="mt-2 text-xs text-gray-500">
+                          <span className="font-medium">Sources: </span>
+                          {message.sources.map((source, idx) => (
+                            <span key={idx}>
+                              {source.title}
+                              {idx < message.sources!.length - 1 && ', '}
+                            </span>
+                          ))}
                         </div>
                       )}
                     </div>

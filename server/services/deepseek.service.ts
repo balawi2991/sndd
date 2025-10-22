@@ -106,7 +106,7 @@ export const callDeepSeek = async (
 ): Promise<string> => {
   try {
     const apiKey = process.env.DEEPSEEK_API_KEY;
-    
+
     if (!apiKey) {
       throw new Error('DeepSeek API key not configured');
     }
@@ -152,7 +152,7 @@ export const callDeepSeek = async (
     );
 
     const assistantMessage = response.data.choices[0]?.message?.content;
-    
+
     if (!assistantMessage) {
       throw new Error('No response from DeepSeek');
     }
@@ -160,7 +160,7 @@ export const callDeepSeek = async (
     return assistantMessage.trim();
   } catch (error: any) {
     console.error('DeepSeek API error:', error.response?.data || error.message);
-    
+
     // Fallback response
     if (error.response?.status === 401) {
       throw new Error('API authentication failed');
