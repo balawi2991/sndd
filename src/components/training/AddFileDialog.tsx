@@ -11,6 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Upload } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useQueryClient } from '@tanstack/react-query';
 import { addFile } from '@/services/trainingService';
 
 interface AddFileDialogProps {
@@ -20,26 +21,30 @@ interface AddFileDialogProps {
 
 const AddFileDialog: React.FC<AddFileDialogProps> = ({ open, onOpenChange }) => {
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   const [loading, setLoading] = useState(false);
-  const [files, setFiles] = useState<FileList | null>(null);
+  const [file, setFile] = useState<File | null>(null);
+  const [title, setTitle] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!files || files.length === 0) return;
+    if (!file || !title.trim()) return;
 
     setLoading(true);
     try {
-      await addFile(files);
+      await addFile(file, title);
       toast({
-        title: "Files uploaded",
-        description: `${files.length} file(s) added successfully.`,
+        title: "File uploaded",
+        description: "Your file has been added to the knowledge base.",
       });
+      queryClient.invalidateQueries({ queryKey: ['training-materials'] });
       onOpenChange(false);
-      setFiles(null);
-    } catch (error) {
+      setFile(null);
+      setTitle('');
+    } catch (error: any) {
       toast({
         title: "Upload failed",
-        description: "Something went wrong. Please try again.",
+        description: error.message || "Something went wrong. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -58,28 +63,46 @@ const AddFileDialog: React.FC<AddFileDialogProps> = ({ open, onOpenChange }) => 
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="files">Select files</Label>
+            <Label htmlFor="title">Title</Label>
+            <Input
+              id="title"
+              placeholder="e.g., Product Documentation"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              required
+              className="focus-calm"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="file">Select file</Label>
             <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-mint-400 transition-colors">
               <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
               <Input
-                id="files"
+                id="file"
                 type="file"
-                multiple
-                accept=".pdf,.docx,.md"
-                onChange={(e) => setFiles(e.target.files)}
+                accept=".pdf,.docx,.md,.txt"
+                onChange={(e) => {
+                  const selectedFile = e.target.files?.[0];
+                  if (selectedFile) {
+                    setFile(selectedFile);
+                    if (!title) {
+                      setTitle(selectedFile.name.replace(/\.[^/.]+$/, ''));
+                    }
+                  }
+                }}
                 className="hidden"
               />
-              <Label htmlFor="files" className="cursor-pointer">
+              <Label htmlFor="file" className="cursor-pointer">
                 <span className="text-sm text-mint-600 font-medium hover:text-mint-700">
-                  Choose files
+                  Choose file
                 </span>
                 <span className="text-sm text-gray-600"> or drag and drop</span>
               </Label>
-              <p className="text-xs text-gray-500 mt-1">PDF, DOCX, MD up to 10MB each</p>
+              <p className="text-xs text-gray-500 mt-1">PDF, DOCX, MD, TXT up to 1MB</p>
             </div>
-            {files && files.length > 0 && (
+            {file && (
               <p className="text-sm text-gray-600">
-                {files.length} file(s) selected
+                Selected: {file.name} ({(file.size / 1024).toFixed(1)} KB)
               </p>
             )}
           </div>
@@ -93,7 +116,7 @@ const AddFileDialog: React.FC<AddFileDialogProps> = ({ open, onOpenChange }) => 
             </Button>
             <Button
               type="submit"
-              disabled={!files || files.length === 0 || loading}
+              disabled={!file || !title.trim() || loading}
               className="bg-mint-600 hover:bg-mint-700 text-white"
             >
               {loading ? 'Uploading...' : 'Upload'}

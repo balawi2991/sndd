@@ -2,7 +2,13 @@ import React, { useState } from 'react';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { Plus } from 'lucide-react';
+import { Plus, FileText, Link as LinkIcon, Type, ChevronDown } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { useQuery } from '@tanstack/react-query';
 import { getTrainingMaterials } from '@/services/trainingService';
 import TrainingTable from '@/components/training/TrainingTable';
@@ -21,12 +27,7 @@ const TrainingMaterials = () => {
     queryFn: () => getTrainingMaterials(activeTab),
   });
 
-  const handleAddClick = () => {
-    if (activeTab === 'files') setShowFileDialog(true);
-    else if (activeTab === 'links') setShowLinkDialog(true);
-    else if (activeTab === 'text') setShowTextDialog(true);
-    else setShowFileDialog(true); // Default to file for 'all'
-  };
+
 
   return (
     <div className="flex flex-col h-full w-full">
@@ -38,13 +39,29 @@ const TrainingMaterials = () => {
             <p className="text-sm text-gray-600">Manage your knowledge base</p>
           </div>
         </div>
-        <Button
-          onClick={handleAddClick}
-          className="bg-mint-600 hover:bg-mint-700 text-white focus-calm"
-        >
-          <Plus className="w-4 h-4 mr-2" />
-          Add Material
-        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button className="bg-mint-600 hover:bg-mint-700 text-white focus-calm">
+              <Plus className="w-4 h-4 mr-2" />
+              Add Material
+              <ChevronDown className="w-4 h-4 ml-2" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-48">
+            <DropdownMenuItem onClick={() => setShowFileDialog(true)}>
+              <FileText className="w-4 h-4 mr-2" />
+              Upload File
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setShowLinkDialog(true)}>
+              <LinkIcon className="w-4 h-4 mr-2" />
+              Add Link
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setShowTextDialog(true)}>
+              <Type className="w-4 h-4 mr-2" />
+              Add Text
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </header>
 
       <main className="flex-1 overflow-auto p-6">

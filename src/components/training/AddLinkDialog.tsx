@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
+import { useQueryClient } from '@tanstack/react-query';
 import { addLink } from '@/services/trainingService';
 
 interface AddLinkDialogProps {
@@ -19,8 +20,10 @@ interface AddLinkDialogProps {
 
 const AddLinkDialog: React.FC<AddLinkDialogProps> = ({ open, onOpenChange }) => {
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   const [loading, setLoading] = useState(false);
   const [url, setUrl] = useState('');
+  const [title, setTitle] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,17 +31,19 @@ const AddLinkDialog: React.FC<AddLinkDialogProps> = ({ open, onOpenChange }) => 
 
     setLoading(true);
     try {
-      await addLink(url);
+      await addLink(url, title);
       toast({
         title: "Link added",
-        description: "The website content will be crawled and trained.",
+        description: "The website content has been added to your knowledge base.",
       });
+      queryClient.invalidateQueries({ queryKey: ['training-materials'] });
       onOpenChange(false);
       setUrl('');
-    } catch (error) {
+      setTitle('');
+    } catch (error: any) {
       toast({
         title: "Failed to add link",
-        description: "Please check the URL and try again.",
+        description: error.message || "Please check the URL and try again.",
         variant: "destructive",
       });
     } finally {
@@ -57,6 +62,16 @@ const AddLinkDialog: React.FC<AddLinkDialogProps> = ({ open, onOpenChange }) => 
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
+            <Label htmlFor="title">Title (optional)</Label>
+            <Input
+              id="title"
+              placeholder="e.g., Company Website"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              className="focus-calm"
+            />
+          </div>
+          <div className="space-y-2">
             <Label htmlFor="url">Website URL</Label>
             <Input
               id="url"
@@ -68,7 +83,7 @@ const AddLinkDialog: React.FC<AddLinkDialogProps> = ({ open, onOpenChange }) => 
               className="focus-calm"
             />
             <p className="text-xs text-gray-500">
-              We'll crawl the page and extract relevant content
+              Enter the URL of the page you want to add
             </p>
           </div>
           <div className="flex gap-3 justify-end">

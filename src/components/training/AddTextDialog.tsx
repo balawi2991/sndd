@@ -11,6 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
+import { useQueryClient } from '@tanstack/react-query';
 import { addText } from '@/services/trainingService';
 
 interface AddTextDialogProps {
@@ -20,6 +21,7 @@ interface AddTextDialogProps {
 
 const AddTextDialog: React.FC<AddTextDialogProps> = ({ open, onOpenChange }) => {
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
@@ -37,12 +39,13 @@ const AddTextDialog: React.FC<AddTextDialogProps> = ({ open, onOpenChange }) => 
         title: "Text added",
         description: "Your content has been added to the knowledge base.",
       });
+      queryClient.invalidateQueries({ queryKey: ['training-materials'] });
       onOpenChange(false);
       setFormData({ title: '', content: '' });
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: "Failed to add text",
-        description: "Something went wrong. Please try again.",
+        description: error.message || "Something went wrong. Please try again.",
         variant: "destructive",
       });
     } finally {
