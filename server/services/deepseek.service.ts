@@ -15,16 +15,17 @@ export const callDeepSeek = async (
 
     // Build system prompt with context
     const systemPrompt = context
-      ? `You are a helpful AI assistant. Use the following context to answer the user's question accurately. If the context doesn't contain relevant information, provide a helpful general response.
+      ? `You are a helpful AI assistant. You MUST use the following context to answer the user's question. The context contains specific information that you should prioritize over your general knowledge.
 
-Context:
+Context from knowledge base:
 ${context}
 
-Instructions:
-- Answer based on the context when relevant
-- Be concise and clear
-- If you're not sure, say so
-- Be friendly and professional`
+IMPORTANT Instructions:
+- ALWAYS check the context first before answering
+- If the answer is in the context, use it directly
+- Be specific and use exact information from the context
+- If the context doesn't contain the answer, then provide a general response
+- Be concise, clear, and friendly`
       : 'You are a helpful AI assistant. Provide clear, concise, and friendly responses.';
 
     const response = await axios.post(

@@ -152,7 +152,10 @@ const semanticRetrieval = async (
           const chunkEmbedding = await getEmbedding(chunk);
           const similarity = cosineSimilarity(queryEmbedding, chunkEmbedding);
           
-          if (similarity > 0.3) { // Threshold
+          console.log(`📊 Similarity for "${material.title}": ${similarity.toFixed(3)}`);
+          
+          // Lower threshold for better recall
+          if (similarity > 0.15) {
             results.push({
               source: {
                 title: material.title,
@@ -169,7 +172,10 @@ const semanticRetrieval = async (
         for (const emb of embeddings) {
           const similarity = cosineSimilarity(queryEmbedding, emb.embedding);
           
-          if (similarity > 0.3) {
+          console.log(`📊 Similarity for "${material.title}": ${similarity.toFixed(3)}`);
+          
+          // Lower threshold for better recall (0.15 instead of 0.3)
+          if (similarity > 0.15) {
             results.push({
               source: {
                 title: material.title,
@@ -260,6 +266,8 @@ export const retrieveContext = async (
       return { context: '', sources: [] };
     }
 
+    console.log(`🔍 Retrieving context for query: "${query}"`);
+
     // Get all trained materials for user (with explicit userId filter for security)
     const materials = await TrainingMaterial.find({
       userId,
@@ -268,7 +276,10 @@ export const retrieveContext = async (
       .select('title content source metadata embeddings')
       .lean();
 
+    console.log(`📚 Found ${materials.length} trained materials`);
+
     if (materials.length === 0) {
+      console.log('⚠️ No trained materials found');
       return {
         context: '',
         sources: [],
@@ -278,10 +289,19 @@ export const retrieveContext = async (
     // Retrieve relevant sources using semantic search
     const sources = await semanticRetrieval(query.trim(), materials);
 
+    console.log(`✅ Retrieved ${sources.length} relevant sources`);
+    if (sources.length > 0) {
+      sources.forEach((s, i) => {
+        console.log(`   ${i + 1}. ${s.title} (chunk: ${s.chunk.substring(0, 50)}...)`);
+      });
+    }
+
     // Build context from sources
     const context = sources
       .map((s, i) => `[Source ${i + 1}: ${s.title}]\n${s.chunk}`)
       .join('\n\n');
+
+    console.log(`📝 Context length: ${context.length} characters`);
 
     return { context, sources };
   } catch (error) {
