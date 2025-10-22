@@ -36,7 +36,14 @@ const ConversationView: React.FC<ConversationViewProps> = ({ conversationId, onD
 
   const { data: conversation, isLoading } = useQuery({
     queryKey: ['conversation', conversationId],
-    queryFn: () => conversationId ? getConversation(conversationId) : null,
+    queryFn: async () => {
+      if (!conversationId) return null;
+      const data = await getConversation(conversationId);
+      // Invalidate conversations list to update unread badge
+      queryClient.invalidateQueries({ queryKey: ['conversations'] });
+      queryClient.invalidateQueries({ queryKey: ['conversation-stats'] });
+      return data;
+    },
     enabled: !!conversationId,
   });
 
@@ -208,21 +215,21 @@ const ConversationView: React.FC<ConversationViewProps> = ({ conversationId, onD
                     }`}
                   >
                     {message.role === 'assistant' && (
-                      <div className="w-8 h-8 rounded-full bg-mint-100 flex items-center justify-center flex-shrink-0">
-                        <span className="text-sm font-medium text-mint-700">AI</span>
+                      <div className="w-7 h-7 rounded-full bg-mint-100 flex items-center justify-center flex-shrink-0">
+                        <span className="text-xs font-medium text-mint-700">AI</span>
                       </div>
                     )}
                     <div className="max-w-lg">
                       <div
-                        className={`rounded-lg px-4 py-3 ${
+                        className={`rounded-lg px-3 py-2 ${
                           message.role === 'user'
                             ? 'bg-mint-600 text-white'
                             : 'bg-white border border-gray-200'
                         }`}
                       >
-                        <p className="text-sm leading-relaxed">{message.content}</p>
+                        <p className="text-xs leading-relaxed">{message.content}</p>
                         <p
-                          className={`text-xs mt-2 ${
+                          className={`text-[10px] mt-1.5 ${
                             message.role === 'user' ? 'text-mint-100' : 'text-gray-500'
                           }`}
                         >
@@ -235,7 +242,7 @@ const ConversationView: React.FC<ConversationViewProps> = ({ conversationId, onD
                       
                       {/* Sources */}
                       {message.sources && message.sources.length > 0 && (
-                        <div className="mt-2 text-xs text-gray-500">
+                        <div className="mt-1.5 text-[10px] text-gray-500">
                           <span className="font-medium">Sources: </span>
                           {message.sources.map((source, idx) => (
                             <span key={idx}>
@@ -247,8 +254,8 @@ const ConversationView: React.FC<ConversationViewProps> = ({ conversationId, onD
                       )}
                     </div>
                     {message.role === 'user' && (
-                      <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center flex-shrink-0">
-                        <span className="text-sm font-medium text-gray-700">U</span>
+                      <div className="w-7 h-7 rounded-full bg-gray-200 flex items-center justify-center flex-shrink-0">
+                        <span className="text-xs font-medium text-gray-700">U</span>
                       </div>
                     )}
                   </div>
