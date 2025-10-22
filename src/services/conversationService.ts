@@ -1,103 +1,76 @@
-export interface Message {
-  id: string;
-  role: 'user' | 'assistant';
-  content: string;
-  timestamp: Date;
+import api from '@/lib/api';
+
+export interface Source {
+  title: string;
+  url?: string;
+  materialId?: string;
 }
 
-export interface Conversation {
+export interface Message {
+  role: 'user' | 'assistant';
+  content: string;
+  sources?: Source[];
+  timestamp: string | Date;
+}
+
+export interface ConversationListItem {
   id: string;
   title: string;
   preview: string;
-  lastActivity: Date;
+  lastActivity: string | Date;
   unread: boolean;
-  messages: Message[];
+  messageCount: number;
 }
 
-const mockConversations: Conversation[] = [
-  {
-    id: '1',
-    title: 'Product Inquiry',
-    preview: 'Hi, I have a question about your pricing...',
-    lastActivity: new Date('2024-01-15T14:30:00'),
-    unread: true,
-    messages: [
-      {
-        id: '1-1',
-        role: 'user',
-        content: 'Hi, I have a question about your pricing plans.',
-        timestamp: new Date('2024-01-15T14:30:00'),
-      },
-      {
-        id: '1-2',
-        role: 'assistant',
-        content: 'Hello! I\'d be happy to help you with information about our pricing. We offer three main plans: Starter, Professional, and Enterprise. What would you like to know?',
-        timestamp: new Date('2024-01-15T14:30:15'),
-      },
-      {
-        id: '1-3',
-        role: 'user',
-        content: 'What\'s included in the Professional plan?',
-        timestamp: new Date('2024-01-15T14:31:00'),
-      },
-      {
-        id: '1-4',
-        role: 'assistant',
-        content: 'The Professional plan includes unlimited conversations, advanced analytics, custom branding, priority support, and API access. It\'s perfect for growing businesses.',
-        timestamp: new Date('2024-01-15T14:31:20'),
-      },
-    ],
-  },
-  {
-    id: '2',
-    title: 'Technical Support',
-    preview: 'I\'m having trouble integrating the widget...',
-    lastActivity: new Date('2024-01-14T10:15:00'),
-    unread: false,
-    messages: [
-      {
-        id: '2-1',
-        role: 'user',
-        content: 'I\'m having trouble integrating the widget into my website.',
-        timestamp: new Date('2024-01-14T10:15:00'),
-      },
-      {
-        id: '2-2',
-        role: 'assistant',
-        content: 'I can help you with that! Could you tell me which platform you\'re using? WordPress, custom HTML, or something else?',
-        timestamp: new Date('2024-01-14T10:15:30'),
-      },
-    ],
-  },
-  {
-    id: '3',
-    title: 'Feature Request',
-    preview: 'Would love to see multi-language support...',
-    lastActivity: new Date('2024-01-13T16:45:00'),
-    unread: false,
-    messages: [
-      {
-        id: '3-1',
-        role: 'user',
-        content: 'Would love to see multi-language support in the future!',
-        timestamp: new Date('2024-01-13T16:45:00'),
-      },
-      {
-        id: '3-2',
-        role: 'assistant',
-        content: 'Thank you for the feedback! Multi-language support is on our roadmap. We\'re planning to add it in Q2 2024.',
-        timestamp: new Date('2024-01-13T16:45:45'),
-      },
-    ],
-  },
-];
+export interface ConversationDetail {
+  id: string;
+  title: string;
+  messages: Message[];
+  lastActivity: string | Date;
+}
 
-export const getConversations = async (): Promise<Conversation[]> => {
-  await new Promise(resolve => setTimeout(resolve, 600));
-  return mockConversations;
+export interface ConversationStats {
+  total: number;
+  unread: number;
+  today: number;
+  thisWeek: number;
+}
+
+// Get all conversations
+export const getConversations = async (): Promise<ConversationListItem[]> => {
+  const response = await api.get('/conversations');
+  return response.data;
 };
 
-export const getConversation = async (id: string): Promise<Conversation | undefined> => {
-  await new Promise(resolve => setTimeout(resolve, 300));
-  return mockConversations.find(c => c.id === id);
+// Get single conversation
+export const getConversation = async (id: string): Promise<ConversationDetail> => {
+  const response = await api.get(`/conversations/${id}`);
+  return response.data;
+};
+
+// Delete conversation
+export const deleteConversation = async (id: string): Promise<void> => {
+  await api.delete(`/conversations/${id}`);
+};
+
+// Rename conversation
+export const renameConversation = async (id: string, title: string): Promise<void> => {
+  await api.patch(`/conversations/${id}`, { title });
+};
+
+// Get conversation statistics
+export const getConversationStats = async (): Promise<ConversationStats> => {
+  const conversations = await getConversations();
+  
+  const now = new Date();
+  const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const weekStart = new Date(now);
+  weekStart.setDate(now.getDate() - 7);
+
+  return {
+    total: conversations.length,
+    unread: conversations.filter(c => c.unread).length,
+    today: conversations.filter(c => new Date(c.lastActivity) >= todayStart).length,
+    thisWeek: conversations.filter(c => new Date(c.lastActivity) >= weekStart).length,
+  };
 };
